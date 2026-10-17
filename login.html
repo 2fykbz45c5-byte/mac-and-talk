@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#10243e">
 
     <title>Login | Mac&Talk</title>
 
@@ -35,9 +36,7 @@
             flex-direction: column;
         }
 
-        a {
-            text-decoration: none;
-        }
+        a { text-decoration: none; }
 
         .topbar {
             min-height: 78px;
@@ -57,22 +56,15 @@
             letter-spacing: -1px;
         }
 
-        .logo span {
-            color: var(--yellow);
-        }
-
-        .logo-icon {
-            margin-right: 8px;
-        }
+        .logo span { color: var(--yellow); }
+        .logo-icon { margin-right: 8px; }
 
         .back-link {
             color: #d9e5f7;
             font-weight: 600;
         }
 
-        .back-link:hover {
-            color: var(--yellow);
-        }
+        .back-link:hover { color: var(--yellow); }
 
         .main {
             width: min(1200px, 92%);
@@ -110,6 +102,7 @@
             border-radius: 50%;
             top: -130px;
             left: -130px;
+            pointer-events: none;
         }
 
         .big-mic {
@@ -123,9 +116,7 @@
             font-weight: 800;
         }
 
-        .brand-title span {
-            color: var(--yellow);
-        }
+        .brand-title span { color: var(--yellow); }
 
         .brand-description {
             margin-top: 20px;
@@ -149,9 +140,7 @@
             margin-top: 20px;
         }
 
-        .feature {
-            padding: 15px 5px;
-        }
+        .feature { padding: 15px 5px; }
 
         .feature-icon {
             display: block;
@@ -195,9 +184,7 @@
             font-size: 17px;
         }
 
-        .form-group {
-            margin-bottom: 23px;
-        }
+        .form-group { margin-bottom: 23px; }
 
         .form-group label {
             display: block;
@@ -205,9 +192,7 @@
             margin-bottom: 10px;
         }
 
-        .input-wrap {
-            position: relative;
-        }
+        .input-wrap { position: relative; }
 
         .input-wrap input {
             width: 100%;
@@ -226,9 +211,7 @@
             box-shadow: 0 0 0 3px rgba(38, 119, 232, 0.12);
         }
 
-        .input-wrap input::placeholder {
-            color: #8297b5;
-        }
+        .input-wrap input::placeholder { color: #8297b5; }
 
         .input-icon {
             position: absolute;
@@ -268,9 +251,7 @@
             font-weight: 700;
         }
 
-        .text-link:hover {
-            text-decoration: underline;
-        }
+        .text-link:hover { text-decoration: underline; }
 
         .submit-btn {
             width: 100%;
@@ -290,7 +271,8 @@
             transform: translateY(-1px);
         }
 
-        .submit-btn:disabled {
+        .submit-btn:disabled,
+        .google-btn:disabled {
             opacity: 0.65;
             cursor: wait;
             transform: none;
@@ -324,9 +306,7 @@
             cursor: pointer;
         }
 
-        .google-btn:hover {
-            background: #f7faff;
-        }
+        .google-btn:hover { background: #f7faff; }
 
         .signup-text {
             text-align: center;
@@ -336,9 +316,7 @@
             font-size: 14px;
         }
 
-        .signup-text a {
-            margin-left: 8px;
-        }
+        .signup-text a { margin-left: 8px; }
 
         .message {
             display: none;
@@ -361,6 +339,12 @@
             color: #167345;
         }
 
+        .message.info {
+            display: block;
+            background: #edf5ff;
+            color: #174a87;
+        }
+
         footer {
             text-align: center;
             color: var(--muted);
@@ -374,48 +358,19 @@
                 max-width: 560px;
             }
 
-            .brand-panel {
-                padding: 40px 25px;
-            }
-
-            .big-mic {
-                font-size: 60px;
-            }
-
-            .brand-title {
-                font-size: 43px;
-            }
-
-            .brand-description {
-                margin-top: 10px;
-            }
-
-            .illustration {
-                font-size: 65px;
-                margin: 15px 0;
-            }
-
-            .features {
-                max-width: 400px;
-            }
-
-            .login-panel {
-                padding: 45px 30px;
-            }
+            .brand-panel { padding: 40px 25px; }
+            .big-mic { font-size: 60px; }
+            .brand-title { font-size: 43px; }
+            .brand-description { margin-top: 10px; }
+            .illustration { font-size: 65px; margin: 15px 0; }
+            .features { max-width: 400px; }
+            .login-panel { padding: 45px 30px; }
         }
 
         @media (max-width: 480px) {
-            .topbar {
-                padding: 17px 5%;
-            }
-
-            .logo {
-                font-size: 23px;
-            }
-
-            .back-link {
-                font-size: 13px;
-            }
+            .topbar { padding: 17px 5%; }
+            .logo { font-size: 23px; }
+            .back-link { font-size: 13px; }
 
             .main {
                 width: 94%;
@@ -423,44 +378,24 @@
                 border-radius: 15px;
             }
 
-            .brand-panel {
-                padding: 32px 18px;
-            }
-
-            .brand-title {
-                font-size: 37px;
-            }
-
-            .brand-description {
-                font-size: 15px;
-            }
-
-            .login-panel {
-                padding: 38px 22px;
-            }
-
-            .login-heading h1 {
-                font-size: 31px;
-            }
-
-            .login-heading p {
-                font-size: 15px;
-            }
+            .brand-panel { padding: 32px 18px; }
+            .brand-title { font-size: 37px; }
+            .brand-description { font-size: 15px; }
+            .login-panel { padding: 38px 22px; }
+            .login-heading h1 { font-size: 31px; }
+            .login-heading p { font-size: 15px; }
 
             .form-options {
                 align-items: flex-start;
                 flex-wrap: wrap;
             }
 
-            .features {
-                gap: 2px;
-            }
+            .features { gap: 2px; }
         }
     </style>
 </head>
 
 <body>
-
     <header class="topbar">
         <a href="index.html" class="logo" aria-label="Mac and Talk home">
             <span class="logo-icon">🎙</span> Mac&<span>Talk</span>
@@ -470,22 +405,17 @@
     </header>
 
     <main class="main">
-
         <section class="brand-panel">
             <div class="big-mic" aria-hidden="true">🎙️</div>
 
-            <div class="brand-title">
-                Mac&<span>Talk</span>
-            </div>
+            <div class="brand-title">Mac&<span>Talk</span></div>
 
             <p class="brand-description">
                 Real voices. Real conversations.<br>
                 A stronger community.
             </p>
 
-            <div class="illustration" aria-hidden="true">
-                🎧
-            </div>
+            <div class="illustration" aria-hidden="true">🎧</div>
 
             <div class="features">
                 <div class="feature">
@@ -514,8 +444,8 @@
                 <p>Sign in to your Mac&Talk account</p>
             </div>
 
-            <div id="formMessage" class="message" role="status"
-                 aria-live="polite"></div>
+            <div id="formMessage" class="message"
+                 role="status" aria-live="polite"></div>
 
             <form id="loginForm">
                 <div class="form-group">
@@ -583,216 +513,227 @@
                 <a href="register.html" class="text-link">Create one</a>
             </p>
         </section>
-
     </main>
 
     <footer>
         © <span id="currentYear"></span> Mac&Talk. All rights reserved.
     </footer>
 
+    <script type="module">
+        import { initializeApp } from
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-  <script type="module">
-      import { initializeApp } from
-          "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import {
+            getAuth,
+            setPersistence,
+            browserLocalPersistence,
+            browserSessionPersistence,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithRedirect,
+            getRedirectResult
+        } from
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqW8hGILycifGkXw5HqaRKuMgYIl7aiLc",
+            authDomain: "macandtalk-e3436.firebaseapp.com",
+            projectId: "macandtalk-e3436",
+            storageBucket: "macandtalk-e3436.firebasestorage.app",
+            messagingSenderId: "562396248377",
+            appId: "1:562396248377:web:f139a163870e51a48610e8",
+            measurementId: "G-G0DMB0VRGR"
+        };
 
-      import {
-          getAuth,
-          setPersistence,
-          browserLocalPersistence,
-          browserSessionPersistence,
-          signInWithEmailAndPassword,
-          GoogleAuthProvider,
-          signInWithRedirect,
-          getRedirectResult
-      } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-      // Your Mac&Talk Firebase project
-      const firebaseConfig = {
-          apiKey: "AIzaSyCqW8hGILycifGkXw5HqaRKuMgYIl7aiLc",
-          authDomain: "macandtalk-e3436.firebaseapp.com",
-          projectId: "macandtalk-e3436",
-          storageBucket: "macandtalk-e3436.firebasestorage.app",
-          messagingSenderId: "562396248377",
-          appId: "1:562396248377:web:f139a163870e51a48610e8",
-          measurementId: "G-G0DMB0VRGR"
-      };
+        // HTML elements
+        const loginForm = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const rememberMe = document.getElementById("rememberMe");
+        const signInButton = document.getElementById("signInButton");
+        const googleButton = document.getElementById("googleSignIn");
+        const togglePassword = document.getElementById("togglePassword");
+        const formMessage = document.getElementById("formMessage");
 
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
+        document.getElementById("currentYear").textContent =
+            new Date().getFullYear();
 
-      // HTML elements
-      const loginForm = document.getElementById("loginForm");
-      const emailInput = document.getElementById("email");
-      const passwordInput = document.getElementById("password");
-      const rememberMe = document.getElementById("rememberMe");
-      const signInButton = document.getElementById("signInButton");
-      const googleButton = document.getElementById("googleSignIn");
-      const togglePassword = document.getElementById("togglePassword");
-      const formMessage = document.getElementById("formMessage");
+        // Messages
+        function showMessage(message, type = "error") {
+            formMessage.textContent = message;
+            formMessage.className = `message ${type}`;
+        }
 
-      // Current year
-      document.getElementById("currentYear").textContent =
-          new Date().getFullYear();
+        function clearMessage() {
+            formMessage.textContent = "";
+            formMessage.className = "message";
+        }
 
-      // Display a message
-      function showMessage(message, type = "error") {
-          formMessage.textContent = message;
-          formMessage.className = `message ${type}`;
-      }
+        function getFriendlyError(error) {
+            console.error("Authentication error:", error.code, error.message);
 
-      function clearMessage() {
-          formMessage.textContent = "";
-          formMessage.className = "message";
-      }
+            switch (error.code) {
+                case "auth/invalid-email":
+                    return "Please enter a valid email address.";
 
-      // Convert Firebase errors into readable messages
-      function getFriendlyError(error) {
-          switch (error.code) {
-              case "auth/invalid-email":
-                  return "Please enter a valid email address.";
+                case "auth/invalid-credential":
+                case "auth/wrong-password":
+                case "auth/user-not-found":
+                    return "Incorrect email or password.";
 
-              case "auth/invalid-credential":
-              case "auth/wrong-password":
-              case "auth/user-not-found":
-                  return "Incorrect email or password.";
+                case "auth/user-disabled":
+                    return "This account has been disabled.";
 
-              case "auth/user-disabled":
-                  return "This account has been disabled.";
+                case "auth/too-many-requests":
+                    return "Too many attempts. Please try again later.";
 
-              case "auth/too-many-requests":
-                  return "Too many attempts. Please try again later.";
+                case "auth/network-request-failed":
+                    return "Network error. Check your internet connection.";
 
-              case "auth/network-request-failed":
-                  return "Network error. Check your internet connection.";
+                case "auth/invalid-api-key":
+                    return "Firebase configuration is invalid. Check your API key.";
 
-              case "auth/invalid-api-key":
-                  return "Firebase configuration is invalid. Check your API key.";
+                case "auth/operation-not-allowed":
+                    return "This sign-in method is not enabled in Firebase.";
 
-              case "auth/operation-not-allowed":
-                  return "This sign-in method is not enabled in Firebase.";
+                case "auth/unauthorized-domain":
+                    return "This domain is not authorized in Firebase Authentication.";
 
-              case "auth/unauthorized-domain":
-                  return "This domain is not authorized in Firebase Authentication.";
+                case "auth/account-exists-with-different-credential":
+                    return "An account already exists with another sign-in method.";
 
-              case "auth/popup-closed-by-user":
-                  return "Google sign-in was cancelled.";
+                case "auth/redirect-cancelled-by-user":
+                    return "Google sign-in was cancelled.";
 
-              case "auth/popup-blocked":
-                  return "Your browser blocked the Google sign-in popup.";
+                case "auth/redirect-operation-pending":
+                    return "A Google sign-in operation is already in progress.";
 
-              case "auth/account-exists-with-different-credential":
-                  return "An account already exists with another sign-in method.";
+                case "auth/web-storage-unsupported":
+                    return "Your browser is blocking required storage. Enable cookies and site storage, then try again.";
 
-              default:
-                  console.error("Firebase error:", error.code, error.message);
-                  return "Sign-in failed. Please check your details and try again.";
-          }
-      }
+                case "auth/timeout":
+                    return "Sign-in timed out. Please try again.";
 
-      // Show or hide the password
-      togglePassword.addEventListener("click", () => {
-          const isHidden = passwordInput.type === "password";
+                default:
+                    return "Sign-in failed. Please try again. Error: " +
+                        (error.code || "unknown");
+            }
+        }
 
-          passwordInput.type = isHidden ? "text" : "password";
-          togglePassword.textContent = isHidden ? "◎" : "◉";
+        // Password visibility
+        togglePassword.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
 
-          togglePassword.setAttribute(
-              "aria-pressed",
-              String(isHidden)
-          );
-
-          togglePassword.setAttribute(
-              "aria-label",
-              isHidden ? "Hide password" : "Show password"
-          );
-      });
-
-      // Email and password login
-      loginForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          clearMessage();
-
-          const email = emailInput.value.trim();
-          const password = passwordInput.value;
-
-          if (!email || !password) {
-              showMessage("Please enter your email and password.");
-              return;
-          }
-
-          signInButton.disabled = true;
-          signInButton.textContent = "Signing in...";
-
-          try {
-              // Remember the user or use session-only persistence
-              await setPersistence(
-                  auth,
-                  rememberMe.checked
-                      ? browserLocalPersistence
-                      : browserSessionPersistence
-              );
-
-              // Authenticate against Firebase
-              const credential = await signInWithEmailAndPassword(
-                  auth,
-                  email,
-                  password
-              );
-
-              console.log("Signed in:", credential.user.uid);
-
-              showMessage(
-                  "Login successful! Redirecting to your account...",
-                  "success"
-              );
-
-              // Open the user dashboard
-              window.location.replace("user.html");
-
-          } catch (error) {
-              showMessage(getFriendlyError(error));
-
-              signInButton.disabled = false;
-              signInButton.textContent = "Sign In →";
-          }
-      });
-
-      // Google login
-
-
-googleButton.addEventListener("click", async () => {
-    clearMessage();
-
-    googleButton.disabled = true;
-    googleButton.textContent = "Redirecting to Google...";
-
-    try {
-        await setPersistence(
-            auth,
-            rememberMe.checked
-                ? browserLocalPersistence
-                : browserSessionPersistence
-        );
-
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({
-            prompt: "select_account"
+            passwordInput.type = isHidden ? "text" : "password";
+            togglePassword.textContent = isHidden ? "◎" : "◉";
+            togglePassword.setAttribute("aria-pressed", String(isHidden));
+            togglePassword.setAttribute(
+                "aria-label",
+                isHidden ? "Hide password" : "Show password"
+            );
         });
 
-        await signInWithRedirect(auth, provider);
+        // Persistence preference
+        async function applyPersistence() {
+            await setPersistence(
+                auth,
+                rememberMe.checked
+                    ? browserLocalPersistence
+                    : browserSessionPersistence
+            );
+        }
 
-    } catch (error) {
-        console.error("Google sign-in error:", error);
-        showMessage(getFriendlyError(error));
+        // Email/password login
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            clearMessage();
 
-        googleButton.disabled = false;
-        googleButton.innerHTML =
-            "🌐 &nbsp; Continue with Google";
-    }
-});
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
-  </script>
+            if (!email || !password) {
+                showMessage("Please enter your email and password.");
+                return;
+            }
 
+            signInButton.disabled = true;
+            signInButton.textContent = "Signing in...";
+
+            try {
+                await applyPersistence();
+
+                await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+                showMessage(
+                    "Login successful! Redirecting to your account...",
+                    "success"
+                );
+
+                window.location.replace("user.html");
+
+            } catch (error) {
+                showMessage(getFriendlyError(error));
+                signInButton.disabled = false;
+                signInButton.textContent = "Sign In →";
+            }
+        });
+
+        // Google login: redirect instead of popup
+        googleButton.addEventListener("click", async () => {
+            clearMessage();
+
+            googleButton.disabled = true;
+            googleButton.textContent = "Redirecting to Google...";
+
+            try {
+                await applyPersistence();
+
+                const provider = new GoogleAuthProvider();
+
+                provider.setCustomParameters({
+                    prompt: "select_account"
+                });
+
+                await signInWithRedirect(auth, provider);
+
+                // Firebase redirects the browser to Google.
+                // The result is handled when the browser returns.
+
+            } catch (error) {
+                showMessage(getFriendlyError(error));
+                googleButton.disabled = false;
+                googleButton.innerHTML =
+                    "🌐 &nbsp; Continue with Google";
+            }
+        });
+
+        // Handle the result after returning from Google.
+        // This must run on the page Firebase redirects back to.
+        try {
+            const result = await getRedirectResult(auth);
+
+            if (result && result.user) {
+                showMessage(
+                    "Google login successful! Redirecting...",
+                    "success"
+                );
+
+                window.location.replace("user.html");
+            }
+        } catch (error) {
+            showMessage(getFriendlyError(error));
+            googleButton.disabled = false;
+            googleButton.innerHTML =
+                "🌐 &nbsp; Continue with Google";
+        }
+    </script>
 </body>
 </html>
