@@ -245,8 +245,8 @@
             <p>Create your account and join the conversation.</p>
         </header>
 
-        <div id="message" class="message" role="status"
-             aria-live="polite"></div>
+        <div id="message" class="message"
+             role="status" aria-live="polite"></div>
 
         <form id="registerForm">
             <div class="form-group">
@@ -352,7 +352,14 @@
         } from
             "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-        // Your Mac&Talk Firebase project
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            serverTimestamp
+        } from
+            "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyCqW8hGILycifGkXw5HqaRKuMgYIl7aiLc",
             authDomain: "macandtalk-e3436.firebaseapp.com",
@@ -365,6 +372,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const form = document.getElementById("registerForm");
         const fullNameInput = document.getElementById("fullName");
@@ -395,7 +403,7 @@
                     return "Choose a stronger password with at least 6 characters.";
 
                 case "auth/operation-not-allowed":
-                    return "Email/password registration is disabled. Enable it in Firebase Authentication settings.";
+                    return "Email/password registration is disabled in Firebase Authentication.";
 
                 case "auth/network-request-failed":
                     return "Network error. Check your internet connection and try again.";
@@ -406,13 +414,17 @@
                 case "auth/unauthorized-domain":
                     return "This website domain is not authorized in Firebase Authentication settings.";
 
+                case "permission-denied":
+                case "firestore/permission-denied":
+                    return "Firestore denied access. Check your Firestore Security Rules.";
+
                 default:
                     console.error("Registration error:", error);
-                    return "Account creation failed. Please try again.";
+                    return "Something went wrong. Check the browser console for details.";
             }
         }
 
-        // Show/hide password buttons
+        // Show or hide passwords
         document.querySelectorAll(".toggle-password").forEach(button => {
             button.addEventListener("click", () => {
                 const input = document.getElementById(button.dataset.target);
@@ -441,7 +453,9 @@
             }
 
             if (password.length < 6) {
-                showMessage("Your password must contain at least 6 characters.");
+                showMessage(
+                    "Your password must contain at least 6 characters."
+                );
                 passwordInput.focus();
                 return;
             }
@@ -455,28 +469,64 @@
             submitBtn.disabled = true;
             submitBtn.textContent = "Creating account...";
 
+            let accountCreated = false;
+
             try {
                 await setPersistence(auth, browserLocalPersistence);
 
+                // 1. Create the Firebase Authentication account
                 const credential = await createUserWithEmailAndPassword(
                     auth,
                     email,
                     password
                 );
 
-                await updateProfile(credential.user, {
+                const user = credential.user;
+                accountCreated = true;
+
+                // 2. Save the name in Firebase Authentication
+                await updateProfile(user, {
                     displayName: fullName
                 });
 
+                // 3. Save private and public profile documents
+                // Both documents use the Firebase Authentication UID.
+                await Promise.all([
+                    setDoc(doc(db, "users", user.uid), {
+                        displayName: fullName,
+                        email: user.email,
+                        createdAt: serverTimestamp()
+                    }),
+
+                    setDoc(doc(db, "publicProfiles", user.uid), {
+                        displayName: fullName,
+                        photoURL: "",
+                        createdAt: serverTimestamp()
+                    })
+                ]);
+
+                // 4. Redirect only after both writes succeed
                 showMessage(
-                    "Your account was created successfully! Redirecting...",
+                    "Account created and profile saved! Redirecting...",
                     "success"
                 );
 
                 window.location.replace("user.html");
 
             } catch (error) {
-                showMessage(friendlyError(error));
+                console.error("Registration or profile error:", error);
+
+                if (accountCreated) {
+                    showMessage(
+                        "Your account was created, but profile setup did not finish. " +
+                        "Check Firestore Rules and the browser console. " +
+                        "Your account already exists, so don't register again " +
+                        "with the same email; sign in after fixing the issue."
+                    );
+                } else {
+                    showMessage(friendlyError(error));
+                }
+
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Create Account";
             }

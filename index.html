@@ -1,31 +1,176 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover student podcasts, conversations, and live broadcasts on Mac&Talk.">
+    <title>Mac&Talk — Our Voices, Better Ideas!</title>
+    <link rel="stylesheet" href="style.css">
 
-    <title>Mac&Talk</title>
-
-    <meta
-        http-equiv="refresh"
-        content="0; url=login.html"
-    >
-
-    <script>
-        window.location.replace("login.html");
-    </script>
+    <script type="module" src="./script.js"></script>
 </head>
-
 <body>
-    <p>Loading Mac&Talk...</p>
-    <p>
-        If you are not redirected,
-        <a href="login.html">click here to sign in</a>.
-    </p>
+
+    <!-- NAVIGATION -->
+    <header class="navbar">
+        <a href="#home" class="logo">Mac<span>&</span>Talk<span class="logo-dot">.</span></a>
+
+        <button class="menu-toggle" id="menuToggle"
+                aria-label="Open navigation" aria-expanded="false">
+            ☰
+        </button>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="#home">Home</a>
+            <a href="#live">Live</a>
+            <a href="#upcoming">Upcoming</a>
+            <a href="#podcasts">Podcasts</a>
+        </nav>
+
+        <a href="#podcasts" class="nav-button">Explore Episodes ↗</a>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <span class="eyebrow">🎙️ STUDENT VOICES. REAL CONVERSATIONS.</span>
+
+                <h1>
+                    Our Voices,<br>
+                    <span>Better Ideas!</span>
+                </h1>
+
+                <p>
+                    Welcome to Mac&Talk — a place for conversations,
+                    fresh perspectives, and stories told by students.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#podcasts" class="button button-dark">
+                        Discover Podcasts ↗
+                    </a>
+                    <a href="#live" class="button button-light">
+                        🔴 Watch Live
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    <span>✳</span> Listen. Connect. Share ideas.
+                </div>
+            </div>
+
+            <div class="hero-art" aria-label="Podcast illustration">
+                <div class="art-star star-one">✳</div>
+                <div class="art-star star-two">✦</div>
+
+                <div class="art-circle">
+                    <div class="mic">🎙️</div>
+                </div>
+
+                <div class="speech speech-one">YOUR VOICE!</div>
+                <div class="speech speech-two">LET'S TALK 💬</div>
+            </div>
+        </section>
+
+        <!-- LIVE NOW -->
+        <section class="section live-section" id="live">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">HAPPENING NOW</span>
+                    <h2>Live on <span>Mac&Talk</span></h2>
+                    <p>Join the conversation while it's happening.</p>
+                </div>
+                <span class="live-indicator">
+                    <span class="live-dot"></span> LIVE NOW
+                </span>
+            </div>
+
+            <div class="live-grid" id="liveGrid">
+                <!-- Populated by script.js -->
+            </div>
+
+            <p class="empty-message hidden" id="noLive">
+                No live broadcasts right now. Check out our latest podcasts!
+            </p>
+        </section>
+
+        <!-- UPCOMING LIVE -->
+        <section class="section upcoming-section" id="upcoming">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">SAVE THE DATE</span>
+                    <h2>Coming <span>Up</span></h2>
+                    <p>Don't miss our next conversations.</p>
+                </div>
+            </div>
+
+            <div class="upcoming-grid" id="upcomingGrid">
+                <!-- Populated by script.js -->
+            </div>
+
+            <p class="empty-message hidden" id="noUpcoming">
+                No upcoming broadcasts have been announced yet.
+            </p>
+        </section>
+
+        <!-- PODCAST LIBRARY -->
+        <section class="section podcast-section" id="podcasts">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">PRESS PLAY ▶</span>
+                    <h2>Latest <span>Podcasts</span></h2>
+                    <p>Great conversations, ready whenever you are.</p>
+                </div>
+            </div>
+
+            <div class="podcast-tools">
+                <label class="search-box">
+                    <span>⌕</span>
+                    <input type="search" id="searchInput"
+                           placeholder="Search episodes..."
+                           aria-label="Search podcasts">
+                </label>
+
+                <select id="categoryFilter" aria-label="Filter podcasts">
+                    <option value="all">All topics</option>
+                    <option value="everyday">Everyday Life</option>
+                    <option value="school">School Life</option>
+                    <option value="technology">Technology</option>
+                </select>
+            </div>
+
+            <div class="podcast-grid" id="podcastGrid">
+                <!-- Populated by script.js -->
+            </div>
+
+            <p class="empty-message hidden" id="noPodcasts">
+                No episodes match your search.
+            </p>
+        </section>
+
+        <!-- ABOUT -->
+        <section class="about-section">
+            <div class="about-symbol">💬</div>
+            <div>
+                <span class="eyebrow">MORE THAN A PODCAST</span>
+                <h2>Every voice has a story.</h2>
+                <p>
+                    Mac&Talk brings students together through honest
+                    conversations, different opinions, and shared ideas.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <a href="#home" class="logo">Mac<span>&</span>Talk<span class="logo-dot">.</span></a>
+        <p>Our Voices, Better Ideas!</p>
+        <a href="#home">Back to top ↑</a>
+        <small>© <span id="currentYear"></span> Mac&Talk. All rights reserved.</small>
+    </footer>
+
 </body>
 </html>
-```
