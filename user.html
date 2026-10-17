@@ -1,0 +1,1334 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Mac&Talk</title>
+
+    <style>
+        :root {
+            --navy: #10243e;
+            --navy-light: #1c3657;
+            --yellow: #ffc629;
+            --bg: #f4f6fa;
+            --white: #fff;
+            --muted: #758195;
+            --border: #e5e9f0;
+            --green: #18865a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--navy);
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .app {
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: 245px;
+            padding: 25px 17px;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 32px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--yellow);
+            color: var(--navy);
+            font-weight: 900;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-name span {
+            color: var(--yellow);
+        }
+
+        .nav-label {
+            margin: 0 12px 12px;
+            color: #aab6c8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 7px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            border-radius: 10px;
+            color: #d5ddea;
+            font-size: 14px;
+            cursor: pointer;
+            border: 0;
+            background: transparent;
+            text-align: left;
+            width: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--navy);
+            background: var(--yellow);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+        .sidebar-note {
+            padding: 17px;
+            border-radius: 13px;
+            background: rgba(255,255,255,.08);
+            margin-bottom: 18px;
+        }
+
+        .sidebar-note strong {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        .sidebar-note p {
+            color: #c3ccda;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .main {
+            margin-left: 245px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            min-height: 82px;
+            padding: 17px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar h2 {
+            font-size: 21px;
+        }
+
+        .topbar p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: var(--yellow);
+            display: grid;
+            place-items: center;
+            color: var(--navy);
+            font-size: 16px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .user-mini strong {
+            display: block;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .user-mini span {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: 0;
+            background: transparent;
+            font-size: 24px;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        .content {
+            max-width: 1450px;
+            padding: 30px 35px 45px;
+            margin: auto;
+        }
+
+        .welcome-banner {
+            position: relative;
+            overflow: hidden;
+            padding: 32px;
+            border-radius: 19px;
+            background: linear-gradient(120deg, var(--navy), #23476d);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+            right: 40px;
+            top: -115px;
+            background: rgba(255,198,41,.12);
+        }
+
+        .welcome-banner h1 {
+            font-size: clamp(24px, 3vw, 33px);
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-banner p {
+            max-width: 560px;
+            color: #d8e1ed;
+            font-size: 14px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--yellow);
+            color: var(--navy);
+            padding: 13px 17px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform .2s, background .2s;
+        }
+
+        .primary-btn:hover {
+            background: #ffd65e;
+            transform: translateY(-1px);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 32px 0 17px;
+        }
+
+        .section-heading h2 {
+            font-size: 19px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 17px;
+        }
+
+        .stat-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #fff3c8;
+            font-size: 20px;
+        }
+
+        .stat-card h3 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .stat-card p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #20b875;
+        }
+
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .session-card {
+            padding: 23px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: var(--white);
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 25px rgba(16,36,62,.07);
+        }
+
+        .session-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .session-emoji {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: #fff3c8;
+            font-size: 25px;
+        }
+
+        .session-tag {
+            border-radius: 30px;
+            background: #eaf8f0;
+            color: var(--green);
+            padding: 7px 10px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .session-card h3 {
+            font-size: 16px;
+            margin-bottom: 9px;
+        }
+
+        .session-card > p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+            min-height: 43px;
+        }
+
+        .session-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .host {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .join-btn {
+            border: 1px solid var(--navy);
+            border-radius: 8px;
+            background: white;
+            color: var(--navy);
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .join-btn:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+        .empty-state {
+            padding: 32px;
+            background: white;
+            border: 1px dashed #cbd3df;
+            border-radius: 15px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+            grid-column: 1 / -1;
+        }
+
+        .page-panel {
+            display: none;
+        }
+
+        .page-panel.active {
+            display: block;
+        }
+
+        .profile-card,
+        .settings-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 22px;
+        }
+
+        .profile-header .avatar {
+            width: 65px;
+            height: 65px;
+            font-size: 23px;
+        }
+
+        .profile-header h3 {
+            margin-bottom: 7px;
+        }
+
+        .profile-header p {
+            color: var(--muted);
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-row {
+            display: grid;
+            grid-template-columns: 150px minmax(0, 1fr);
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .profile-row:last-child {
+            border-bottom: 0;
+        }
+
+        .profile-row span {
+            color: var(--muted);
+        }
+
+        .profile-row strong {
+            overflow-wrap: anywhere;
+        }
+
+        .settings-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .settings-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .signout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 14px;
+            background: #fff0f0;
+            color: #b42318;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .signout-btn:hover {
+            background: #ffe2e2;
+        }
+
+        .notice {
+            display: none;
+            margin-bottom: 18px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .notice.show {
+            display: block;
+        }
+
+        .notice.error {
+            color: #b42318;
+            background: #fff0f0;
+        }
+
+        .notice.success {
+            color: var(--green);
+            background: #eaf8f0;
+        }
+
+        .page-footer {
+            padding-top: 28px;
+            text-align: center;
+            color: #98a1af;
+            font-size: 11px;
+        }
+
+        .loading-screen {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        .loading-screen span {
+            display: block;
+            margin-top: 10px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 1050px) {
+            .sidebar {
+                width: 215px;
+            }
+
+            .main {
+                margin-left: 215px;
+            }
+
+            .content {
+                padding: 25px 22px 35px;
+            }
+
+            .topbar {
+                padding: 17px 22px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .25s ease;
+                box-shadow: 10px 0 30px rgba(0,0,0,.12);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .topbar {
+                min-height: 75px;
+                padding: 14px 18px;
+            }
+
+            .topbar h2 {
+                font-size: 17px;
+            }
+
+            .user-mini {
+                display: none;
+            }
+
+            .content {
+                padding: 20px 16px 32px;
+            }
+
+            .welcome-banner {
+                padding: 25px 22px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .session-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 18px;
+            }
+
+            .section-heading h2 {
+                font-size: 17px;
+            }
+
+            .profile-row {
+                grid-template-columns: 1fr;
+                gap: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div>
+            <strong>Mac&Talk</strong>
+            <span>Checking your account...</span>
+        </div>
+    </div>
+
+    <div class="app" id="app" hidden>
+        <aside class="sidebar" id="sidebar">
+            <a href="user.html" class="brand">
+                <div class="brand-icon">M&T</div>
+                <div class="brand-name">Mac<span>&</span>Talk</div>
+            </a>
+
+            <p class="nav-label">WORKSPACE</p>
+
+            <nav class="nav" aria-label="Main navigation">
+                <button class="nav-link active" data-page="dashboard">
+                    <span class="nav-icon">⌂</span> Dashboard
+                </button>
+
+                <button class="nav-link" data-page="sessions">
+                    <span class="nav-icon">🎙️</span> Live Sessions
+                </button>
+
+                <button class="nav-link" data-page="profile">
+                    <span class="nav-icon">♙</span> My Profile
+                </button>
+
+                <button class="nav-link" data-page="settings">
+                    <span class="nav-icon">⚙</span> Settings
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-note">
+                    <strong>💬 Keep talking!</strong>
+                    <p>Share ideas, discover conversations, and connect with your community.</p>
+                </div>
+
+                <button class="signout-btn" id="sidebarSignOut">
+                    <span>↪</span> Sign out
+                </button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:13px">
+                    <button class="menu-toggle" id="menuToggle"
+                            aria-label="Toggle navigation">☰</button>
+
+                    <div>
+                        <h2 id="pageTitle">Dashboard</h2>
+                        <p id="currentDate">Welcome to Mac&Talk</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="user-mini">
+                        <strong id="headerName">Member</strong>
+                        <span>Mac&Talk Member</span>
+                    </div>
+                    <div class="avatar" id="headerAvatar">M</div>
+                </div>
+            </header>
+
+            <div class="content">
+                <div id="notice" class="notice" role="status"
+                     aria-live="polite"></div>
+
+                <!-- DASHBOARD -->
+                <section class="page-panel active" id="dashboardPage">
+                    <div class="welcome-banner">
+                        <div>
+                            <h1>Welcome back, <span id="welcomeName">Member</span>! 👋</h1>
+                            <p>
+                                Your voice matters. Discover conversations,
+                                listen to live sessions, and connect with people
+                                through Mac&Talk.
+                            </p>
+                        </div>
+
+                        <button class="primary-btn" data-go="sessions">
+                            🎙️ Explore Sessions
+                        </button>
+                    </div>
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Your Overview</h2>
+                            <p>Your account at a glance</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <article class="stat-card">
+                            <div class="stat-top">
+                                <div class="stat-icon">🎙️</div>
+                                <span class="live-indicator">
+                                    <span class="live-dot"></span> Explore
+                                </span>
+                            </div>
+                            <h3 id="sessionCount">0</h3>
+                            <p>Available demo sessions</p>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-top">
+                                <div class="stat-icon">👤</div>
+                            </div>
+                            <h3 id="accountStatus">Active</h3>
+                            <p>Your account status</p>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-top">
+                                <div class="stat-icon">📅</div>
+                            </div>
+                            <h3 id="memberSince">Today</h3>
+                            <p>Member since</p>
+                        </article>
+                    </div>
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Discover Sessions</h2>
+                            <p>Explore conversations from the Mac&Talk community</p>
+                        </div>
+                        <button class="join-btn" data-go="sessions">
+                            View all
+                        </button>
+                    </div>
+
+                    <div class="session-grid" id="dashboardSessions"></div>
+                </section>
+
+                <!-- SESSIONS -->
+                <section class="page-panel" id="sessionsPage">
+                    <div class="section-heading" style="margin-top:0">
+                        <div>
+                            <h2>Live Sessions</h2>
+                            <p>Explore the sample sessions below.</p>
+                        </div>
+                        <span class="live-indicator">
+                            <span class="live-dot"></span> Demo content
+                        </span>
+                    </div>
+
+                    <div class="session-grid" id="allSessions"></div>
+                </section>
+
+                <!-- PROFILE -->
+                <section class="page-panel" id="profilePage">
+                    <div class="section-heading" style="margin-top:0">
+                        <div>
+                            <h2>My Profile</h2>
+                            <p>Your signed-in account information</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="avatar" id="profileAvatar">M</div>
+                            <div>
+                                <h3 id="profileName">Member</h3>
+                                <p id="profileEmail">Loading email...</p>
+                            </div>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Full name</span>
+                            <strong id="profileFullName">—</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Email address</span>
+                            <strong id="profileEmailRow">—</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Account status</span>
+                            <strong>Active</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Email verified</span>
+                            <strong id="profileVerified">Not verified</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>User ID</span>
+                            <strong id="profileUid">—</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SETTINGS -->
+                <section class="page-panel" id="settingsPage">
+                    <div class="section-heading" style="margin-top:0">
+                        <div>
+                            <h2>Settings</h2>
+                            <p>Manage your current session</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Account and security</h3>
+                        <p>
+                            You are signed in with Firebase Authentication.
+                            Sign out when you have finished using this device.
+                        </p>
+
+                        <button class="signout-btn" id="settingsSignOut">
+                            <span>↪</span> Sign out of Mac&Talk
+                        </button>
+                    </div>
+                </section>
+
+                <footer class="page-footer">
+                    © <span id="footerYear"></span> Mac&Talk · Made for conversations.
+                </footer>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        window.setTimeout(function () {
+            const loading = document.getElementById("loadingScreen");
+            const dashboard = document.getElementById("app");
+
+            if (loading && !loading.hidden && dashboard?.hidden) {
+                loading.innerHTML = `
+                    <div style="padding:24px;text-align:center">
+                        <strong>Dashboard JavaScript did not finish loading.</strong>
+                        <p>Open Chrome DevTools with F12, select Console,
+                        and check for red error messages.</p>
+                        <p><a href="login.html">Return to login</a></p>
+                    </div>
+                `;
+            }
+        }, 12000);
+    </script>
+
+
+  <script type="module">
+      import { initializeApp } from
+          "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+      import {
+          getAuth,
+          onAuthStateChanged,
+          signOut
+      } from
+          "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+      const firebaseConfig = {
+          apiKey: "AIzaSyCqW8hGILycifGkXw5HqaRKuMgYIl7aiLc",
+          authDomain: "macandtalk-e3436.firebaseapp.com",
+          projectId: "macandtalk-e3436",
+          storageBucket: "macandtalk-e3436.firebasestorage.app",
+          messagingSenderId: "562396248377",
+          appId: "1:562396248377:web:f139a163870e51a48610e8",
+          measurementId: "G-G0DMB0VRGR"
+      };
+
+      const loadingScreen = document.getElementById("loadingScreen");
+      const appElement = document.getElementById("app");
+      const sidebar = document.getElementById("sidebar");
+      const notice = document.getElementById("notice");
+
+      // Check that the required HTML elements exist.
+      if (!loadingScreen || !appElement) {
+          console.error(
+              'Missing #loadingScreen or #app in user.html.'
+          );
+          throw new Error("Required dashboard elements are missing.");
+      }
+
+      function showError(message) {
+          loadingScreen.hidden = false;
+          appElement.hidden = true;
+
+          loadingScreen.innerHTML = `
+              <div>
+                  <strong>Unable to load Mac&amp;Talk</strong>
+                  <span>${message}</span>
+                  <p style="text-align:center;margin-top:15px">
+                      <a href="login.html">Return to login</a>
+                  </p>
+                  <p style="text-align:center;margin-top:10px">
+                      <button id="retryAuth" type="button">
+                          Try again
+                      </button>
+                  </p>
+              </div>
+          `;
+
+          document.getElementById("retryAuth")
+              ?.addEventListener("click", () => {
+                  window.location.reload();
+              });
+      }
+
+      let auth;
+
+      try {
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+      } catch (error) {
+          console.error("Firebase initialization failed:", error);
+          showError("Firebase could not initialize. Check your configuration.");
+          throw error;
+      }
+
+      const requiredIds = [
+          "footerYear",
+          "currentDate",
+          "dashboardSessions",
+          "allSessions",
+          "sessionCount",
+          "pageTitle",
+          "menuToggle",
+          "sidebarSignOut",
+          "settingsSignOut",
+          "welcomeName",
+          "headerName",
+          "headerAvatar",
+          "profileAvatar",
+          "profileName",
+          "profileEmail",
+          "profileFullName",
+          "profileEmailRow",
+          "profileUid",
+          "profileVerified",
+          "memberSince"
+      ];
+
+      const missingIds = requiredIds.filter(
+          id => !document.getElementById(id)
+      );
+
+      if (missingIds.length) {
+          console.error("Missing dashboard elements:", missingIds);
+          showError("Some dashboard HTML elements are missing. Check the element IDs in user.html.");
+          throw new Error("Missing dashboard elements: " + missingIds.join(", "));
+      }
+
+      document.getElementById("footerYear").textContent =
+          new Date().getFullYear();
+
+      document.getElementById("currentDate").textContent =
+          new Intl.DateTimeFormat(undefined, {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric"
+          }).format(new Date());
+
+      const liveSessions = [
+          {
+              id: "session-1",
+              title: "Sharing Household Duties",
+              host: "Mac&Talk Community",
+              description: "A conversation about sharing responsibilities at home and working together.",
+              emoji: "🏠",
+              tag: "Community"
+          },
+          {
+              id: "session-2",
+              title: "Technology and Family",
+              host: "Mac&Talk Community",
+              description: "Discuss how to use technology wisely while keeping family relationships strong.",
+              emoji: "💬",
+              tag: "Discussion"
+          },
+          {
+              id: "session-3",
+              title: "Ideas for a Better Future",
+              host: "Mac&Talk Community",
+              description: "Share ideas, learn from others, and explore solutions to everyday challenges.",
+              emoji: "💡",
+              tag: "Ideas"
+          },
+          {
+              id: "session-4",
+              title: "Music and Culture",
+              host: "Mac&Talk Community",
+              description: "Discover different musical tastes, traditions, and cultural experiences.",
+              emoji: "🎵",
+              tag: "Culture"
+          }
+      ];
+
+      function escapeHTML(value = "") {
+          return String(value).replace(/[&<>"']/g, char => ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;"
+          })[char]);
+      }
+
+      function initials(name) {
+          return String(name || "Member")
+              .trim()
+              .split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map(part => part[0])
+              .join("")
+              .toUpperCase() || "M";
+      }
+
+      function showNotice(message, type = "success") {
+          if (!notice) return;
+
+          notice.textContent = message;
+          notice.className = `notice show ${type}`;
+
+          window.setTimeout(() => {
+              notice.className = "notice";
+          }, 4500);
+      }
+
+      function renderSessions(containerId, items) {
+          const container = document.getElementById(containerId);
+
+          if (!container) {
+              console.error(`Missing #${containerId}`);
+              return;
+          }
+
+          if (!items.length) {
+              container.innerHTML = `
+                  <div class="empty-state">
+                      No sessions are available yet.<br>
+                      Check back later for new conversations.
+                  </div>
+              `;
+              return;
+          }
+
+          container.innerHTML = items.map(session => `
+              <article class="session-card">
+                  <div class="session-card-top">
+                      <div class="session-emoji" aria-hidden="true">
+                          ${session.emoji}
+                      </div>
+                      <span class="session-tag">
+                          ${escapeHTML(session.tag)}
+                      </span>
+                  </div>
+
+                  <h3>${escapeHTML(session.title)}</h3>
+                  <p>${escapeHTML(session.description)}</p>
+
+                  <div class="session-footer">
+                      <span class="host">
+                          Hosted by ${escapeHTML(session.host)}
+                      </span>
+                      <button
+                          class="join-btn"
+                          type="button"
+                          data-session="${escapeHTML(session.id)}"
+                      >
+                          View session
+                      </button>
+                  </div>
+              </article>
+          `).join("");
+      }
+
+      renderSessions("dashboardSessions", liveSessions.slice(0, 2));
+      renderSessions("allSessions", liveSessions);
+
+      document.getElementById("sessionCount").textContent =
+          String(liveSessions.length);
+
+      const pageTitles = {
+          dashboard: "Dashboard",
+          sessions: "Live Sessions",
+          profile: "My Profile",
+          settings: "Settings"
+      };
+
+      function showPage(page) {
+          const target = document.getElementById(`${page}Page`);
+
+          if (!target) return;
+
+          document.querySelectorAll(".page-panel").forEach(panel => {
+              panel.classList.remove("active");
+          });
+
+          target.classList.add("active");
+
+          document.querySelectorAll(".nav-link").forEach(link => {
+              link.classList.toggle("active", link.dataset.page === page);
+          });
+
+          document.getElementById("pageTitle").textContent =
+              pageTitles[page] || "Dashboard";
+
+          sidebar?.classList.remove("open");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      document.querySelectorAll("[data-page]").forEach(button => {
+          button.addEventListener("click", () => {
+              showPage(button.dataset.page);
+          });
+      });
+
+      document.querySelectorAll("[data-go]").forEach(button => {
+          button.addEventListener("click", () => {
+              showPage(button.dataset.go);
+          });
+      });
+
+      document.getElementById("menuToggle")
+          .addEventListener("click", () => {
+              sidebar?.classList.toggle("open");
+          });
+
+      // Demo cards only; these are not real live broadcasts.
+      document.querySelectorAll("[data-session]").forEach(button => {
+          button.addEventListener("click", () => {
+              showNotice(
+                  "This is a demo session. The live-session feature is not connected yet."
+              );
+          });
+      });
+
+      async function handleSignOut() {
+          const buttons = [
+              document.getElementById("sidebarSignOut"),
+              document.getElementById("settingsSignOut")
+          ].filter(Boolean);
+
+          buttons.forEach(button => button.disabled = true);
+
+          try {
+              await signOut(auth);
+              window.location.replace("login.html");
+          } catch (error) {
+              console.error("Sign-out error:", error);
+
+              showNotice(
+                  "Could not sign out. Check your connection and try again.",
+                  "error"
+              );
+
+              buttons.forEach(button => button.disabled = false);
+          }
+      }
+
+      document.getElementById("sidebarSignOut")
+          .addEventListener("click", handleSignOut);
+
+      document.getElementById("settingsSignOut")
+          .addEventListener("click", handleSignOut);
+
+      let authResolved = false;
+
+      // Show a helpful message if authentication takes too long.
+      const authTimeout = window.setTimeout(() => {
+          if (!authResolved) {
+              showError(
+                  "Authentication is taking too long. Check your internet connection, Firebase configuration, and browser console."
+              );
+          }
+      }, 12000);
+
+      try {
+          onAuthStateChanged(auth, user => {
+              authResolved = true;
+              window.clearTimeout(authTimeout);
+
+              if (!user) {
+                  window.location.replace("login.html");
+                  return;
+              }
+
+              const name = user.displayName?.trim() ||
+                  (user.email ? user.email.split("@")[0] : "Member");
+
+              const email = user.email || "No email available";
+              const avatarText = initials(name);
+
+              document.getElementById("welcomeName").textContent = name;
+              document.getElementById("headerName").textContent = name;
+              document.getElementById("headerAvatar").textContent = avatarText;
+              document.getElementById("profileAvatar").textContent = avatarText;
+
+              document.getElementById("profileName").textContent = name;
+              document.getElementById("profileEmail").textContent = email;
+              document.getElementById("profileFullName").textContent = name;
+              document.getElementById("profileEmailRow").textContent = email;
+              document.getElementById("profileUid").textContent = user.uid;
+              document.getElementById("profileVerified").textContent =
+                  user.emailVerified ? "Verified" : "Not verified";
+
+              const creationTime = user.metadata?.creationTime;
+
+              document.getElementById("memberSince").textContent =
+                  creationTime
+                      ? new Intl.DateTimeFormat(undefined, {
+                          month: "short",
+                          year: "numeric"
+                      }).format(new Date(creationTime))
+                      : "Unknown";
+
+              loadingScreen.hidden = true;
+              appElement.hidden = false;
+
+          }, error => {
+              authResolved = true;
+              window.clearTimeout(authTimeout);
+
+              console.error("Firebase authentication error:", error);
+
+              showError(
+                  `Firebase error: ${error.code || error.message || "Unknown authentication error"}.`
+              );
+          });
+      } catch (error) {
+          authResolved = true;
+          window.clearTimeout(authTimeout);
+
+          console.error("Could not start authentication listener:", error);
+
+          showError(
+              "Could not start Firebase authentication. Check the browser console."
+          );
+      }
+  </script>
+  </body>
+  </html>
