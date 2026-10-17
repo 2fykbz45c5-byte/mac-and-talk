@@ -595,6 +595,7 @@
       import { initializeApp } from
           "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
+
       import {
           getAuth,
           setPersistence,
@@ -602,9 +603,9 @@
           browserSessionPersistence,
           signInWithEmailAndPassword,
           GoogleAuthProvider,
-          signInWithPopup
-      } from
-          "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+          signInWithRedirect,
+          getRedirectResult
+      } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
       // Your Mac&Talk Firebase project
       const firebaseConfig = {
@@ -758,44 +759,39 @@
       });
 
       // Google login
-      googleButton.addEventListener("click", async () => {
-          clearMessage();
 
-          googleButton.disabled = true;
-          googleButton.textContent = "Connecting to Google...";
 
-          try {
-              await setPersistence(
-                  auth,
-                  rememberMe.checked
-                      ? browserLocalPersistence
-                      : browserSessionPersistence
-              );
+googleButton.addEventListener("click", async () => {
+    clearMessage();
 
-              const provider = new GoogleAuthProvider();
-              provider.setCustomParameters({
-                  prompt: "select_account"
-              });
+    googleButton.disabled = true;
+    googleButton.textContent = "Redirecting to Google...";
 
-              const result = await signInWithPopup(auth, provider);
+    try {
+        await setPersistence(
+            auth,
+            rememberMe.checked
+                ? browserLocalPersistence
+                : browserSessionPersistence
+        );
 
-              console.log("Google login successful:", result.user.uid);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({
+            prompt: "select_account"
+        });
 
-              showMessage(
-                  "Google login successful! Redirecting...",
-                  "success"
-              );
+        await signInWithRedirect(auth, provider);
 
-              window.location.replace("user.html");
+    } catch (error) {
+        console.error("Google sign-in error:", error);
+        showMessage(getFriendlyError(error));
 
-          } catch (error) {
-              showMessage(getFriendlyError(error));
+        googleButton.disabled = false;
+        googleButton.innerHTML =
+            "🌐 &nbsp; Continue with Google";
+    }
+});
 
-              googleButton.disabled = false;
-              googleButton.innerHTML =
-                  "🌐 &nbsp; Continue with Google";
-          }
-      });
   </script>
 
 </body>
