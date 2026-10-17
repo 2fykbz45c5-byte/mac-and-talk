@@ -687,16 +687,314 @@
                 gap: 7px;
             }
         }
+
+
+/* =========================================
+   MODERN MAC&TALK DASHBOARD ENHANCEMENTS
+========================================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+button {
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 3px;
+}
+
+/* Sidebar */
+.sidebar {
+    padding: 28px 18px 20px;
+    box-shadow: 5px 0 25px rgba(16, 36, 62, .08);
+}
+
+.brand {
+    padding-bottom: 35px;
+}
+
+.brand-icon {
+    box-shadow: 0 5px 15px rgba(255, 198, 41, .18);
+}
+
+.nav-link {
+    min-height: 47px;
+    border: 1px solid transparent;
+    transition: background .2s ease, color .2s ease,
+                transform .2s ease;
+}
+
+.nav-link:hover {
+    transform: translateX(3px);
+}
+
+.nav-link.active {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
+}
+
+/* Header */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 3px 15px rgba(16, 36, 62, .035);
+}
+
+.topbar h2 {
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.avatar {
+    border: 3px solid #fff3c8;
+    box-shadow: 0 3px 10px rgba(16, 36, 62, .08);
+}
+
+/* Main content */
+.content {
+    padding-top: 32px;
+}
+
+.welcome-banner {
+    min-height: 205px;
+    padding: clamp(24px, 4vw, 38px);
+    border: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 12px 30px rgba(16, 36, 62, .12);
+}
+
+.welcome-banner h1 {
+    font-weight: 800;
+    letter-spacing: -.8px;
+    line-height: 1.25;
+}
+
+.welcome-banner p {
+    max-width: 580px;
+}
+
+.primary-btn {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .12);
+}
+
+.primary-btn:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
+}
+
+/* Section headings */
+.section-heading {
+    margin-top: 35px;
+    margin-bottom: 19px;
+}
+
+.section-heading h2 {
+    font-weight: 800;
+    letter-spacing: -.35px;
+}
+
+.section-heading p {
+    line-height: 1.6;
+}
+
+/* Overview cards */
+.stats-grid {
+    gap: 20px;
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 17px;
+    box-shadow: 0 4px 16px rgba(16, 36, 62, .035);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(16, 36, 62, .08);
+}
+
+.stat-card h3 {
+    font-weight: 800;
+    letter-spacing: -.6px;
+}
+
+.stat-icon {
+    border: 1px solid rgba(255, 198, 41, .22);
+}
+
+/* Session cards */
+.session-grid {
+    gap: 20px;
+}
+
+.session-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: 17px;
+    box-shadow: 0 4px 16px rgba(16, 36, 62, .035);
+}
+
+.session-card:hover {
+    border-color: #d5dce7;
+    box-shadow: 0 13px 28px rgba(16, 36, 62, .09);
+}
+
+.session-card h3 {
+    font-size: 17px;
+    line-height: 1.4;
+    letter-spacing: -.2px;
+}
+
+.session-card > p {
+    flex: 1;
+}
+
+.session-emoji {
+    border: 1px solid rgba(255, 198, 41, .22);
+}
+
+.session-footer {
+    margin-top: 22px;
+    flex-wrap: wrap;
+}
+
+.join-btn {
+    font-weight: 700;
+}
+
+.join-btn:hover {
+    box-shadow: 0 4px 12px rgba(16, 36, 62, .12);
+}
+
+/* Profile and settings */
+.profile-card,
+.settings-card {
+    border-radius: 18px;
+    box-shadow: 0 5px 22px rgba(16, 36, 62, .045);
+}
+
+.profile-row {
+    line-height: 1.6;
+}
+
+.profile-row span {
+    font-weight: 500;
+}
+
+/* Notification */
+.notice {
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 15px 17px;
+}
+
+.notice.success {
+    border-color: #c7ead6;
+}
+
+.notice.error {
+    border-color: #f4cccc;
+}
+
+/* Loading screen */
+.loading-screen {
+    padding: 24px;
+    background: var(--bg);
+    text-align: center;
+}
+
+.loading-screen > div {
+    width: min(100%, 360px);
+    padding: 34px 28px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--white);
+    box-shadow: 0 15px 45px rgba(16, 36, 62, .09);
+}
+
+.loading-screen strong {
+    display: block;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -.6px;
+}
+
+.loading-screen span {
+    line-height: 1.7;
+}
+
+/* Responsive refinements */
+@media (min-width: 1400px) {
+    .content {
+        padding-left: 42px;
+        padding-right: 42px;
+    }
+
+    .session-grid {
+        gap: 24px;
+    }
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        position: sticky;
+        top: 0;
+    }
+
+    .welcome-banner {
+        border-radius: 16px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .stat-card:hover,
+    .session-card:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}
+[hidden] {
+    display: none !important;
+}
     </style>
 </head>
 
 <body>
-    <div class="loading-screen" id="loadingScreen">
-        <div>
-            <strong>Mac&Talk</strong>
-            <span>Checking your account...</span>
-        </div>
+  <div class="loading-screen" id="loadingScreen">
+    <div>
+        <strong>Mac&Talk</strong>
+        <span>Checking your account...</span>
     </div>
+  </div>
 
     <div class="app" id="app" hidden>
         <aside class="sidebar" id="sidebar">
