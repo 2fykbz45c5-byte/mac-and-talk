@@ -1,0 +1,802 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Mac&Talk</title>
+
+    <style>
+        :root {
+            --navy: #10243e;
+            --navy-light: #1c3657;
+            --yellow: #ffc629;
+            --yellow-hover: #f4b900;
+            --blue: #2677e8;
+            --text: #142943;
+            --muted: #6c83a5;
+            --border: #d8e2f0;
+            --background: #f3f7fc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .topbar {
+            min-height: 78px;
+            padding: 18px 7%;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 29px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--yellow);
+        }
+
+        .logo-icon {
+            margin-right: 8px;
+        }
+
+        .back-link {
+            color: #d9e5f7;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--yellow);
+        }
+
+        .main {
+            width: min(1200px, 92%);
+            margin: 30px auto;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(16, 36, 62, 0.08);
+        }
+
+        .brand-panel {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top right, #ffc629 0 85px, transparent 86px),
+                linear-gradient(145deg, #1d3c65, var(--navy) 65%);
+            color: white;
+            padding: 65px 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .brand-panel::before {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 35px solid rgba(72, 139, 235, 0.12);
+            border-radius: 50%;
+            top: -130px;
+            left: -130px;
+        }
+
+        .big-mic {
+            font-size: 85px;
+            margin-bottom: 15px;
+        }
+
+        .brand-title {
+            font-size: clamp(38px, 5vw, 60px);
+            letter-spacing: -2px;
+            font-weight: 800;
+        }
+
+        .brand-title span {
+            color: var(--yellow);
+        }
+
+        .brand-description {
+            margin-top: 20px;
+            color: #d5e3f8;
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 350px;
+        }
+
+        .illustration {
+            font-size: 95px;
+            margin: 35px 0;
+            filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.15));
+        }
+
+        .features {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            padding: 15px 5px;
+        }
+
+        .feature-icon {
+            display: block;
+            font-size: 29px;
+            margin-bottom: 12px;
+        }
+
+        .feature strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .feature p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #cbd9ec;
+        }
+
+        .login-panel {
+            padding: 65px clamp(25px, 5vw, 65px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-heading {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .login-heading h1 {
+            font-size: 38px;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .login-heading p {
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 17px;
+        }
+
+        .form-group {
+            margin-bottom: 23px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 16px 45px 16px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text);
+            outline: none;
+            background: #fbfdff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(38, 119, 232, 0.12);
+        }
+
+        .input-wrap input::placeholder {
+            color: #8297b5;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin: 4px 0 30px;
+            font-size: 14px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .remember input {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--blue);
+        }
+
+        .text-link {
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .text-link:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 12px;
+            background: var(--yellow);
+            color: var(--navy);
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: var(--yellow-hover);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.65;
+            cursor: wait;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 27px 0;
+            color: #8397b4;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: var(--border);
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .google-btn:hover {
+            background: #f7faff;
+        }
+
+        .signup-text {
+            text-align: center;
+            margin-top: 32px;
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .signup-text a {
+            margin-left: 8px;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff0f0;
+            color: #a52222;
+        }
+
+        .message.success {
+            display: block;
+            background: #eafaf1;
+            color: #167345;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 22px 15px 28px;
+        }
+
+        @media (max-width: 850px) {
+            .main {
+                grid-template-columns: 1fr;
+                max-width: 560px;
+            }
+
+            .brand-panel {
+                padding: 40px 25px;
+            }
+
+            .big-mic {
+                font-size: 60px;
+            }
+
+            .brand-title {
+                font-size: 43px;
+            }
+
+            .brand-description {
+                margin-top: 10px;
+            }
+
+            .illustration {
+                font-size: 65px;
+                margin: 15px 0;
+            }
+
+            .features {
+                max-width: 400px;
+            }
+
+            .login-panel {
+                padding: 45px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 17px 5%;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            .back-link {
+                font-size: 13px;
+            }
+
+            .main {
+                width: 94%;
+                margin: 16px auto;
+                border-radius: 15px;
+            }
+
+            .brand-panel {
+                padding: 32px 18px;
+            }
+
+            .brand-title {
+                font-size: 37px;
+            }
+
+            .brand-description {
+                font-size: 15px;
+            }
+
+            .login-panel {
+                padding: 38px 22px;
+            }
+
+            .login-heading h1 {
+                font-size: 31px;
+            }
+
+            .login-heading p {
+                font-size: 15px;
+            }
+
+            .form-options {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .features {
+                gap: 2px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <a href="index.html" class="logo" aria-label="Mac and Talk home">
+            <span class="logo-icon">🎙</span> Mac&<span>Talk</span>
+        </a>
+
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </header>
+
+    <main class="main">
+
+        <section class="brand-panel">
+            <div class="big-mic" aria-hidden="true">🎙️</div>
+
+            <div class="brand-title">
+                Mac&<span>Talk</span>
+            </div>
+
+            <p class="brand-description">
+                Real voices. Real conversations.<br>
+                A stronger community.
+            </p>
+
+            <div class="illustration" aria-hidden="true">
+                🎧
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">🎧</span>
+                    <strong>Live Sessions</strong>
+                    <p>Join the conversation</p>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">🎙️</span>
+                    <strong>Podcasts</strong>
+                    <p>Listen anytime</p>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">👥</span>
+                    <strong>Community</strong>
+                    <p>Be part of it</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="login-panel">
+            <div class="login-heading">
+                <h1>Welcome Back!</h1>
+                <p>Sign in to your Mac&Talk account</p>
+            </div>
+
+            <div id="formMessage" class="message" role="status"
+                 aria-live="polite"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+
+                    <div class="input-wrap">
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="input-wrap">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="input-icon"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-pressed="false"
+                        >◉</button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <span>Remember me</span>
+                    </label>
+
+                    <a href="forgot-password.html" class="text-link">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <button type="submit" class="submit-btn" id="signInButton">
+                    Sign In →
+                </button>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <button type="button" class="google-btn" id="googleSignIn">
+                🌐 &nbsp; Continue with Google
+            </button>
+
+            <p class="signup-text">
+                Don't have an account?
+                <a href="register.html" class="text-link">Create one</a>
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        © <span id="currentYear"></span> Mac&Talk. All rights reserved.
+    </footer>
+
+
+  <script type="module">
+      import { initializeApp } from
+          "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+      import {
+          getAuth,
+          setPersistence,
+          browserLocalPersistence,
+          browserSessionPersistence,
+          signInWithEmailAndPassword,
+          GoogleAuthProvider,
+          signInWithPopup
+      } from
+          "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+      // Your Mac&Talk Firebase project
+      const firebaseConfig = {
+          apiKey: "AIzaSyCqW8hGILycifGkXw5HqaRKuMgYIl7aiLc",
+          authDomain: "macandtalk-e3436.firebaseapp.com",
+          projectId: "macandtalk-e3436",
+          storageBucket: "macandtalk-e3436.firebasestorage.app",
+          messagingSenderId: "562396248377",
+          appId: "1:562396248377:web:f139a163870e51a48610e8",
+          measurementId: "G-G0DMB0VRGR"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // HTML elements
+      const loginForm = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const rememberMe = document.getElementById("rememberMe");
+      const signInButton = document.getElementById("signInButton");
+      const googleButton = document.getElementById("googleSignIn");
+      const togglePassword = document.getElementById("togglePassword");
+      const formMessage = document.getElementById("formMessage");
+
+      // Current year
+      document.getElementById("currentYear").textContent =
+          new Date().getFullYear();
+
+      // Display a message
+      function showMessage(message, type = "error") {
+          formMessage.textContent = message;
+          formMessage.className = `message ${type}`;
+      }
+
+      function clearMessage() {
+          formMessage.textContent = "";
+          formMessage.className = "message";
+      }
+
+      // Convert Firebase errors into readable messages
+      function getFriendlyError(error) {
+          switch (error.code) {
+              case "auth/invalid-email":
+                  return "Please enter a valid email address.";
+
+              case "auth/invalid-credential":
+              case "auth/wrong-password":
+              case "auth/user-not-found":
+                  return "Incorrect email or password.";
+
+              case "auth/user-disabled":
+                  return "This account has been disabled.";
+
+              case "auth/too-many-requests":
+                  return "Too many attempts. Please try again later.";
+
+              case "auth/network-request-failed":
+                  return "Network error. Check your internet connection.";
+
+              case "auth/invalid-api-key":
+                  return "Firebase configuration is invalid. Check your API key.";
+
+              case "auth/operation-not-allowed":
+                  return "This sign-in method is not enabled in Firebase.";
+
+              case "auth/unauthorized-domain":
+                  return "This domain is not authorized in Firebase Authentication.";
+
+              case "auth/popup-closed-by-user":
+                  return "Google sign-in was cancelled.";
+
+              case "auth/popup-blocked":
+                  return "Your browser blocked the Google sign-in popup.";
+
+              case "auth/account-exists-with-different-credential":
+                  return "An account already exists with another sign-in method.";
+
+              default:
+                  console.error("Firebase error:", error.code, error.message);
+                  return "Sign-in failed. Please check your details and try again.";
+          }
+      }
+
+      // Show or hide the password
+      togglePassword.addEventListener("click", () => {
+          const isHidden = passwordInput.type === "password";
+
+          passwordInput.type = isHidden ? "text" : "password";
+          togglePassword.textContent = isHidden ? "◎" : "◉";
+
+          togglePassword.setAttribute(
+              "aria-pressed",
+              String(isHidden)
+          );
+
+          togglePassword.setAttribute(
+              "aria-label",
+              isHidden ? "Hide password" : "Show password"
+          );
+      });
+
+      // Email and password login
+      loginForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          clearMessage();
+
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+
+          if (!email || !password) {
+              showMessage("Please enter your email and password.");
+              return;
+          }
+
+          signInButton.disabled = true;
+          signInButton.textContent = "Signing in...";
+
+          try {
+              // Remember the user or use session-only persistence
+              await setPersistence(
+                  auth,
+                  rememberMe.checked
+                      ? browserLocalPersistence
+                      : browserSessionPersistence
+              );
+
+              // Authenticate against Firebase
+              const credential = await signInWithEmailAndPassword(
+                  auth,
+                  email,
+                  password
+              );
+
+              console.log("Signed in:", credential.user.uid);
+
+              showMessage(
+                  "Login successful! Redirecting to your account...",
+                  "success"
+              );
+
+              // Open the user dashboard
+              window.location.replace("user.html");
+
+          } catch (error) {
+              showMessage(getFriendlyError(error));
+
+              signInButton.disabled = false;
+              signInButton.textContent = "Sign In →";
+          }
+      });
+
+      // Google login
+      googleButton.addEventListener("click", async () => {
+          clearMessage();
+
+          googleButton.disabled = true;
+          googleButton.textContent = "Connecting to Google...";
+
+          try {
+              await setPersistence(
+                  auth,
+                  rememberMe.checked
+                      ? browserLocalPersistence
+                      : browserSessionPersistence
+              );
+
+              const provider = new GoogleAuthProvider();
+              provider.setCustomParameters({
+                  prompt: "select_account"
+              });
+
+              const result = await signInWithPopup(auth, provider);
+
+              console.log("Google login successful:", result.user.uid);
+
+              showMessage(
+                  "Google login successful! Redirecting...",
+                  "success"
+              );
+
+              window.location.replace("user.html");
+
+          } catch (error) {
+              showMessage(getFriendlyError(error));
+
+              googleButton.disabled = false;
+              googleButton.innerHTML =
+                  "🌐 &nbsp; Continue with Google";
+          }
+      });
+  </script>
+
+</body>
+</html>
