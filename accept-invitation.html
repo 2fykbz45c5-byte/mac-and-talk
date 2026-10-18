@@ -1,23 +1,316 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Create your Mac&Talk account</title>
 <style>
-:root{--navy:#10243e;--navy2:#1c3657;--yellow:#ffc629;--bg:#f3f6fb;--muted:#718096;--line:#e5eaf1;--red:#c53b4b;--green:#14734e}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--navy)}.card{width:100%;max-width:470px;padding:30px;border-radius:20px;background:#fff;box-shadow:0 12px 40px #10243e15;border:1px solid var(--line)}.brand{background:var(--navy);color:#fff;border-radius:13px;padding:18px;text-align:center;margin-bottom:24px}.brand h1{margin:0;color:var(--yellow);font-size:28px}.brand p{margin:7px 0 0;font-size:10px;letter-spacing:1.5px}h2{margin:0 0 10px;font-size:23px}p{line-height:1.6}label{display:block;margin:16px 0 7px;font-size:13px;font-weight:700}input{width:100%;padding:13px;border:1px solid var(--line);border-radius:9px;font-size:15px;color:var(--navy)}button,.link-button{display:block;width:100%;margin-top:20px;padding:14px;border:0;border-radius:9px;background:var(--yellow);color:var(--navy);font-size:15px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none}button:disabled{opacity:.6;cursor:wait}[hidden]{display:none!important}#message{overflow-wrap:anywhere}.hint{color:var(--muted);font-size:13px}.error{color:var(--red)}.success{color:var(--green)}
-</style></head>
-<body><main class="card"><div class="brand"><h1>Mac&Talk</h1><p>LEARN TOGETHER. GROW TOGETHER.</p></div><h2>Create your account</h2><p id="message">Sign up to join the Mac&Talk community.</p><form id="signupForm"><label for="fullName">Full name</label><input id="fullName" type="text" maxlength="100" autocomplete="name" required><label for="username">Choose a username</label><input id="username" type="text" minlength="3" maxlength="30" autocomplete="username" pattern="[A-Za-z0-9_.-]{3,30}" required placeholder="Letters, numbers, dots, _ or -"><label for="email">Invited email address</label><input id="email" type="email" autocomplete="email" readonly required aria-readonly="true"><p class="hint">This email comes from your invitation and cannot be edited here.</p><label for="password">Create password</label><input id="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="At least 8 characters"><label for="confirmPassword">Confirm password</label><input id="confirmPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" required><p class="hint">New self-registered accounts receive the Student role. An administrator must assign any elevated role.</p><button id="submitButton" type="submit">Create Mac&Talk Account</button></form><a class="link-button" href="/login.html" style="background:#eef2f8;margin-top:10px">Already have an account? Sign in</a></main>
+:root {
+  --navy:#10243e; --yellow:#ffc629; --bg:#f3f6fb;
+  --muted:#718096; --line:#e5eaf1; --red:#c53b4b; --green:#14734e;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; min-height:100vh; display:grid; place-items:center;
+  padding:20px; font-family:Inter,Arial,sans-serif;
+  background:var(--bg); color:var(--navy);
+}
+.card {
+  width:100%; max-width:470px; padding:30px; border-radius:20px;
+  background:#fff; box-shadow:0 12px 40px #10243e15;
+  border:1px solid var(--line);
+}
+.brand {
+  background:var(--navy); color:#fff; border-radius:13px;
+  padding:18px; text-align:center; margin-bottom:24px;
+}
+.brand h1 { margin:0; color:var(--yellow); font-size:28px; }
+.brand p { margin:7px 0 0; font-size:10px; letter-spacing:1.5px; }
+h2 { margin:0 0 10px; font-size:23px; }
+p { line-height:1.6; }
+label { display:block; margin:16px 0 7px; font-size:13px; font-weight:700; }
+input {
+  width:100%; padding:13px; border:1px solid var(--line);
+  border-radius:9px; font-size:15px; color:var(--navy);
+}
+button,.link-button {
+  display:block; width:100%; margin-top:20px; padding:14px;
+  border:0; border-radius:9px; background:var(--yellow);
+  color:var(--navy); font-size:15px; font-weight:800;
+  cursor:pointer; text-align:center; text-decoration:none;
+}
+button:disabled { opacity:.6; cursor:wait; }
+[hidden] { display:none!important; }
+#message { overflow-wrap:anywhere; }
+.hint { color:var(--muted); font-size:13px; }
+.error { color:var(--red); }
+.success { color:var(--green); }
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="brand">
+    <h1>Mac&Talk</h1>
+    <p>LEARN TOGETHER. GROW TOGETHER.</p>
+  </div>
+
+  <h2>Create your account</h2>
+  <p id="message">Checking your invitation…</p>
+
+  <form id="signupForm" hidden>
+    <label for="fullName">Full name</label>
+    <input id="fullName" type="text" maxlength="100" autocomplete="name" required>
+
+    <label for="username">Choose a username</label>
+    <input id="username" type="text" minlength="3" maxlength="30"
+      autocomplete="username" pattern="[A-Za-z0-9_.-]{3,30}" required
+      placeholder="Letters, numbers, dots, _ or -">
+
+    <label for="email">Invited email address</label>
+    <input id="email" type="email" autocomplete="email" readonly required aria-readonly="true">
+    <p class="hint">This email comes from your invitation and cannot be edited here.</p>
+
+    <label for="password">Create password</label>
+    <input id="password" type="password" minlength="8" maxlength="128"
+      autocomplete="new-password" required placeholder="At least 8 characters">
+
+    <label for="confirmPassword">Confirm password</label>
+    <input id="confirmPassword" type="password" minlength="8" maxlength="128"
+      autocomplete="new-password" required>
+
+    <p class="hint">New student accounts receive the Student role.</p>
+    <button id="submitButton" type="submit">Create Mac&Talk Account</button>
+  </form>
+
+  <a class="link-button" href="/login.html" style="background:#eef2f8;margin-top:10px">
+    Already have an account? Sign in
+  </a>
+</main>
+
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const supabase=createClient("https://gprdmwjqgyrvqrgjkycc.supabase.co","sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const form=document.getElementById("signupForm"),message=document.getElementById("message"),button=document.getElementById("submitButton");
-const params=new URLSearchParams(location.search);
-const invitedEmail=(params.get("email")||"").trim().toLowerCase();
-const invitedName=(params.get("name")||"").trim();
-document.getElementById("email").value=invitedEmail;
-document.getElementById("fullName").value=invitedName;
-if(!invitedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(invitedEmail)){say("This registration link is missing a valid invited email. Please open the link from your Mac&Talk invitation email.","error");form.hidden=true;}
-function say(text,kind=""){message.textContent=text;message.className=kind;}
-form.addEventListener("submit",async event=>{event.preventDefault();const fullName=document.getElementById("fullName").value.trim(),username=document.getElementById("username").value.trim(),email=invitedEmail,password=document.getElementById("password").value,confirm=document.getElementById("confirmPassword").value;if(!invitedEmail){say("Open the invitation link sent to your email.","error");return;}if(!fullName){say("Please enter your full name.","error");return;}if(!/^[A-Za-z0-9_.-]{3,30}$/.test(username)){say("Choose a username with 3–30 letters, numbers, dots, underscores, or hyphens.","error");return;}if(password.length<8){say("Your password must contain at least 8 characters.","error");return;}if(password!==confirm){say("The passwords do not match.","error");return;}button.disabled=true;button.textContent="Creating account…";say("Creating your account…");try{const redirectUrl=new URL(location.pathname,location.origin);redirectUrl.searchParams.set("email",invitedEmail);redirectUrl.searchParams.set("name",fullName);const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:redirectUrl.toString(),data:{display_name:fullName,full_name:fullName,username}}});if(error)throw error;if(data.session){say("Your account is ready! You can now sign in. Your email address is " + invitedEmail,"success");form.hidden=true;}else{say("Signup started. Check your email for the confirmation link, then return to Mac&Talk and sign in.","success");form.hidden=true;}}catch(error){console.error(error);say(error.message||"Could not create your account. Please try again.","error");}finally{button.disabled=false;button.textContent="Create Mac&Talk Account";}});
-</script></body></html>
+
+const supabase = createClient(
+  "https://gprdmwjqgyrvqrgjkycc.supabase.co",
+  "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+const form = document.getElementById("signupForm");
+const message = document.getElementById("message");
+const button = document.getElementById("submitButton");
+const params = new URLSearchParams(location.search);
+const token = (params.get("token") || "").trim();
+
+let invitedEmail = "";
+let invitedName = "";
+let submitting = false;
+
+function say(text, kind = "") {
+  message.textContent = text;
+  message.className = kind;
+}
+
+function invitationExpired() {
+  form.hidden = true;
+  say("This invitation has expired or has already been used.", "error");
+}
+
+async function validateInvitation() {
+  if (!token) {
+    invitationExpired();
+    return;
+  }
+
+  try {
+    // This RPC must return invited_email and invited_name only
+    // when the token exists, is unused, and has not expired.
+    const { data, error } = await supabase.rpc(
+      "validate_student_invitation",
+      { invitation_token: token }
+    );
+
+    if (error) throw error;
+
+    const invitation = Array.isArray(data) ? data[0] : data;
+
+    if (!invitation ||
+        invitation.is_valid === false ||
+        !invitation.invited_email) {
+      invitationExpired();
+      return;
+    }
+
+    invitedEmail = invitation.invited_email.trim().toLowerCase();
+    invitedName = (invitation.invited_name || "").trim();
+
+    document.getElementById("email").value = invitedEmail;
+    document.getElementById("fullName").value = invitedName;
+    form.hidden = false;
+
+    // If the student has just returned from email confirmation,
+    // Supabase may already have established their session.
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData.session;
+
+    if (session) {
+      await redeemInvitation(session);
+    } else {
+      say("Your invitation is valid. Create your account to continue.");
+    }
+  } catch (error) {
+    console.error(error);
+    say("We couldn't verify this invitation. Please try again later.", "error");
+    form.hidden = true;
+  }
+}
+
+async function redeemInvitation(session) {
+  if (!session?.user) {
+    say("Please confirm your email using the link we sent you.", "success");
+    form.hidden = true;
+    return;
+  }
+
+  const confirmedEmail = (session.user.email || "").toLowerCase();
+  const isConfirmed = Boolean(session.user.email_confirmed_at);
+
+  if (!isConfirmed || confirmedEmail !== invitedEmail) {
+    say("Please confirm the invited email address to finish registration.", "error");
+    form.hidden = true;
+    return;
+  }
+
+  const { data, error } = await supabase.rpc(
+    "redeem_student_invitation",
+    { invitation_token: token }
+  );
+
+  if (error) throw error;
+
+  if (data !== true) {
+    invitationExpired();
+    return;
+  }
+
+  form.hidden = true;
+  say("Your account is ready! Your invitation has been used. You can now sign in.", "success");
+}
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (submitting) return;
+
+  const fullName = document.getElementById("fullName").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (!token || !invitedEmail) {
+    invitationExpired();
+    return;
+  }
+
+  if (!fullName) {
+    say("Please enter your full name.", "error");
+    return;
+  }
+
+  if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username)) {
+    say("Choose a username with 3–30 letters, numbers, dots, underscores, or hyphens.", "error");
+    return;
+  }
+
+  if (password.length < 8) {
+    say("Your password must contain at least 8 characters.", "error");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    say("The passwords do not match.", "error");
+    return;
+  }
+
+  submitting = true;
+  button.disabled = true;
+  button.textContent = "Creating account…";
+  say("Creating your account…");
+
+  try {
+    // Keep the invitation token in the URL after email confirmation.
+    const redirectUrl = new URL("/accept-invitation.html", location.origin);
+    redirectUrl.searchParams.set("token", token);
+
+    const { data, error } = await supabase.auth.signUp({
+      email: invitedEmail,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl.toString(),
+        data: {
+          display_name: fullName,
+          full_name: fullName,
+          username
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      // When confirmation is disabled, a session may be returned
+      // immediately. Redeem only after checking confirmation.
+      await redeemInvitation(data.session);
+    } else {
+      // Do not mark the invitation used before email confirmation.
+      form.hidden = true;
+      say("Check your email and click the confirmation link to finish creating your account.", "success");
+    }
+  } catch (error) {
+    console.error(error);
+    say(error.message || "Could not create your account. Please try again.", "error");
+  } finally {
+    submitting = false;
+    button.disabled = false;
+    button.textContent = "Create Mac&Talk Account";
+  }
+});
+
+// Run after Supabase has had an opportunity to process the
+// confirmation session in the URL.
+await validateInvitation();
+
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === "SIGNED_IN" && session && token) {
+    try {
+      // Revalidate so an already-used invitation cannot be reused.
+      const { data, error } = await supabase.rpc(
+        "validate_student_invitation",
+        { invitation_token: token }
+      );
+      if (error) throw error;
+
+      const invitation = Array.isArray(data) ? data[0] : data;
+      if (!invitation || !invitation.invited_email ||
+          invitation.invited_email.toLowerCase() !== (session.user.email || "").toLowerCase()) {
+        invitationExpired();
+        return;
+      }
+
+      invitedEmail = invitation.invited_email.toLowerCase();
+      await redeemInvitation(session);
+    } catch (error) {
+      console.error(error);
+      say("We couldn't finish your invitation. Please reopen the confirmation link.", "error");
+    }
+  }
+});
+</script>
+</body>
+</html>
