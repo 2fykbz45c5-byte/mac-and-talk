@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mac&Talk | Admin Control Center</title>
+<style>
+:root{--navy:#10243e;--navy2:#1c3657;--yellow:#ffc629;--bg:#f3f6fb;--white:#fff;--muted:#718096;--line:#e5eaf1;--green:#16845b;--red:#c53b4b;--blue:#3867d6;--shadow:0 12px 35px rgba(16,36,62,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.layout{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--navy);color:#fff;padding:24px 16px;display:flex;flex-direction:column;z-index:10}.brand{display:flex;align-items:center;gap:12px;padding:0 10px 30px}.brand-mark{width:44px;height:44px;border-radius:14px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:22px}.brand-name{font-size:20px;font-weight:850}.brand-name span{color:var(--yellow)}.eyebrow{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#9eacc0;margin:8px 12px 12px}.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#d8e0eb;text-align:left;padding:13px 14px;border-radius:11px;display:flex;gap:12px;align-items:center}.nav button:hover,.nav button.active{background:var(--yellow);color:var(--navy)}.nav .ico{width:22px;text-align:center;font-size:17px}.side-bottom{margin-top:auto;padding:14px 10px 0;color:#aab8ca;font-size:12px;line-height:1.6}.main{margin-left:250px;min-height:100vh}.topbar{height:82px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;gap:16px}.topbar h1{font-size:21px;margin:0 0 5px}.topbar p{margin:0;color:var(--muted);font-size:12px}.admin-chip{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}.avatar{width:38px;height:38px;background:var(--navy);color:var(--yellow);border-radius:50%;display:grid;place-items:center;font-weight:900}.content{padding:30px 34px 50px;max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}.welcome h2{font-size:25px;margin:0 0 8px}.welcome p{color:var(--muted);margin:0;line-height:1.5}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--navy);color:white}.btn-primary:hover{background:var(--navy2)}.btn-yellow{background:var(--yellow);color:var(--navy)}.btn-light{background:#eef2f8;color:var(--navy)}.btn-danger{background:#fff0f1;color:var(--red)}.btn-small{padding:8px 10px;font-size:12px;border-radius:8px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:700}.stat-icon{width:37px;height:37px;border-radius:12px;background:#fff4cf;display:grid;place-items:center;font-size:18px}.stat strong{display:block;font-size:29px;margin-top:13px;letter-spacing:-.7px}.stat small{display:block;color:var(--muted);margin-top:5px;font-size:11px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.panel-head h3{margin:0;font-size:16px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.filters{display:flex;gap:9px;flex-wrap:wrap}.field-control{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 11px;color:var(--navy);outline:none;min-width:145px}.field-control:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(56,103,214,.1)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:15px 20px;border-bottom:1px solid #edf0f5;font-size:13px;vertical-align:middle}th{background:#fbfcfe;color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase}tbody tr:hover{background:#fcfdff}tbody tr:last-child td{border-bottom:0}.session-title{font-weight:800;margin-bottom:4px}.session-sub{font-size:11px;color:var(--muted);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:850;letter-spacing:.2px}.pill-live{background:#e2f8ed;color:#14734e}.pill-scheduled{background:#e9efff;color:#3159b9}.pill-ended{background:#eef0f4;color:#5f6b7b}.pill-pending{background:#fff2cf;color:#8a6100}.pill-approved{background:#e2f8ed;color:#14734e}.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}.notice{margin-bottom:18px;padding:12px 15px;border-radius:10px;font-size:13px;display:none}.notice.show{display:block}.notice.success{background:#e5f8ed;color:#146c49}.notice.error{background:#fff0f1;color:#a52d3a}.notice.info{background:#eaf1ff;color:#3159b9}.page{display:none}.page.active{display:block}.grid-two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:18px}.info-card{padding:22px}.info-card h3{margin:0 0 10px;font-size:16px}.info-card p,.info-card li{font-size:13px;line-height:1.7;color:var(--muted)}.info-card ul{padding-left:20px}.modal-backdrop{position:fixed;inset:0;background:rgba(6,17,33,.56);z-index:50;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{background:#fff;border-radius:18px;width:min(640px,100%);max-height:92vh;overflow:auto;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:18px}.close{border:0;background:#eef2f8;width:34px;height:34px;border-radius:9px;font-size:20px}.modal-body{padding:22px 24px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-field{display:grid;gap:7px}.form-field.full{grid-column:1/-1}.form-field label{font-size:12px;font-weight:800}.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;background:#fff;color:var(--navy)}.form-field textarea{min-height:95px;resize:vertical}.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(56,103,214,.1)}.modal-foot{display:flex;justify-content:flex-end;gap:9px;padding:17px 24px;border-top:1px solid var(--line)}.loading{min-height:100vh;display:grid;place-items:center;padding:25px;text-align:center}.loading-card{background:#fff;padding:30px;border-radius:18px;max-width:480px;box-shadow:var(--shadow)}.loading-card h2{margin:0 0 10px}.loading-card p{color:var(--muted);font-size:14px;line-height:1.6}.spinner{width:30px;height:30px;border:3px solid #e5eaf1;border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}.mobile-menu{display:none}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-two{grid-template-columns:1fr}}
+@media(max-width:760px){.sidebar{width:72px;padding:18px 9px}.brand{padding:0 5px 25px;justify-content:center}.brand-name,.eyebrow,.nav-label-text,.nav-text,.side-bottom{display:none}.brand-mark{width:45px}.nav button{justify-content:center;padding:13px 7px}.nav .ico{font-size:19px}.main{margin-left:72px}.topbar{padding:0 17px;height:72px}.content{padding:22px 14px 35px}.welcome{flex-direction:column}.welcome h2{font-size:22px}.stats{gap:10px}.stat{padding:15px}.stat strong{font-size:25px}.stat-top{font-size:10px}.panel-head{padding:16px}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}.admin-chip .admin-email{display:none}}
+@media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.stat-icon{width:30px;height:30px}.stat strong{font-size:22px}.filters{width:100%}.filters .field-control{flex:1;min-width:0}}
+</style>
+</head>
+<body>
+<div class="loading" id="gate">
+  <div class="loading-card"><div class="spinner" id="spinner"></div><h2 id="gateTitle">Opening Admin Control Center</h2><p id="gateText">Checking your Mac&Talk account…</p><p id="gateActions" class="hidden"><a href="login.html">Return to login</a></p></div>
+</div>
+
+<div class="layout hidden" id="adminApp">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">M</div><div class="brand-name">Mac<span>&</span>Talk</div></div>
+    <div class="eyebrow">ADMIN WORKSPACE</div>
+    <nav class="nav">
+      <button class="active" data-page="overview"><span class="ico">▦</span><span class="nav-text">Overview</span></button>
+      <button data-page="sessions"><span class="ico">🎙</span><span class="nav-text">Live sessions</span></button>
+      <button data-page="guide"><span class="ico">⚙</span><span class="nav-text">Setup & security</span></button>
+    </nav>
+    <div class="side-bottom">Mac&Talk Admin<br>Manage community sessions safely.</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="pageHeading">Admin overview</h1><p id="todayLabel">Mac&Talk Control Center</p></div>
+      <div class="admin-chip"><div class="avatar" id="adminAvatar">A</div><span class="admin-email" id="adminEmail">Admin</span><button class="btn btn-light btn-small" id="signOutBtn">Sign out</button></div>
+    </header>
+    <div class="content">
+      <div class="notice" id="notice" role="status"></div>
+
+      <section class="page active" id="page-overview">
+        <div class="welcome"><div><h2>Good to see you, Admin 👋</h2><p>Keep your sessions organized, review approvals, and control what appears on the member dashboard.</p></div><button class="btn btn-primary" id="newSessionBtn">＋ Create session</button></div>
+        <div class="stats">
+          <div class="stat"><div class="stat-top">Total sessions <span class="stat-icon">🎙</span></div><strong id="statTotal">—</strong><small>All session records</small></div>
+          <div class="stat"><div class="stat-top">Awaiting approval <span class="stat-icon">🕓</span></div><strong id="statPending">—</strong><small>Sessions not approved</small></div>
+          <div class="stat"><div class="stat-top">Live now <span class="stat-icon">🔴</span></div><strong id="statLive">—</strong><small>Approved and marked live</small></div>
+          <div class="stat"><div class="stat-top">Scheduled <span class="stat-icon">📅</span></div><strong id="statScheduled">—</strong><small>Approved upcoming sessions</small></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h3>Recent sessions</h3><p>Quickly review or edit session details.</p></div><button class="btn btn-light btn-small" data-goto="sessions">View all sessions →</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Session</th><th>Status</th><th>Approval</th><th>Actions</th></tr></thead><tbody id="recentRows"><tr><td colspan="4" class="empty">Loading sessions…</td></tr></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-sessions">
+        <div class="welcome"><div><h2>Live session management</h2><p>Create sessions, update details, approve submissions, and change session status.</p></div><button class="btn btn-primary" id="newSessionBtn2">＋ Create session</button></div>
+        <div class="panel">
+          <div class="panel-head"><div><h3>All sessions</h3><p>Approved sessions with status “live” or “scheduled” are shown to members.</p></div><div class="filters"><input class="field-control" id="searchInput" placeholder="Search sessions…" aria-label="Search sessions"><select class="field-control" id="statusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="live">Live</option><option value="scheduled">Scheduled</option><option value="ended">Ended</option></select><select class="field-control" id="approvalFilter" aria-label="Filter by approval"><option value="all">All approvals</option><option value="approved">Approved</option><option value="pending">Pending</option></select></div></div>
+          <div class="table-wrap"><table><thead><tr><th>Session</th><th>Host</th><th>Status</th><th>Approval</th><th>Actions</th></tr></thead><tbody id="sessionRows"><tr><td colspan="5" class="empty">Loading sessions…</td></tr></tbody></table></div>
+          <div class="panel-head"><p id="resultCount">Loading…</p><button class="btn btn-light btn-small" id="refreshBtn">↻ Refresh</button></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-guide">
+        <div class="welcome"><div><h2>Setup & security</h2><p>Important checks before using the admin page with real accounts.</p></div></div>
+        <div class="grid-two">
+          <div class="panel info-card"><h3>Firebase connection</h3><p>This page imports <code>auth</code> and <code>db</code> from your existing <code>firebase.js</code> file and manages the <code>liveSessions</code> Firestore collection used by your member dashboard.</p><ul><li>Keep <code>firebase.js</code> beside <code>admin.html</code>.</li><li>Use the same local server URL pattern: <code>http://127.0.0.1:8000/admin.html</code>.</li><li>Do not open this page with <code>file:///</code>.</li></ul></div>
+          <div class="panel info-card"><h3>Secure administrator access</h3><p>The email allowlist in this file protects the page UI, but Firestore security rules must also restrict writes. A browser-only check by itself is not sufficient security.</p><ul><li>Set your actual administrator email in <code>ADMIN_EMAILS</code> in the script.</li><li>Apply the Firestore rules shown in the generated instructions before deploying.</li><li>Never publish service-account credentials or Firebase Admin SDK secrets in this HTML file.</li></ul></div>
+          <div class="panel info-card"><h3>What this page manages</h3><p>Session title, host, description, emoji, status, approval, creation date, and edits/deletions. Your current member dashboard reads the same <code>liveSessions</code> collection.</p></div>
+          <div class="panel info-card"><h3>Not included yet</h3><p>Managing Firebase Authentication users, private messages, payments, or reports requires the exact data model and secure backend/Firestore rules. Those should not be guessed or exposed through unrestricted browser code.</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <form class="modal" id="sessionForm">
+    <div class="modal-head"><h3 id="modalTitle">Create session</h3><button type="button" class="close" id="closeModal" aria-label="Close">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="sessionId">
+      <div class="form-grid">
+        <div class="form-field"><label for="sessionTitle">Session title *</label><input id="sessionTitle" required maxlength="100" placeholder="e.g. English conversation club"></div>
+        <div class="form-field"><label for="sessionHost">Host name *</label><input id="sessionHost" required maxlength="80" placeholder="e.g. Sarah"></div>
+        <div class="form-field"><label for="sessionEmoji">Emoji</label><input id="sessionEmoji" maxlength="8" value="🎙️" placeholder="🎙️"></div>
+        <div class="form-field"><label for="sessionStatus">Status *</label><select id="sessionStatus" required><option value="scheduled">Scheduled</option><option value="live">Live</option><option value="ended">Ended</option></select></div>
+        <div class="form-field full"><label for="sessionDescription">Description</label><textarea id="sessionDescription" maxlength="1000" placeholder="What will members talk about?"></textarea></div>
+        <div class="form-field"><label for="sessionApproved">Approval</label><select id="sessionApproved"><option value="false">Pending approval</option><option value="true">Approved — visible to members</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-light" id="cancelModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveSessionBtn">Save session</button></div>
+  </form>
+</div>
+
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+});
+
+const $ = id => document.getElementById(id);
+
+const gate = $("gate");
+const app = $("adminApp");
+const notice = $("notice");
+
+let sessions = [];
+let editingId = null;
+let noticeTimer = null;
+let currentAdmin = null;
+let loadingSessions = false;
+
+$("todayLabel").textContent = new Date().toLocaleDateString(undefined, {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric"
+});
+
+function showGate(title, message, showLink = false, isLoading = false) {
+  $("gateTitle").textContent = title;
+  $("gateText").textContent = message;
+  $("spinner").classList.toggle("hidden", !isLoading);
+  $("gateActions").classList.toggle("hidden", !showLink);
+  gate.classList.remove("hidden");
+  app.classList.add("hidden");
+}
+
+function showNotice(message, type = "success") {
+  notice.textContent = message;
+  notice.className = "notice show " + type;
+
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    notice.className = "notice";
+  }, 5000);
+}
+
+function esc(value = "") {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[ch]);
+}
+
+/*
+ * IMPORTANT:
+ * The role is read from public.profiles.role,
+ * NOT from app_metadata.
+ *
+ * profiles.id must match auth.users.id.
+ */
+async function getUserRole(user) {
+  if (!user?.id) {
+    throw new Error("No authenticated user was found.");
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Profile role query error:", error);
+    throw new Error(
+      "Cannot read your role from profiles. Check your profiles table and RLS SELECT policy."
+    );
+  }
+
+  if (!profile) {
+    throw new Error(
+      "No profile exists for this account. Check that profiles.id matches your Authentication user UUID."
+    );
+  }
+
+  const role = String(profile.role || "student").toLowerCase();
+
+  if (!["admin", "teacher", "student"].includes(role)) {
+    throw new Error("Invalid role in your profiles table.");
+  }
+
+  return role;
+}
+
+function statusPill(status) {
+  const s = ["live", "scheduled", "ended"].includes(status)
+    ? status
+    : "scheduled";
+
+  return `<span class="pill pill-${s}">${s[0].toUpperCase() + s.slice(1)}</span>`;
+}
+
+function approvalPill(approved) {
+  return approved
+    ? '<span class="pill pill-approved">Approved</span>'
+    : '<span class="pill pill-pending">Pending</span>';
+}
+
+function sessionRow(s, recent = false) {
+  const host = s.host || "Mac&Talk Community";
+
+  return `<tr>
+    <td>
+      <div class="session-title">${esc(s.emoji || "🎙️")} ${esc(s.title || "Untitled session")}</div>
+      <div class="session-sub">${esc(s.description || "No description")}</div>
+    </td>
+    ${recent ? "" : `<td>${esc(host)}</td>`}
+    <td>${statusPill(s.status)}</td>
+    <td>${approvalPill(s.approved === true)}</td>
+    <td>
+      <div class="actions">
+        <button class="btn btn-light btn-small"
+          data-action="edit" data-id="${esc(s.id)}">Edit</button>
+
+        <button class="btn ${s.approved ? "btn-light" : "btn-yellow"} btn-small"
+          data-action="approval" data-id="${esc(s.id)}">
+          ${s.approved ? "Unapprove" : "Approve"}
+        </button>
+
+        <button class="btn btn-danger btn-small"
+          data-action="delete" data-id="${esc(s.id)}">Delete</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+function filteredSessions() {
+  const search = $("searchInput").value.trim().toLowerCase();
+  const status = $("statusFilter").value;
+  const approval = $("approvalFilter").value;
+
+  return sessions.filter(s => {
+    const text =
+      `${s.title || ""} ${s.host || ""} ${s.description || ""}`.toLowerCase();
+
+    return (!search || text.includes(search)) &&
+      (status === "all" || s.status === status) &&
+      (
+        approval === "all" ||
+        (approval === "approved"
+          ? s.approved === true
+          : s.approved !== true)
+      );
+  }).sort((a, b) => b._sortTime - a._sortTime);
+}
+
+function render() {
+  $("statTotal").textContent = sessions.length;
+
+  $("statPending").textContent =
+    sessions.filter(s => s.approved !== true).length;
+
+  $("statLive").textContent =
+    sessions.filter(s =>
+      s.approved === true && s.status === "live"
+    ).length;
+
+  $("statScheduled").textContent =
+    sessions.filter(s =>
+      s.approved === true && s.status === "scheduled"
+    ).length;
+
+  const recent = [...sessions]
+    .sort((a, b) => b._sortTime - a._sortTime)
+    .slice(0, 5);
+
+  $("recentRows").innerHTML = recent.length
+    ? recent.map(s => sessionRow(s, true)).join("")
+    : '<tr><td colspan="4" class="empty">No sessions yet. Select “Create session” to add one.</td></tr>';
+
+  const rows = filteredSessions();
+
+  $("sessionRows").innerHTML = rows.length
+    ? rows.map(s => sessionRow(s)).join("")
+    : '<tr><td colspan="5" class="empty">No sessions match these filters.</td></tr>';
+
+  $("resultCount").textContent =
+    `${rows.length} of ${sessions.length} sessions`;
+}
+
+/*
+ * Load sessions from Supabase.
+ */
+async function loadSessions() {
+  if (loadingSessions) return;
+  loadingSessions = true;
+
+  $("sessionRows").innerHTML =
+    '<tr><td colspan="5" class="empty">Loading sessions…</td></tr>';
+
+  try {
+    const { data, error } = await supabase
+      .from("live_sessions")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    sessions = (data || []).map(s => ({
+      ...s,
+      _sortTime:
+        new Date(s.updated_at || s.created_at || 0).getTime() || 0
+    }));
+
+    render();
+
+  } catch (error) {
+    console.error("Loading sessions failed:", error);
+
+    $("sessionRows").innerHTML =
+      `<tr><td colspan="5" class="empty">Could not load sessions: ${esc(error.message || "Unknown error")}</td></tr>`;
+
+    $("recentRows").innerHTML =
+      '<tr><td colspan="4" class="empty">Could not load sessions. Check your table and RLS policies.</td></tr>';
+
+    showNotice(
+      "Could not load sessions. Check your Supabase table and RLS policies.",
+      "error"
+    );
+  } finally {
+    loadingSessions = false;
+  }
+}
+
+/*
+ * Create/edit modal.
+ */
+function openModal(session = null) {
+  editingId = session?.id || null;
+
+  $("sessionId").value = editingId || "";
+  $("modalTitle").textContent =
+    editingId ? "Edit session" : "Create session";
+
+  $("sessionTitle").value = session?.title || "";
+  $("sessionHost").value = session?.host || "";
+  $("sessionEmoji").value = session?.emoji || "🎙️";
+
+  $("sessionStatus").value =
+    ["live", "scheduled", "ended"].includes(session?.status)
+      ? session.status
+      : "scheduled";
+
+  $("sessionDescription").value = session?.description || "";
+  $("sessionApproved").value =
+    session?.approved === true ? "true" : "false";
+
+  $("sessionModal").classList.add("open");
+
+  setTimeout(() => $("sessionTitle").focus(), 50);
+}
+
+function closeModal() {
+  $("sessionModal").classList.remove("open");
+}
+
+/*
+ * Save a new session or update an existing one.
+ */
+async function saveSession(event) {
+  event.preventDefault();
+
+  const title = $("sessionTitle").value.trim();
+  const host = $("sessionHost").value.trim();
+
+  if (!title || !host) {
+    showNotice("Please enter a session title and host name.", "error");
+    return;
+  }
+
+  const now = new Date().toISOString();
+
+  const payload = {
+    title,
+    host,
+    emoji: $("sessionEmoji").value.trim() || "🎙️",
+    status: $("sessionStatus").value,
+    description: $("sessionDescription").value.trim(),
+    approved: $("sessionApproved").value === "true",
+    updated_at: now
+  };
+
+  const saveBtn = $("saveSessionBtn");
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving…";
+
+  try {
+    let result;
+
+    if (editingId) {
+      result = await supabase
+        .from("live_sessions")
+        .update(payload)
+        .eq("id", editingId)
+        .select("id");
+    } else {
+      result = await supabase
+        .from("live_sessions")
+        .insert({
+          ...payload,
+          created_at: now
+        })
+        .select("id");
+    }
+
+    if (result.error) throw result.error;
+
+    if (!result.data?.length) {
+      throw new Error(
+        "No session was changed. Check your administrator permissions and RLS policies."
+      );
+    }
+
+    const wasEditing = Boolean(editingId);
+
+    closeModal();
+    showNotice(
+      wasEditing
+        ? "Session updated successfully."
+        : "Session created successfully."
+    );
+
+    await loadSessions();
+
+  } catch (error) {
+    console.error("Saving session failed:", error);
+    showNotice(
+      "Could not save session: " + (error.message || "Unknown error"),
+      "error"
+    );
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save session";
+  }
+}
+
+/*
+ * Approve/unapprove a session.
+ */
+async function toggleApproval(id) {
+  const session = sessions.find(s => String(s.id) === String(id));
+  if (!session) return;
+
+  try {
+    const { data, error } = await supabase
+      .from("live_sessions")
+      .update({
+        approved: session.approved !== true,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", id)
+      .select("id");
+
+    if (error) throw error;
+
+    if (!data?.length) {
+      throw new Error(
+        "No session was changed. Check administrator permissions and RLS policies."
+      );
+    }
+
+    showNotice(
+      session.approved === true
+        ? "Session approval removed."
+        : "Session approved."
+    );
+
+    await loadSessions();
+
+  } catch (error) {
+    console.error("Updating approval failed:", error);
+    showNotice(
+      "Could not update approval: " + (error.message || "Unknown error"),
+      "error"
+    );
+  }
+}
+
+/*
+ * Delete a session.
+ */
+async function removeSession(id) {
+  const session = sessions.find(s => String(s.id) === String(id));
+  if (!session) return;
+
+  if (!confirm(
+    `Delete “${session.title || "Untitled session"}” permanently? This cannot be undone.`
+  )) {
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("live_sessions")
+      .delete()
+      .eq("id", id)
+      .select("id");
+
+    if (error) throw error;
+
+    if (!data?.length) {
+      throw new Error(
+        "No session was deleted. Check administrator permissions and RLS policies."
+      );
+    }
+
+    showNotice("Session deleted.");
+    await loadSessions();
+
+  } catch (error) {
+    console.error("Deleting session failed:", error);
+    showNotice(
+      "Could not delete session: " + (error.message || "Unknown error"),
+      "error"
+    );
+  }
+}
+
+/*
+ * Navigation.
+ */
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.toggle("active", page.id === "page-" + name);
+  });
+
+  document.querySelectorAll(".nav button[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === name);
+  });
+
+  const titles = {
+    overview: "Admin overview",
+    sessions: "Live session management",
+    guide: "Setup & security"
+  };
+
+  $("pageHeading").textContent = titles[name] || "Admin";
+}
+
+document.querySelectorAll(".nav button[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+document.querySelectorAll("[data-goto]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.goto));
+});
+
+$("newSessionBtn").addEventListener("click", () => openModal());
+$("newSessionBtn2").addEventListener("click", () => openModal());
+$("closeModal").addEventListener("click", closeModal);
+$("cancelModal").addEventListener("click", closeModal);
+
+$("sessionModal").addEventListener("click", event => {
+  if (event.target === $("sessionModal")) closeModal();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeModal();
+});
+
+$("sessionForm").addEventListener("submit", saveSession);
+
+$("searchInput").addEventListener("input", render);
+$("statusFilter").addEventListener("change", render);
+$("approvalFilter").addEventListener("change", render);
+$("refreshBtn").addEventListener("click", loadSessions);
+
+/*
+ * Session action buttons.
+ */
+document.addEventListener("click", event => {
+  const button = event.target.closest("button[data-action]");
+  if (!button) return;
+
+  const { id, action } = button.dataset;
+
+  if (action === "edit") {
+    const session = sessions.find(s => String(s.id) === String(id));
+    if (session) openModal(session);
+  } else if (action === "approval") {
+    toggleApproval(id);
+  } else if (action === "delete") {
+    removeSession(id);
+  }
+});
+
+/*
+ * Sign out.
+ */
+$("signOutBtn").addEventListener("click", async () => {
+  $("signOutBtn").disabled = true;
+
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+
+    window.location.replace("login.html");
+  } catch (error) {
+    console.error("Sign-out failed:", error);
+    showNotice("Could not sign out: " + error.message, "error");
+    $("signOutBtn").disabled = false;
+  }
+});
+
+/*
+ * Verify the session AND read public.profiles.role.
+ */
+async function initializeAdmin() {
+  showGate(
+    "Opening Admin Control Center",
+    "Checking your Mac&Talk account…",
+    false,
+    true
+  );
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) throw error;
+
+    const user = data.session?.user;
+
+    if (!user) {
+      showGate(
+        "Sign in required",
+        "Please sign in to Mac&Talk first, then open the admin page.",
+        true,
+        false
+      );
+      return;
+    }
+
+    const role = await getUserRole(user);
+
+    if (role !== "admin") {
+      showGate(
+        "Access denied",
+        `Your account role is "${role}", not "admin". Change your role in Supabase Table Editor → profiles.`,
+        false,
+        false
+      );
+      return;
+    }
+
+    currentAdmin = user;
+
+    $("adminEmail").textContent = user.email || "Administrator";
+
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email ||
+      "A";
+
+    $("adminAvatar").textContent =
+      String(displayName).trim().charAt(0).toUpperCase() || "A";
+
+    gate.classList.add("hidden");
+    app.classList.remove("hidden");
+
+    await loadSessions();
+
+  } catch (error) {
+    console.error("Admin initialization failed:", error);
+
+    showGate(
+      "Could not open Admin Control Center",
+      error.message || "Check your Supabase connection and permissions.",
+      false,
+      false
+    );
+  }
+}
+
+/*
+ * Handle a sign-out in another tab or an expired session.
+ */
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_OUT" || !session) {
+    currentAdmin = null;
+    sessions = [];
+
+    showGate(
+      "Sign in required",
+      "Please sign in to Mac&Talk first, then open the admin page.",
+      true,
+      false
+    );
+  }
+});
+
+initializeAdmin();
+</script>
+</body>
+</html>

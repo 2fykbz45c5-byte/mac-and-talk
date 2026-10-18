@@ -1216,417 +1216,484 @@ a:focus-visible {
     </div>
 
 
-    <script>
-        window.setTimeout(function () {
-            const loading = document.getElementById("loadingScreen");
-            const dashboard = document.getElementById("app");
+    <script type="module">
+      // =========================================
+      // MAC&TALK — SUPABASE DASHBOARD
+      // =========================================
 
-            if (loading && !loading.hidden && dashboard?.hidden) {
-                loading.innerHTML = `
-                    <div style="padding:24px;text-align:center">
-                        <strong>Dashboard JavaScript did not finish loading.</strong>
-                        <p>Open Chrome DevTools with F12, select Console,
-                        and check for red error messages.</p>
-                        <p><a href="login.html">Return to login</a></p>
-                    </div>
-                `;
-            }
-        }, 12000);
-    </script>
+      import { createClient } from
+        "https://esm.sh/@supabase/supabase-js@2";
 
+      const SUPABASE_URL =
+        "https://gprdmwjqgyrvqrgjkycc.supabase.co";
 
-  <script type="module">
-      import { initializeApp } from
-          "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+      // A publishable key is safe to use in browser code.
+      // Never put a Supabase secret/service_role key here.
+      const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
 
-      import {
-          getAuth,
-          onAuthStateChanged,
-          signOut
-      } from
-          "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-      const firebaseConfig = {
-          apiKey: "AIzaSyCqW8hGILycifGkXw5HqaRKuMgYIl7aiLc",
-          authDomain: "macandtalk-e3436.firebaseapp.com",
-          projectId: "macandtalk-e3436",
-          storageBucket: "macandtalk-e3436.firebasestorage.app",
-          messagingSenderId: "562396248377",
-          appId: "1:562396248377:web:f139a163870e51a48610e8",
-          measurementId: "G-G0DMB0VRGR"
-      };
-
-      const loadingScreen = document.getElementById("loadingScreen");
-      const appElement = document.getElementById("app");
-      const sidebar = document.getElementById("sidebar");
-      const notice = document.getElementById("notice");
-
-      // Check that the required HTML elements exist.
-      if (!loadingScreen || !appElement) {
-          console.error(
-              'Missing #loadingScreen or #app in user.html.'
-          );
-          throw new Error("Required dashboard elements are missing.");
-      }
-
-      function showError(message) {
-          loadingScreen.hidden = false;
-          appElement.hidden = true;
-
-          loadingScreen.innerHTML = `
-              <div>
-                  <strong>Unable to load Mac&amp;Talk</strong>
-                  <span>${message}</span>
-                  <p style="text-align:center;margin-top:15px">
-                      <a href="login.html">Return to login</a>
-                  </p>
-                  <p style="text-align:center;margin-top:10px">
-                      <button id="retryAuth" type="button">
-                          Try again
-                      </button>
-                  </p>
-              </div>
-          `;
-
-          document.getElementById("retryAuth")
-              ?.addEventListener("click", () => {
-                  window.location.reload();
-              });
-      }
-
-      let auth;
-
-      try {
-          const app = initializeApp(firebaseConfig);
-          auth = getAuth(app);
-      } catch (error) {
-          console.error("Firebase initialization failed:", error);
-          showError("Firebase could not initialize. Check your configuration.");
-          throw error;
-      }
-
-      const requiredIds = [
-          "footerYear",
-          "currentDate",
-          "dashboardSessions",
-          "allSessions",
-          "sessionCount",
-          "pageTitle",
-          "menuToggle",
-          "sidebarSignOut",
-          "settingsSignOut",
-          "welcomeName",
-          "headerName",
-          "headerAvatar",
-          "profileAvatar",
-          "profileName",
-          "profileEmail",
-          "profileFullName",
-          "profileEmailRow",
-          "profileUid",
-          "profileVerified",
-          "memberSince"
-      ];
-
-      const missingIds = requiredIds.filter(
-          id => !document.getElementById(id)
+      const supabase = createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
       );
 
-      if (missingIds.length) {
-          console.error("Missing dashboard elements:", missingIds);
-          showError("Some dashboard HTML elements are missing. Check the element IDs in user.html.");
-          throw new Error("Missing dashboard elements: " + missingIds.join(", "));
-      }
+      const $ = id => document.getElementById(id);
 
-      document.getElementById("footerYear").textContent =
-          new Date().getFullYear();
+      const loadingScreen = $("loadingScreen");
+      const appElement = $("app");
+      const sidebar = $("sidebar");
+      const notice = $("notice");
 
-      document.getElementById("currentDate").textContent =
-          new Intl.DateTimeFormat(undefined, {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric"
-          }).format(new Date());
+      let currentUser = null;
+      let noticeTimeout = null;
+      let sessionRequest = 0;
+      let signingOut = false;
 
-      const liveSessions = [
-          {
-              id: "session-1",
-              title: "Sharing Household Duties",
-              host: "Mac&Talk Community",
-              description: "A conversation about sharing responsibilities at home and working together.",
-              emoji: "🏠",
-              tag: "Community"
-          },
-          {
-              id: "session-2",
-              title: "Technology and Family",
-              host: "Mac&Talk Community",
-              description: "Discuss how to use technology wisely while keeping family relationships strong.",
-              emoji: "💬",
-              tag: "Discussion"
-          },
-          {
-              id: "session-3",
-              title: "Ideas for a Better Future",
-              host: "Mac&Talk Community",
-              description: "Share ideas, learn from others, and explore solutions to everyday challenges.",
-              emoji: "💡",
-              tag: "Ideas"
-          },
-          {
-              id: "session-4",
-              title: "Music and Culture",
-              host: "Mac&Talk Community",
-              description: "Discover different musical tastes, traditions, and cultural experiences.",
-              emoji: "🎵",
-              tag: "Culture"
-          }
-      ];
+      // =========================================
+      // ERROR AND NOTICE HANDLING
+      // =========================================
 
-      function escapeHTML(value = "") {
-          return String(value).replace(/[&<>"']/g, char => ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;"
-          })[char]);
-      }
+      function showError(message) {
+        if (appElement) appElement.hidden = true;
+        if (!loadingScreen) return;
 
-      function initials(name) {
-          return String(name || "Member")
-              .trim()
-              .split(/\s+/)
-              .filter(Boolean)
-              .slice(0, 2)
-              .map(part => part[0])
-              .join("")
-              .toUpperCase() || "M";
+        loadingScreen.hidden = false;
+        loadingScreen.replaceChildren();
+
+        const box = document.createElement("div");
+        const title = document.createElement("strong");
+        const description = document.createElement("p");
+        const link = document.createElement("a");
+        const retry = document.createElement("button");
+
+        title.textContent = "Unable to load Mac&Talk";
+        description.textContent = message;
+        description.style.marginTop = "12px";
+        description.style.lineHeight = "1.6";
+
+        link.href = "login.html";
+        link.textContent = "Return to login";
+        link.style.display = "inline-block";
+        link.style.marginTop = "16px";
+
+        retry.type = "button";
+        retry.textContent = "Try again";
+        retry.style.display = "block";
+        retry.style.margin = "14px auto 0";
+        retry.style.padding = "10px 16px";
+        retry.addEventListener("click", () => location.reload());
+
+        box.append(title, description, link, retry);
+        loadingScreen.append(box);
       }
 
       function showNotice(message, type = "success") {
-          if (!notice) return;
+        if (!notice) return;
 
-          notice.textContent = message;
-          notice.className = `notice show ${type}`;
+        notice.textContent = message;
+        notice.className = `notice show ${type}`;
 
-          window.setTimeout(() => {
-              notice.className = "notice";
-          }, 4500);
+        clearTimeout(noticeTimeout);
+
+        noticeTimeout = setTimeout(() => {
+          notice.className = "notice";
+        }, 4500);
       }
 
-      function renderSessions(containerId, items) {
-          const container = document.getElementById(containerId);
+      // =========================================
+      // PAGE INITIALIZATION
+      // =========================================
 
-          if (!container) {
-              console.error(`Missing #${containerId}`);
-              return;
+      try {
+        if (!loadingScreen || !appElement) {
+          throw new Error("Required dashboard HTML elements are missing.");
+        }
+
+        $("footerYear").textContent = new Date().getFullYear();
+
+        $("currentDate").textContent =
+          new Intl.DateTimeFormat(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          }).format(new Date());
+
+        // =========================================
+        // HELPERS
+        // =========================================
+
+        function initials(name) {
+          return String(name || "Member")
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part[0])
+            .join("")
+            .toUpperCase() || "M";
+        }
+
+        function formatDate(value, options = {}) {
+          if (!value) return "Unknown";
+
+          const date = new Date(value);
+
+          if (Number.isNaN(date.getTime())) return "Unknown";
+
+          return new Intl.DateTimeFormat(undefined, options).format(date);
+        }
+
+        // =========================================
+        // SESSION CARDS
+        // =========================================
+
+        function createSessionCard(session) {
+          const card = document.createElement("article");
+          card.className = "session-card";
+
+          const top = document.createElement("div");
+          top.className = "session-card-top";
+
+          const emoji = document.createElement("div");
+          emoji.className = "session-emoji";
+          emoji.setAttribute("aria-hidden", "true");
+          emoji.textContent = session.emoji || "🎙️";
+
+          const tag = document.createElement("span");
+          tag.className = "session-tag";
+          tag.textContent =
+            session.status === "live" ? "Live now" : "Scheduled";
+
+          top.append(emoji, tag);
+
+          const title = document.createElement("h3");
+          title.textContent = session.title || "Untitled session";
+
+          const description = document.createElement("p");
+          description.textContent =
+            session.description || "Join the Mac&Talk community.";
+
+          const footer = document.createElement("div");
+          footer.className = "session-footer";
+
+          const host = document.createElement("span");
+          host.className = "host";
+          host.textContent =
+            `Hosted by ${session.host || session.host_name || "Mac&Talk Community"}`;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "join-btn";
+          button.textContent = "View session";
+
+          button.addEventListener("click", () => {
+            showNotice(
+              session.status === "live"
+                ? "This session is live, but audio broadcasting is not connected yet."
+                : "This session is scheduled, but joining is not connected yet."
+            );
+          });
+
+          footer.append(host, button);
+          card.append(top, title, description, footer);
+
+          return card;
+        }
+
+        function renderSessions(containerId, sessions) {
+          const container = $(containerId);
+          if (!container) return;
+
+          container.replaceChildren();
+
+          if (!sessions.length) {
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.textContent =
+              "No approved sessions are available right now. Check back later!";
+            container.append(empty);
+            return;
           }
 
-          if (!items.length) {
-              container.innerHTML = `
-                  <div class="empty-state">
-                      No sessions are available yet.<br>
-                      Check back later for new conversations.
-                  </div>
-              `;
-              return;
+          sessions.forEach(session => {
+            container.append(createSessionCard(session));
+          });
+        }
+
+        function showSessionsError(message) {
+          ["dashboardSessions", "allSessions"].forEach(id => {
+            const container = $(id);
+            if (!container) return;
+
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.textContent = message;
+            container.replaceChildren(empty);
+          });
+
+          $("sessionCount").textContent = "—";
+        }
+
+        // =========================================
+        // LOAD LIVE SESSIONS FROM SUPABASE
+        // Table: public.live_sessions
+        // =========================================
+
+        async function loadLiveSessions() {
+          const requestId = ++sessionRequest;
+
+          const { data, error } = await supabase
+            .from("live_sessions")
+            .select("*")
+            .eq("approved", true)
+            .in("status", ["live", "scheduled"]);
+
+          if (requestId !== sessionRequest) return;
+
+          if (error) {
+            console.error("Supabase live_sessions error:", error);
+
+            showSessionsError(
+              "Could not load sessions. Check the live_sessions table, its column names, and its Row Level Security policies."
+            );
+
+            return;
           }
 
-          container.innerHTML = items.map(session => `
-              <article class="session-card">
-                  <div class="session-card-top">
-                      <div class="session-emoji" aria-hidden="true">
-                          ${session.emoji}
-                      </div>
-                      <span class="session-tag">
-                          ${escapeHTML(session.tag)}
-                      </span>
-                  </div>
+          const sessions = (data || []).map(row => ({
+            id: row.id,
+            title: row.title || "Untitled session",
+            host: row.host || row.host_name || "Mac&Talk Community",
+            description: row.description || "",
+            emoji: row.emoji || "🎙️",
+            status: row.status
+          }));
 
-                  <h3>${escapeHTML(session.title)}</h3>
-                  <p>${escapeHTML(session.description)}</p>
+          sessions.sort((a, b) => {
+            if (a.status === "live" && b.status !== "live") return -1;
+            if (b.status === "live" && a.status !== "live") return 1;
+            return a.title.localeCompare(b.title);
+          });
 
-                  <div class="session-footer">
-                      <span class="host">
-                          Hosted by ${escapeHTML(session.host)}
-                      </span>
-                      <button
-                          class="join-btn"
-                          type="button"
-                          data-session="${escapeHTML(session.id)}"
-                      >
-                          View session
-                      </button>
-                  </div>
-              </article>
-          `).join("");
-      }
+          renderSessions("dashboardSessions", sessions.slice(0, 2));
+          renderSessions("allSessions", sessions);
 
-      renderSessions("dashboardSessions", liveSessions.slice(0, 2));
-      renderSessions("allSessions", liveSessions);
+          $("sessionCount").textContent = String(sessions.length);
+        }
 
-      document.getElementById("sessionCount").textContent =
-          String(liveSessions.length);
+        // =========================================
+        // NAVIGATION
+        // =========================================
 
-      const pageTitles = {
+        const pageTitles = {
           dashboard: "Dashboard",
           sessions: "Live Sessions",
           profile: "My Profile",
           settings: "Settings"
-      };
+        };
 
-      function showPage(page) {
-          const target = document.getElementById(`${page}Page`);
-
-          if (!target) return;
+        function showPage(page) {
+          const target = $(`${page}Page`);
+          if (!target || !pageTitles[page]) return;
 
           document.querySelectorAll(".page-panel").forEach(panel => {
-              panel.classList.remove("active");
+            panel.classList.toggle("active", panel === target);
           });
 
-          target.classList.add("active");
-
-          document.querySelectorAll(".nav-link").forEach(link => {
-              link.classList.toggle("active", link.dataset.page === page);
+          document.querySelectorAll(".nav-link[data-page]").forEach(link => {
+            link.classList.toggle("active", link.dataset.page === page);
           });
 
-          document.getElementById("pageTitle").textContent =
-              pageTitles[page] || "Dashboard";
-
+          $("pageTitle").textContent = pageTitles[page];
           sidebar?.classList.remove("open");
+
           window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+        }
 
-      document.querySelectorAll("[data-page]").forEach(button => {
+        document.querySelectorAll(".nav-link[data-page]").forEach(button => {
           button.addEventListener("click", () => {
-              showPage(button.dataset.page);
+            showPage(button.dataset.page);
           });
-      });
+        });
 
-      document.querySelectorAll("[data-go]").forEach(button => {
+        document.querySelectorAll("[data-go]").forEach(button => {
           button.addEventListener("click", () => {
-              showPage(button.dataset.go);
+            showPage(button.dataset.go);
           });
-      });
+        });
 
-      document.getElementById("menuToggle")
-          .addEventListener("click", () => {
-              sidebar?.classList.toggle("open");
-          });
+        $("menuToggle").addEventListener("click", () => {
+          sidebar?.classList.toggle("open");
+        });
 
-      // Demo cards only; these are not real live broadcasts.
-      document.querySelectorAll("[data-session]").forEach(button => {
-          button.addEventListener("click", () => {
-              showNotice(
-                  "This is a demo session. The live-session feature is not connected yet."
-              );
-          });
-      });
+        document.addEventListener("click", event => {
+          if (
+            window.innerWidth <= 760 &&
+            sidebar?.classList.contains("open") &&
+            !sidebar.contains(event.target) &&
+            !$("menuToggle").contains(event.target)
+          ) {
+            sidebar.classList.remove("open");
+          }
+        });
 
-      async function handleSignOut() {
+        // =========================================
+        // PROFILE
+        // =========================================
+
+        function renderProfile(user) {
+          const metadata = user.user_metadata || {};
+
+          const name =
+            metadata.full_name ||
+            metadata.name ||
+            metadata.display_name ||
+            user.email?.split("@")[0] ||
+            "Member";
+
+          const email = user.email || "No email available";
+          const avatarText = initials(name);
+
+          $("welcomeName").textContent = name;
+          $("headerName").textContent = name;
+          $("headerAvatar").textContent = avatarText;
+
+          $("profileAvatar").textContent = avatarText;
+          $("profileName").textContent = name;
+          $("profileEmail").textContent = email;
+          $("profileFullName").textContent = name;
+          $("profileEmailRow").textContent = email;
+          $("profileUid").textContent = user.id;
+
+          $("profileVerified").textContent =
+            user.email_confirmed_at ? "Verified" : "Not verified";
+
+          $("accountStatus").textContent = "Active";
+
+          $("memberSince").textContent = user.created_at
+            ? formatDate(user.created_at, {
+                month: "short",
+                year: "numeric"
+              })
+            : "Unknown";
+        }
+
+        // =========================================
+        // SIGN OUT
+        // =========================================
+
+        async function handleSignOut() {
+          if (signingOut) return;
+          signingOut = true;
+
           const buttons = [
-              document.getElementById("sidebarSignOut"),
-              document.getElementById("settingsSignOut")
+            $("sidebarSignOut"),
+            $("settingsSignOut")
           ].filter(Boolean);
 
-          buttons.forEach(button => button.disabled = true);
-
-          try {
-              await signOut(auth);
-              window.location.replace("login.html");
-          } catch (error) {
-              console.error("Sign-out error:", error);
-
-              showNotice(
-                  "Could not sign out. Check your connection and try again.",
-                  "error"
-              );
-
-              buttons.forEach(button => button.disabled = false);
-          }
-      }
-
-      document.getElementById("sidebarSignOut")
-          .addEventListener("click", handleSignOut);
-
-      document.getElementById("settingsSignOut")
-          .addEventListener("click", handleSignOut);
-
-      let authResolved = false;
-
-      // Show a helpful message if authentication takes too long.
-      const authTimeout = window.setTimeout(() => {
-          if (!authResolved) {
-              showError(
-                  "Authentication is taking too long. Check your internet connection, Firebase configuration, and browser console."
-              );
-          }
-      }, 12000);
-
-      try {
-          onAuthStateChanged(auth, user => {
-              authResolved = true;
-              window.clearTimeout(authTimeout);
-
-              if (!user) {
-                  window.location.replace("login.html");
-                  return;
-              }
-
-              const name = user.displayName?.trim() ||
-                  (user.email ? user.email.split("@")[0] : "Member");
-
-              const email = user.email || "No email available";
-              const avatarText = initials(name);
-
-              document.getElementById("welcomeName").textContent = name;
-              document.getElementById("headerName").textContent = name;
-              document.getElementById("headerAvatar").textContent = avatarText;
-              document.getElementById("profileAvatar").textContent = avatarText;
-
-              document.getElementById("profileName").textContent = name;
-              document.getElementById("profileEmail").textContent = email;
-              document.getElementById("profileFullName").textContent = name;
-              document.getElementById("profileEmailRow").textContent = email;
-              document.getElementById("profileUid").textContent = user.uid;
-              document.getElementById("profileVerified").textContent =
-                  user.emailVerified ? "Verified" : "Not verified";
-
-              const creationTime = user.metadata?.creationTime;
-
-              document.getElementById("memberSince").textContent =
-                  creationTime
-                      ? new Intl.DateTimeFormat(undefined, {
-                          month: "short",
-                          year: "numeric"
-                      }).format(new Date(creationTime))
-                      : "Unknown";
-
-              loadingScreen.hidden = true;
-              appElement.hidden = false;
-
-          }, error => {
-              authResolved = true;
-              window.clearTimeout(authTimeout);
-
-              console.error("Firebase authentication error:", error);
-
-              showError(
-                  `Firebase error: ${error.code || error.message || "Unknown authentication error"}.`
-              );
+          buttons.forEach(button => {
+            button.disabled = true;
           });
+
+          const { error } = await supabase.auth.signOut();
+
+          if (error) {
+            console.error("Supabase sign-out error:", error);
+            signingOut = false;
+
+            buttons.forEach(button => {
+              button.disabled = false;
+            });
+
+            showNotice("Could not sign out. Please try again.", "error");
+            return;
+          }
+
+          location.replace("login.html");
+        }
+
+        $("sidebarSignOut").addEventListener("click", handleSignOut);
+        $("settingsSignOut").addEventListener("click", handleSignOut);
+
+        // =========================================
+        // AUTHENTICATION
+        // =========================================
+
+        async function handleSession(session) {
+          if (signingOut) return;
+
+          if (!session?.user) {
+            currentUser = null;
+            sessionRequest++;
+            location.replace("login.html");
+            return;
+          }
+
+          currentUser = session.user;
+          renderProfile(currentUser);
+
+          loadingScreen.hidden = true;
+          appElement.hidden = false;
+
+          await loadLiveSessions();
+        }
+
+        // Subscribe to sign-in, sign-out, and token/session changes.
+        // Defer processing to avoid calling other Supabase Auth methods
+        // while the auth-state callback is executing.
+        const {
+          data: { subscription }
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+          setTimeout(() => {
+            handleSession(session).catch(error => {
+              console.error("Dashboard session error:", error);
+              showError("Could not load your account. Please sign in again.");
+            });
+          }, 0);
+        });
+
+        // Explicit initial check as a fallback.
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.session) {
+          await handleSession(data.session);
+        } else {
+          // The auth listener will also handle the initial session event.
+          // Redirect if there is no signed-in account.
+          location.replace("login.html");
+        }
+
+        // Update email-verification display when returning to the page.
+        document.addEventListener("visibilitychange", async () => {
+          if (document.visibilityState !== "visible" || !currentUser) return;
+
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (!sessionData.session?.user) return;
+
+          currentUser = sessionData.session.user;
+
+          $("profileVerified").textContent =
+            currentUser.email_confirmed_at ? "Verified" : "Not verified";
+        });
+
+        window.addEventListener("pagehide", () => {
+          subscription.unsubscribe();
+        });
+
       } catch (error) {
-          authResolved = true;
-          window.clearTimeout(authTimeout);
+        console.error("Mac&Talk Supabase dashboard error:", error);
 
-          console.error("Could not start authentication listener:", error);
-
-          showError(
-              "Could not start Firebase authentication. Check the browser console."
-          );
+        showError(
+          error?.message ||
+          "Could not initialize Supabase. Check your project URL, publishable key, and internet connection."
+        );
       }
-  </script>
+    </script>
+
   </body>
   </html>
