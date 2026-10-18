@@ -3,46 +3,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mac&Talk — Accept Invitation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accept Invitation | Mac&Talk</title>
   <style>
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
       display: grid;
       place-items: center;
-      background: #f4f5fb;
+      padding: 20px;
       font-family: Arial, sans-serif;
-      color: #222;
+      background: #f4f3ff;
+      color: #202033;
     }
     .card {
-      width: min(90%, 400px);
-      padding: 30px;
-      box-sizing: border-box;
-      text-align: center;
+      width: 100%;
+      max-width: 420px;
+      padding: 32px;
+      border-radius: 20px;
       background: white;
-      border-radius: 18px;
-      box-shadow: 0 8px 30px #0001;
+      box-shadow: 0 12px 40px #25204b15;
     }
-    button {
-      padding: 12px 20px;
-      border: 0;
+    h1 { margin-top: 0; color: #6546e8; }
+    p { line-height: 1.6; }
+    label { display: block; margin: 18px 0 7px; }
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d8d6e8;
       border-radius: 9px;
-      background: #6d4aff;
-      color: white;
-      cursor: pointer;
       font-size: 16px;
     }
-    #message { line-height: 1.6; }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #6546e8;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    #message { overflow-wrap: anywhere; }
+    .hint { color: #66647a; font-size: 13px; }
   </style>
 </head>
 <body>
   <main class="card">
     <h1>Mac&Talk</h1>
     <p id="message">Checking your invitation...</p>
-    <button id="loginButton" hidden
-      onclick="location.href='admin.html'">
-      Go to Mac&Talk
+
+    <form id="passwordForm" hidden>
+      <label for="password">Create your password</label>
+      <input id="password" type="password"
+        minlength="8" maxlength="128"
+        autocomplete="new-password" required
+        placeholder="At least 8 characters">
+
+      <label for="confirmPassword">Confirm your password</label>
+      <input id="confirmPassword" type="password"
+        minlength="8" maxlength="128"
+        autocomplete="new-password" required
+        placeholder="Enter your password again">
+
+      <p class="hint">Choose a password with at least 8 characters.</p>
+      <button id="submitButton" type="submit">
+        Set Password
+      </button>
+    </form>
+
+    <button id="continueButton" hidden
+      onclick="location.href='/admin.html'">
+      Continue to Mac&Talk
     </button>
   </main>
 
@@ -50,32 +86,105 @@
     import { createClient } from
       "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    const SUPABASE_URL =
-      "https://gprdmwjqgyrvqrgjkycc.supabase.co";
-
-    const SUPABASE_ANON_KEY =
-      "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
-
-    const supabase = createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
+      const supabase = createClient(
+      "https://gprdmwjqgyrvqrgjkycc.supabase.co",
+      "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4"
     );
 
     const message = document.getElementById("message");
-    const loginButton = document.getElementById("loginButton");
+    const form = document.getElementById("passwordForm");
+    const submitButton = document.getElementById("submitButton");
+    const continueButton = document.getElementById("continueButton");
 
-    const { data, error } = await supabase.auth.getSession();
+    async function initialize() {
+      const params = new URLSearchParams(location.search);
+      const hash = new URLSearchParams(location.hash.slice(1));
 
-    if (error) {
-      message.textContent = "Could not check your invitation. Please try again.";
-    } else if (data.session) {
+      if (params.has("error") || hash.has("error")) {
+        const description =
+          params.get("error_description") ||
+          hash.get("error_description") ||
+          "The invitation link is invalid or expired.";
+
+        message.textContent = description.replace(/\+/g, " ");
+        return;
+      }
+
+      // Support Supabase PKCE invitation links.
+      const code = params.get("code");
+      if (code) {
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          message.textContent =
+            "This invitation link is invalid, expired, or already used. Ask your administrator for a new invitation.";
+          return;
+        }
+
+        history.replaceState({}, document.title, location.pathname);
+      }
+
+      // Wait for Supabase to process the invitation URL.
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        message.textContent =
+          "Could not verify your invitation. Please try again.";
+        return;
+      }
+
+      if (!data.session) {
+        message.textContent =
+          "Please open the invitation link from your email. If it has expired, ask your administrator to send a new one.";
+        return;
+      }
+
       message.textContent =
-        "Your invitation has been accepted. You are signed in!";
-      loginButton.hidden = false;
-    } else {
-      message.textContent =
-        "Open the invitation link from your email. If it has expired, ask your administrator to send another invitation.";
+        "Invitation verified! Create a password for your Mac&Talk account.";
+      form.hidden = false;
     }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const password = document.getElementById("password").value;
+      const confirmation =
+        document.getElementById("confirmPassword").value;
+
+      if (password.length < 8) {
+        message.textContent =
+          "Your password must contain at least 8 characters.";
+        return;
+      }
+
+      if (password !== confirmation) {
+        message.textContent = "The passwords do not match.";
+        return;
+      }
+
+      submitButton.disabled = true;
+      message.textContent = "Saving your password...";
+
+      const { error } = await supabase.auth.updateUser({ password });
+
+      submitButton.disabled = false;
+
+      if (error) {
+        message.textContent = "Could not save password: " + error.message;
+        return;
+      }
+
+      form.hidden = true;
+      message.textContent =
+        "Your password has been set successfully. Your Mac&Talk account is ready.";
+      continueButton.hidden = false;
+    });
+
+    initialize().catch(() => {
+      message.textContent =
+        "Something went wrong. Please request a new invitation if the problem continues.";
+    });
   </script>
 </body>
 </html>
