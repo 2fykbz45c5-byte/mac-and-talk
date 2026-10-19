@@ -15,7 +15,7 @@
 <header class="topbar"><a href="index.html" class="logo">🎙 Mac&<span>Talk</span></a><a href="index.html" class="back-link">← Back to Home</a></header>
 <main class="main"><section class="brand-panel"><div class="big-mic">🎙️</div><div class="brand-title">Mac&<span>Talk</span></div><p class="brand-description">Real voices. Real conversations.<br>A stronger community.</p><div class="illustration">🎧</div><div class="features"><div class="feature"><span class="feature-icon">🎧</span><strong>Live Sessions</strong><p>Join the conversation</p></div><div class="feature"><span class="feature-icon">🎙️</span><strong>Podcasts</strong><p>Listen anytime</p></div><div class="feature"><span class="feature-icon">👥</span><strong>Community</strong><p>Be part of it</p></div></div></section>
 <section class="login-panel"><div class="login-heading"><h1>Welcome Back!</h1><p>Sign in to your Mac&Talk account</p></div><div id="formMessage" class="message" role="status" aria-live="polite"></div>
-<form id="loginForm"><div class="form-group"><label for="email">Email Address</label><div class="input-wrap"><input type="email" id="email" placeholder="you@example.com" autocomplete="email" required></div></div><div class="form-group"><label for="password">Password</label><div class="input-wrap"><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required><button type="button" class="input-icon" id="togglePassword" aria-label="Show password">◉</button></div></div><div class="form-options"><label class="remember"><input type="checkbox" id="rememberMe" checked><span>Keep me signed in</span></label><a href="#" class="text-link" id="forgotPassword">Forgot password?</a></div><button type="submit" class="submit-btn" id="signInButton">Sign In →</button></form>
+<form id="loginForm"><div class="form-group"><label for="email">Mac&Talk ID or Email</label><div class="input-wrap"><input type="text" id="email" placeholder="MT-Role-0000 or you@example.com" autocomplete="username" autocapitalize="none" spellcheck="false" required></div></div><div class="form-group"><label for="password">Password</label><div class="input-wrap"><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required><button type="button" class="input-icon" id="togglePassword" aria-label="Show password">◉</button></div></div><div class="form-options"><label class="remember"><input type="checkbox" id="rememberMe" checked><span>Keep me signed in</span></label><a href="#" class="text-link" id="forgotPassword">Forgot password?</a></div><button type="submit" class="submit-btn" id="signInButton">Sign In →</button></form>
 <div class="divider">OR</div><button type="button" class="google-btn" id="googleSignIn">🌐 &nbsp; Continue with Google</button>
 <div class="role-choice" id="roleChoice"><h2>Where would you like to go?</h2><p>Your account has administrator access. You can use the student area too.</p><div class="role-actions"><button type="button" class="choice-btn" id="studentDashboard">🎓 Student area</button><button type="button" class="choice-btn" id="adminDashboard">🛡️ Admin dashboard</button></div></div>
 <p class="signup-text">New to Mac&Talk? <a href="register.html" class="text-link">Create an account</a></p><p class="small-note">One sign-in page for students, teachers, and administrators.</p></section></main>
@@ -52,7 +52,7 @@ const ROUTES = {
 const $ = id => document.getElementById(id);
 
 const form = $("loginForm");
-const emailInput = $("email");
+const emailInput = $("email"); // Accepts either the official Mac&Talk ID or the account email.
 const passwordInput = $("password");
 const signInButton = $("signInButton");
 const googleButton = $("googleSignIn");
@@ -104,7 +104,7 @@ async function roleOf(user) {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role,status,is_blocked,mac_talk_id")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -119,6 +119,22 @@ async function roleOf(user) {
     throw new Error(
       "Your account has no matching profiles row. Create a profiles row for this user's UUID."
     );
+  }
+
+  const status = String(profile.status || "pending").toLowerCase();
+  const blocked = profile.is_blocked === true;
+
+  if (blocked) {
+    await supabase.auth.signOut();
+    throw new Error("This account is blocked. Please contact a Mac&Talk administrator.");
+  }
+
+  if (status !== "approved") {
+    await supabase.auth.signOut();
+    if (status === "rejected") {
+      throw new Error("Your registration was rejected. Please contact a Mac&Talk administrator.");
+    }
+    throw new Error("Your account is waiting for administrator approval.");
   }
 
   const role = String(profile.role || "student").toLowerCase();
@@ -231,13 +247,38 @@ if (form) {
     busy(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: emailInput.value.trim(),
-        password: passwordInput.value
-      });
+      const identifier = emailInput.value.trim();
+      let data;
+      let error;
+
+      if (identifier.includes("@")) {
+        // Standard Supabase Auth email/password sign-in.
+        ({ data, error } = await supabase.auth.signInWithPassword({
+          email: identifier,
+          password: passwordInput.value
+        }));
+      } else {
+        // The Edge Function resolves mac_talk_id privately, then signs in through Supabase Auth.
+        const result = await supabase.functions.invoke("login-with-mac-talk-id", {
+          body: {
+            mac_talk_id: identifier.toUpperCase(),
+            password: passwordInput.value
+          }
+        });
+        data = result.data;
+        error = result.error;
+
+        if (!error && data?.session) {
+          const { error: sessionError } = await supabase.auth.setSession(data.session);
+          if (sessionError) throw sessionError;
+          data.user = data.session.user;
+        } else if (!error && data?.error) {
+          throw new Error(data.error);
+        }
+      }
 
       if (error) throw error;
-      if (!data.user) throw new Error("No user returned after sign-in.");
+      if (!data?.user) throw new Error("No user returned after sign-in.");
 
       await routeUser(data.user);
 
@@ -246,10 +287,8 @@ if (form) {
 
       const msg = error.message || "Unknown error";
 
-      if (/invalid login credentials/i.test(msg)) {
-        showMessage(
-          "Incorrect email or password. Make sure this account exists in Supabase Authentication."
-        );
+      if (/invalid login credentials|invalid mac.?talk id or password/i.test(msg)) {
+        showMessage("Incorrect Mac&Talk ID/email or password.");
       } else if (/email not confirmed/i.test(msg)) {
         showMessage("Please confirm your email address before signing in.");
       } else {
@@ -306,10 +345,8 @@ if ($("forgotPassword")) {
 
     const email = emailInput.value.trim();
 
-    if (!email) {
-      showMessage(
-        "Enter your email address first, then click Forgot password."
-      );
+    if (!email || !email.includes("@")) {
+      showMessage("For password reset, enter your account email address (not your Mac&Talk ID).", "info");
       emailInput.focus();
       return;
     }

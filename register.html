@@ -1,11 +1,348 @@
+
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10243e"><title>Create Account | Mac&Talk</title>
-<style>:root{--navy:#10243e;--yellow:#ffc629;--bg:#f3f6fb;--muted:#718096;--line:#e5eaf1;--red:#b42318;--green:#18794e}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;font-family:Arial,sans-serif;background:radial-gradient(circle at top left,#fff0b8,transparent 35%),linear-gradient(135deg,#f5f7fb,#e8edf5);color:var(--navy)}.card{width:100%;max-width:470px;padding:32px;border-radius:20px;background:#fff;box-shadow:0 12px 40px #10243e15;border:1px solid var(--line)}.brand{text-align:center;background:var(--navy);color:#fff;border-radius:14px;padding:20px;margin-bottom:25px}.brand h1{margin:0;color:var(--yellow);font-size:29px}.brand p{margin:7px 0 0;font-size:10px;letter-spacing:1.5px}h2{margin:0 0 9px;font-size:24px}p{line-height:1.6}.muted{color:var(--muted);font-size:13px}label{display:block;margin:16px 0 7px;font-size:13px;font-weight:700}input{width:100%;padding:13px;border:1px solid var(--line);border-radius:9px;font-size:15px;color:var(--navy)}input:focus{outline:3px solid #ffc62955;border-color:#d6a800}button,.link{display:block;width:100%;margin-top:18px;padding:14px;border:0;border-radius:9px;background:var(--yellow);color:var(--navy);font-size:15px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none}button:disabled{opacity:.6;cursor:wait}.link{background:#eef2f8;margin-top:10px}#message{overflow-wrap:anywhere;padding:0}#message:not(:empty){padding:11px 12px;border-radius:9px;background:#eef4ff;color:#174a87}#message.error{background:#fff0f0;color:var(--red)}#message.success{background:#eafaf1;color:var(--green)}.fine{font-size:12px;color:var(--muted);margin-top:14px}a.inline{color:var(--navy);font-weight:700}</style></head>
-<body><main class="card"><div class="brand"><h1>Mac&Talk</h1><p>LEARN TOGETHER. GROW TOGETHER.</p></div><h2>Create your account</h2><p class="muted">Join Mac&Talk to discover live sessions and podcasts.</p><p id="message" role="status" aria-live="polite"></p><form id="registerForm"><label for="fullName">Full name</label><input id="fullName" name="fullName" autocomplete="name" maxlength="100" required placeholder="Your full name"><label for="username">Username</label><input id="username" name="username" autocomplete="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" required placeholder="3–30 letters, numbers, dots, _ or -"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="At least 8 characters"><label for="confirmPassword">Confirm password</label><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="Repeat your password"><button id="submitBtn" type="submit">Create account</button></form><a class="link" href="login.html">Already have an account? Sign in</a><p class="fine">By creating an account, you agree to our <a class="inline" href="terms.html">Terms</a> and <a class="inline" href="privacy.html">Privacy Policy</a>. New accounts receive the Student role; an administrator assigns any elevated role.</p><p class="fine"><a class="inline" href="index.html">← Back to home</a></p></main>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10243e">
+<title>Create Account | Mac&Talk</title>
+
+<style>
+:root {
+  --navy:#10243e;
+  --yellow:#ffc629;
+  --bg:#f3f6fb;
+  --muted:#718096;
+  --line:#e5eaf1;
+  --red:#b42318;
+  --green:#18794e;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  font-family:Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left,#fff0b8,transparent 35%),
+    linear-gradient(135deg,#f5f7fb,#e8edf5);
+  color:var(--navy);
+}
+.card {
+  width:100%;
+  max-width:470px;
+  padding:32px;
+  border-radius:20px;
+  background:#fff;
+  box-shadow:0 12px 40px #10243e15;
+  border:1px solid var(--line);
+}
+.brand {
+  text-align:center;
+  background:var(--navy);
+  color:#fff;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:25px;
+}
+.brand h1 {
+  margin:0;
+  color:var(--yellow);
+  font-size:29px;
+}
+.brand p {
+  margin:7px 0 0;
+  font-size:10px;
+  letter-spacing:1.5px;
+}
+h2 { margin:0 0 9px; font-size:24px; }
+p { line-height:1.6; }
+.muted { color:var(--muted); font-size:13px; }
+label {
+  display:block;
+  margin:16px 0 7px;
+  font-size:13px;
+  font-weight:700;
+}
+input {
+  width:100%;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  font-size:15px;
+  color:var(--navy);
+}
+input:focus {
+  outline:3px solid #ffc62955;
+  border-color:#d6a800;
+}
+button,.link {
+  display:block;
+  width:100%;
+  margin-top:18px;
+  padding:14px;
+  border:0;
+  border-radius:9px;
+  background:var(--yellow);
+  color:var(--navy);
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+}
+button:disabled { opacity:.6; cursor:wait; }
+.link { background:#eef2f8; margin-top:10px; }
+#message {
+  overflow-wrap:anywhere;
+  padding:0;
+}
+#message:not(:empty) {
+  padding:11px 12px;
+  border-radius:9px;
+  background:#eef4ff;
+  color:#174a87;
+}
+#message.error { background:#fff0f0; color:var(--red); }
+#message.success { background:#eafaf1; color:var(--green); }
+.fine { font-size:12px; color:var(--muted); margin-top:14px; }
+a.inline { color:var(--navy); font-weight:700; }
+</style>
+</head>
+
+<body>
+<main class="card">
+
+  <div class="brand">
+    <h1>Mac&Talk</h1>
+    <p>LEARN TOGETHER. GROW TOGETHER.</p>
+  </div>
+
+  <h2>Create your account</h2>
+  <p class="muted">
+    Join Mac&Talk to discover live sessions and podcasts.
+    Every new account must be approved by an administrator.
+  </p>
+
+  <p id="message" role="status" aria-live="polite"></p>
+
+  <form id="registerForm">
+    <label for="fullName">Full name</label>
+    <input
+      id="fullName"
+      name="fullName"
+      autocomplete="name"
+      maxlength="100"
+      required
+      placeholder="Your full name"
+    >
+
+    <label for="username">Username</label>
+    <input
+      id="username"
+      name="username"
+      autocomplete="username"
+      minlength="3"
+      maxlength="30"
+      pattern="[A-Za-z0-9_.-]{3,30}"
+      required
+      placeholder="3–30 letters, numbers, dots, _ or -"
+    >
+
+    <label for="email">Email address</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      maxlength="254"
+      required
+      placeholder="you@example.com"
+    >
+
+    <label for="password">Password</label>
+    <input
+      id="password"
+      name="password"
+      type="password"
+      autocomplete="new-password"
+      minlength="8"
+      maxlength="128"
+      required
+      placeholder="At least 8 characters"
+    >
+
+    <label for="confirmPassword">Confirm password</label>
+    <input
+      id="confirmPassword"
+      name="confirmPassword"
+      type="password"
+      autocomplete="new-password"
+      minlength="8"
+      maxlength="128"
+      required
+      placeholder="Repeat your password"
+    >
+
+    <button id="submitBtn" type="submit">
+      Create account
+    </button>
+  </form>
+
+  <a class="link" href="login.html">
+    Already have an account? Sign in
+  </a>
+
+  <p class="fine">
+    New accounts remain pending until an administrator
+    approves them and assigns a role. Your Mac&Talk ID
+    will be assigned after approval.
+  </p>
+
+  <p class="fine">
+    By creating an account, you agree to our
+    <a class="inline" href="terms.html">Terms</a> and
+    <a class="inline" href="privacy.html">Privacy Policy</a>.
+  </p>
+
+  <p class="fine">
+    <a class="inline" href="index.html">← Back to home</a>
+  </p>
+
+</main>
+
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const supabase=createClient("https://gprdmwjqgyrvqrgjkycc.supabase.co","sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const form=document.getElementById("registerForm"),message=document.getElementById("message"),button=document.getElementById("submitBtn");
-function say(text,kind=""){message.textContent=text;message.className=kind;}
-form.addEventListener("submit",async event=>{event.preventDefault();const fullName=document.getElementById("fullName").value.trim(),username=document.getElementById("username").value.trim(),email=document.getElementById("email").value.trim().toLowerCase(),password=document.getElementById("password").value,confirm=document.getElementById("confirmPassword").value;if(!/^[A-Za-z0-9_.-]{3,30}$/.test(username))return say("Choose a username with 3–30 letters, numbers, dots, underscores, or hyphens.","error");if(password.length<8)return say("Use a password with at least 8 characters.","error");if(password!==confirm)return say("The passwords do not match.","error");button.disabled=true;button.textContent="Creating account…";say("");try{const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:fullName,display_name:fullName,username},emailRedirectTo:new URL("login.html",location.href).toString()}});if(error)throw error;if(data.session){say("Account created. Opening your Mac&Talk dashboard…","success");location.replace("user.html");}else{say("Account created. Check your email to confirm the address, then sign in.","success");form.reset();}}catch(error){console.error("Registration failed:",error);say(error.message||"Could not create your account. Please try again.","error");}finally{button.disabled=false;button.textContent="Create account";}});
-</script></body></html>
+import { createClient } from
+  "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://gprdmwjqgyrvqrgjkycc.supabase.co",
+  "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+const form = document.getElementById("registerForm");
+const message = document.getElementById("message");
+const button = document.getElementById("submitBtn");
+
+function say(text, kind = "") {
+  message.textContent = text;
+  message.className = kind;
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const fullName =
+    document.getElementById("fullName").value.trim();
+
+  const username =
+    document.getElementById("username").value.trim();
+
+  const email =
+    document.getElementById("email").value.trim().toLowerCase();
+
+  const password =
+    document.getElementById("password").value;
+
+  const confirmPassword =
+    document.getElementById("confirmPassword").value;
+
+  if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username)) {
+    return say(
+      "Use 3–30 letters, numbers, dots, underscores or hyphens for your username.",
+      "error"
+    );
+  }
+
+  if (password.length < 8) {
+    return say(
+      "Your password must contain at least 8 characters.",
+      "error"
+    );
+  }
+
+  if (password !== confirmPassword) {
+    return say("The passwords do not match.", "error");
+  }
+
+  button.disabled = true;
+  button.textContent = "Creating account...";
+  say("");
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          display_name: fullName,
+          username: username
+        },
+        emailRedirectTo:
+          new URL("login.html", window.location.href).toString()
+      }
+    });
+
+    if (error) throw error;
+
+    /*
+      Do not send a new account directly to a dashboard.
+      If Supabase immediately creates a session, sign out
+      so this registration flow does not leave the user logged in.
+    */
+    if (data.session) {
+      const { error: signOutError } =
+        await supabase.auth.signOut();
+
+      if (signOutError) {
+        console.error(
+          "Could not sign out after registration:",
+          signOutError
+        );
+
+        say(
+          "The account was created, but we could not finish the sign-out step. Do not use a dashboard yet. Please contact the administrator.",
+          "error"
+        );
+        return;
+      }
+    }
+
+    form.reset();
+
+    say(
+      "Registration received! Your account must be approved by the Mac&Talk administrator before you can access the website. No Mac&Talk ID has been assigned yet. " +
+      (data.session
+        ? "You can now wait for the administrator's decision."
+        : "If Supabase asks you to confirm your email, please check your inbox. Email confirmation does not replace administrator approval."),
+      "success"
+    );
+
+  } catch (error) {
+    console.error("Registration failed:", error);
+
+    say(
+      error.message ||
+      "Could not create your account. Please try again.",
+      "error"
+    );
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Create account";
+  }
+});
+</script>
+
+</body>
+</html>
