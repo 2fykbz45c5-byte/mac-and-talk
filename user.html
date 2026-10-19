@@ -985,6 +985,17 @@ a:focus-visible {
 [hidden] {
     display: none !important;
 }
+
+/* Creator studio and podcast library */
+.studio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.studio-card,.podcast-card{background:#fff;border:1px solid var(--border);border-radius:17px;padding:23px;box-shadow:0 5px 20px rgba(16,36,62,.04)}
+.studio-card h3{margin-bottom:8px;font-size:17px}.studio-card>p{color:var(--muted);font-size:13px;line-height:1.65;margin-bottom:18px}
+.studio-form{display:grid;gap:13px}.studio-form label{display:grid;gap:7px;font-size:12px;font-weight:700}.studio-form input,.studio-form textarea{width:100%;padding:12px 13px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:13px}.studio-form textarea{min-height:82px;resize:vertical}
+.studio-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.studio-btn{border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:800;cursor:pointer;background:var(--navy);color:white}.studio-btn.yellow{background:var(--yellow);color:var(--navy)}.studio-btn.danger{background:#b42318;color:#fff}.studio-btn:disabled{opacity:.55;cursor:not-allowed}
+.studio-status{padding:11px 13px;border-radius:10px;background:#f2f5fa;color:var(--muted);font-size:12px;line-height:1.6;margin-top:13px;overflow-wrap:anywhere}.record-dot{display:inline-block;width:8px;height:8px;background:#e03131;border-radius:50%;margin-right:7px;animation:recordPulse 1s infinite}@keyframes recordPulse{50%{opacity:.25}}
+.podcast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.podcast-card h3{font-size:15px;margin-bottom:7px;overflow-wrap:anywhere}.podcast-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}.podcast-card audio{width:100%;height:38px}.podcast-meta{font-size:11px;color:var(--muted);margin-top:10px}.studio-intro{padding:22px 24px;border-radius:16px;background:linear-gradient(120deg,#10243e,#23476d);color:#fff;margin-bottom:20px}.studio-intro p{color:#d8e1ed;font-size:13px;line-height:1.7;margin-top:8px;max-width:780px}
+@media(max-width:760px){.studio-grid,.podcast-grid{grid-template-columns:1fr}.studio-card,.podcast-card{padding:18px}}
+
     </style>
 </head>
 
@@ -1014,6 +1025,12 @@ a:focus-visible {
                     <span class="nav-icon">🎙️</span> Live Sessions
                 </button>
 
+                <button class="nav-link" data-page="studio">
+                    <span class="nav-icon">🎛️</span> Creator Studio
+                </button>
+                <button class="nav-link" data-page="podcasts">
+                    <span class="nav-icon">🎧</span> Podcasts
+                </button>
                 <button class="nav-link" data-page="profile">
                     <span class="nav-icon">♙</span> My Profile
                 </button>
@@ -1141,6 +1158,36 @@ a:focus-visible {
                     <div class="session-grid" id="allSessions"></div>
                 </section>
 
+                <!-- CREATOR STUDIO -->
+                <section class="page-panel" id="studioPage">
+                    <div class="studio-intro"><h2>🎙️ Creator Studio</h2><p>Start an audio live session or record a podcast. Published podcasts are saved in your Mac&Talk library so signed-in users can listen later. Allow microphone access when your browser asks.</p></div>
+                    <div class="studio-grid">
+                      <article class="studio-card">
+                        <h3>🔴 Start an audio live</h3><p>Go live with your microphone. Other signed-in Mac&Talk users can join and listen while your session is live.</p>
+                        <form id="liveForm" class="studio-form">
+                          <label>Live title<input id="liveTitle" maxlength="100" required placeholder="e.g. English speaking club"></label>
+                          <label>Description (optional)<textarea id="liveDescription" maxlength="500" placeholder="What will you talk about?"></textarea></label>
+                          <div class="studio-actions"><button class="studio-btn yellow" id="startLiveBtn" type="submit">🔴 Start Live</button><button class="studio-btn danger" id="stopLiveBtn" type="button" hidden>■ End Live</button></div>
+                        </form><div class="studio-status" id="liveStatus" role="status">Not live yet. Use headphones to reduce echo.</div>
+                      </article>
+                      <article class="studio-card">
+                        <h3>⏺️ Record a podcast</h3><p>Record audio directly in your browser, review it, then publish it for the community.</p>
+                        <form id="podcastForm" class="studio-form">
+                          <label>Podcast title<input id="podcastTitle" maxlength="120" required placeholder="Episode title"></label>
+                          <label>Description (optional)<textarea id="podcastDescription" maxlength="700" placeholder="Describe this episode"></textarea></label>
+                          <div class="studio-actions"><button class="studio-btn yellow" id="recordBtn" type="button">⏺️ Start Recording</button><button class="studio-btn danger" id="stopRecordBtn" type="button" hidden>■ Stop Recording</button><button class="studio-btn" id="publishPodcastBtn" type="submit" disabled>📤 Publish Podcast</button></div>
+                        </form><div class="studio-status" id="recordStatus" role="status">Ready to record. Your browser may ask for microphone permission.</div><audio id="recordPreview" controls hidden style="width:100%;margin-top:12px"></audio>
+                      </article>
+                    </div>
+                    <div class="section-heading"><div><h2>Your live sessions</h2><p>Sessions you are currently hosting</p></div></div><div class="session-grid" id="myLiveSessions"></div>
+                </section>
+
+                <!-- PODCAST LIBRARY -->
+                <section class="page-panel" id="podcastsPage">
+                  <div class="section-heading" style="margin-top:0"><div><h2>🎧 Podcast Library</h2><p>Listen to episodes published by the Mac&Talk community.</p></div><button class="join-btn" id="refreshPodcastsBtn" type="button">↻ Refresh</button></div>
+                  <div class="podcast-grid" id="podcastLibrary"><div class="empty-state">Loading podcasts…</div></div>
+                </section>
+
                 <!-- PROFILE -->
                 <section class="page-panel" id="profilePage">
                     <div class="section-heading" style="margin-top:0">
@@ -1198,7 +1245,7 @@ a:focus-visible {
                     <div class="settings-card">
                         <h3>Account and security</h3>
                         <p>
-                            You are signed in with Firebase Authentication.
+                            You are signed in with Supabase Authentication.
                             Sign out when you have finished using this device.
                         </p>
 
@@ -1388,11 +1435,8 @@ a:focus-visible {
           button.textContent = "View session";
 
           button.addEventListener("click", () => {
-            showNotice(
-              session.status === "live"
-                ? "This session is live, but audio broadcasting is not connected yet."
-                : "This session is scheduled, but joining is not connected yet."
-            );
+            if (session.status === "live") joinLiveSession(session).catch(err => { console.error(err); showNotice(err.message || "Could not join this live.", "error"); });
+            else showNotice("This session is not live yet. Check back when the host starts broadcasting.");
           });
 
           footer.append(host, button);
@@ -1465,6 +1509,7 @@ a:focus-visible {
             id: row.id,
             title: row.title || "Untitled session",
             host: row.host || row.host_name || "Mac&Talk Community",
+            host_user_id: row.host_user_id || null,
             description: row.description || "",
             emoji: row.emoji || "🎙️",
             status: row.status
@@ -1537,6 +1582,219 @@ a:focus-visible {
             sidebar.classList.remove("open");
           }
         });
+
+         // =========================================
+         // CREATOR STUDIO: LIVE AUDIO + PODCASTS
+         // Live audio uses Supabase Realtime for WebRTC signaling.
+         // =========================================
+         function setStudioStatus(id, message, isError = false) {
+           const el = $(id); if (!el) return;
+           el.textContent = message;
+           el.style.background = isError ? "#fff0f0" : "#f2f5fa";
+           el.style.color = isError ? "#b42318" : "var(--muted)";
+         }
+
+         function safeText(value) { return String(value || "").trim(); }
+
+         async function loadPodcasts() {
+           const grid = $("podcastLibrary");
+           if (!grid) return;
+           grid.replaceChildren();
+           const { data, error } = await supabase.from("podcast_episodes")
+             .select("id,title,description,audio_path,audio_url,host_name,created_at")
+             .eq("published", true).order("created_at", { ascending: false }).limit(100);
+           if (error) {
+             console.error("Podcast library error:", error);
+             const empty = document.createElement("div"); empty.className = "empty-state";
+             empty.textContent = "Podcast library is not configured yet. Run the Mac&Talk media SQL setup first."; grid.append(empty); return;
+           }
+           if (!data || !data.length) {
+             const empty = document.createElement("div"); empty.className = "empty-state";
+             empty.textContent = "No podcasts published yet. Be the first to record and publish an episode from Creator Studio!"; grid.append(empty); return;
+           }
+           for (const episode of data) {
+             const card = document.createElement("article"); card.className = "podcast-card";
+             const title = document.createElement("h3"); title.textContent = episode.title || "Untitled podcast";
+             const desc = document.createElement("p"); desc.textContent = episode.description || "No description provided.";
+             const audio = document.createElement("audio"); audio.controls = true; audio.preload = "none";
+             let url = episode.audio_url;
+             if (!url && episode.audio_path) {
+               const { data: signed, error: signedError } = await supabase.storage.from("podcasts").createSignedUrl(episode.audio_path, 3600);
+               if (!signedError) url = signed?.signedUrl;
+             }
+             if (url) audio.src = url; else { audio.disabled = true; }
+             const meta = document.createElement("div"); meta.className = "podcast-meta";
+             meta.textContent = `By ${episode.host_name || "Mac&Talk member"} · ${formatDate(episode.created_at, { month: "short", day: "numeric", year: "numeric" })}`;
+             card.append(title, desc, audio, meta); grid.append(card);
+           }
+         }
+
+         async function loadMyLiveSessions() {
+           const grid = $("myLiveSessions"); if (!grid || !currentUser) return;
+           grid.replaceChildren();
+           const { data, error } = await supabase.from("live_sessions").select("id,title,description,status,host_user_id")
+             .eq("host_user_id", currentUser.id).in("status", ["live", "ended"]).order("created_at", { ascending: false }).limit(10);
+           if (error) { const e = document.createElement("div"); e.className="empty-state"; e.textContent="Your live sessions will appear here after the media database setup is applied."; grid.append(e); return; }
+           if (!data?.length) { const e=document.createElement("div"); e.className="empty-state"; e.textContent="You have not hosted a live session yet."; grid.append(e); return; }
+           data.forEach(item => { const card=document.createElement("article"); card.className="session-card"; const h=document.createElement("h3"); h.textContent=item.title; const p=document.createElement("p"); p.textContent=item.description || ""; const f=document.createElement("div"); f.className="session-footer"; const st=document.createElement("span"); st.className="host"; st.textContent=item.status === "live" ? "🔴 Live now" : "Ended"; f.append(st); card.append(h,p,f); grid.append(card); });
+         }
+
+         async function startLive(event) {
+           event.preventDefault();
+           if (activeLiveId) return;
+           const title = safeText($("liveTitle").value);
+           const description = safeText($("liveDescription").value);
+           if (!title) { setStudioStatus("liveStatus", "Please enter a live title.", true); return; }
+           const btn=$("startLiveBtn"); btn.disabled=true;
+           try {
+             if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone access requires HTTPS (your deployed Vercel website) or localhost.");
+             liveStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+             const { data: row, error } = await supabase.from("live_sessions").insert({
+               title, description, host: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
+               host_name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
+               host_user_id: currentUser.id, emoji: "🎙️", status: "live", approved: true
+             }).select("id,title,description,status,host_user_id").single();
+             if (error) throw new Error("Could not create the live session: " + error.message + ". Check the media SQL policies.");
+             activeLiveId = row.id;
+             liveChannel = supabase.channel(`live-room-${activeLiveId}`, { config: { broadcast: { self: false } } });
+             liveChannel.on("broadcast", { event: "signal" }, ({ payload }) => handleLiveSignal(payload).catch(err => console.error("Live signal:", err)));
+             const sub = await liveChannel.subscribe();
+             if (sub === "CHANNEL_ERROR" || sub === "TIMED_OUT") throw new Error("Could not connect to live signaling. Check Supabase Realtime is enabled.");
+             $("startLiveBtn").hidden=true; $("stopLiveBtn").hidden=false;
+             setStudioStatus("liveStatus", `🔴 You are LIVE: ${title}. Keep this tab open while broadcasting. Listeners can join from Live Sessions.`);
+             showNotice("Your audio live is now active.");
+             await loadLiveSessions(); await loadMyLiveSessions();
+           } catch (err) {
+             console.error(err); liveStream?.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null;
+             setStudioStatus("liveStatus", err.message || "Could not start live.", true);
+           } finally { btn.disabled=false; }
+         }
+
+         async function sendLiveSignal(payload) {
+           if (!liveChannel) return;
+           await liveChannel.send({ type: "broadcast", event: "signal", payload });
+         }
+
+         async function handleLiveSignal(payload) {
+           if (!payload || (!activeLiveId && !listenerConnections.size)) return;
+           // Host receives join/answer/candidate messages from listeners.
+           if (liveStream && payload.to === currentUser.id) {
+             const peerId = payload.from;
+             if (payload.kind === "join") {
+               if (livePeers.has(peerId)) return;
+               const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+               livePeers.set(peerId, pc);
+               liveStream.getTracks().forEach(track => pc.addTrack(track, liveStream));
+               pc.onicecandidate = e => { if (e.candidate) sendLiveSignal({ kind:"candidate", from:currentUser.id, to:peerId, candidate:e.candidate }); };
+               const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+               await sendLiveSignal({ kind:"offer", from:currentUser.id, to:peerId, sdp:pc.localDescription });
+               pc.onconnectionstatechange = () => { if (["failed","closed","disconnected"].includes(pc.connectionState)) { pc.close(); livePeers.delete(peerId); } };
+             } else if (payload.kind === "answer") {
+               const pc=livePeers.get(peerId); if (pc) await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+             } else if (payload.kind === "candidate") {
+               const pc=livePeers.get(peerId); if (pc && payload.candidate) { try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn(e); } }
+             }
+             return;
+           }
+           // Listener receives offer/candidates addressed to this account.
+           if (payload.to !== currentUser.id || !listenerConnections.has(payload.from)) return;
+           const state = listenerConnections.get(payload.from); const pc = state.pc;
+           if (payload.kind === "offer") {
+             await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+             const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
+             await state.channel.send({ type:"broadcast", event:"signal", payload:{kind:"answer",from:currentUser.id,to:payload.from,sdp:pc.localDescription} });
+           } else if (payload.kind === "candidate" && payload.candidate) {
+             try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn(e); }
+           }
+         }
+
+         async function joinLiveSession(session) {
+           if (!session?.id) throw new Error("This live session has no valid ID.");
+           if (session.host_user_id === currentUser.id) { showNotice("You are hosting this live from Creator Studio."); return; }
+           const channel=supabase.channel(`live-room-${session.id}`, { config:{broadcast:{self:false}} });
+           const peerId=session.host_user_id;
+           const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+           const audio=document.createElement("audio"); audio.autoplay=true; audio.controls=true; audio.style.width="100%"; audio.style.marginTop="12px";
+           const modal=document.createElement("div"); modal.style.cssText="position:fixed;inset:0;z-index:1000;background:rgba(7,18,33,.72);display:grid;place-items:center;padding:20px";
+           const box=document.createElement("div"); box.style.cssText="width:min(100%,460px);background:white;border-radius:18px;padding:24px;color:#10243e";
+           const heading=document.createElement("h2"); heading.textContent="🎙️ Live: "+(session.title||"Mac&Talk live");
+           const info=document.createElement("p"); info.textContent="Connecting to the host… If you hear nothing, check your device volume."; info.style.cssText="font-size:13px;color:#758195;margin:12px 0";
+           const close=document.createElement("button"); close.className="studio-btn"; close.textContent="Leave live"; close.style.marginTop="14px";
+           box.append(heading,info,audio,close); modal.append(box); document.body.append(modal);
+           const state={pc,channel,modal}; listenerConnections.set(peerId,state);
+           pc.ontrack=e=>{ audio.srcObject=e.streams[0]; info.textContent="Connected. You are listening live."; audio.play().catch(()=>{info.textContent="Connected. Press play to hear the live.";}); };
+           pc.onicecandidate=e=>{ if(e.candidate) channel.send({type:"broadcast",event:"signal",payload:{kind:"candidate",from:currentUser.id,to:peerId,candidate:e.candidate}}); };
+           channel.on("broadcast",{event:"signal"},({payload})=>handleLiveSignal(payload).catch(console.error));
+           const result=await channel.subscribe();
+           if (result === "CHANNEL_ERROR" || result === "TIMED_OUT") { modal.remove(); listenerConnections.delete(peerId); pc.close(); throw new Error("Could not connect to the live room. Please try again."); }
+           await channel.send({type:"broadcast",event:"signal",payload:{kind:"join",from:currentUser.id,to:peerId}});
+           close.onclick=async()=>{ listenerConnections.delete(peerId); pc.close(); await supabase.removeChannel(channel); modal.remove(); };
+         }
+
+         async function stopLive() {
+           if (!activeLiveId) return;
+           const id=activeLiveId;
+           try { await supabase.from("live_sessions").update({status:"ended"}).eq("id",id).eq("host_user_id",currentUser.id); } catch(e) { console.error(e); }
+           livePeers.forEach(pc=>pc.close()); livePeers.clear();
+           liveStream?.getTracks().forEach(track=>track.stop()); liveStream=null;
+           if (liveChannel) await supabase.removeChannel(liveChannel); liveChannel=null; activeLiveId=null;
+           $("startLiveBtn").hidden=false; $("stopLiveBtn").hidden=true;
+           setStudioStatus("liveStatus", "Live ended. You can start another session whenever you are ready.");
+           showNotice("Your live has ended."); await loadLiveSessions(); await loadMyLiveSessions();
+         }
+
+         async function startPodcastRecording() {
+           if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { setStudioStatus("recordStatus", "Audio recording needs a modern browser and HTTPS (or localhost).", true); return; }
+           if (!safeText($("podcastTitle").value)) { setStudioStatus("recordStatus", "Enter a podcast title before recording.", true); $("podcastTitle").focus(); return; }
+           try {
+             const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
+             podcastChunks=[]; podcastBlob=null;
+             const mimeType=["audio/webm;codecs=opus","audio/webm","audio/mp4"].find(t=>MediaRecorder.isTypeSupported(t));
+             podcastRecorder=mimeType?new MediaRecorder(stream,{mimeType}):new MediaRecorder(stream);
+             podcastRecorder.ondataavailable=e=>{if(e.data?.size) podcastChunks.push(e.data);};
+             podcastRecorder.onstop=()=>{
+               podcastBlob=new Blob(podcastChunks,{type:podcastRecorder.mimeType||"audio/webm"});
+               if (podcastPreviewUrl) URL.revokeObjectURL(podcastPreviewUrl);
+               podcastPreviewUrl=URL.createObjectURL(podcastBlob); $("recordPreview").src=podcastPreviewUrl; $("recordPreview").hidden=false;
+               $("publishPodcastBtn").disabled=!podcastBlob.size;
+               $("recordBtn").hidden=false; $("stopRecordBtn").hidden=true;
+               stream.getTracks().forEach(t=>t.stop());
+               const secs=Math.max(1,Math.round((Date.now()-recordingStartedAt)/1000));
+               setStudioStatus("recordStatus", `Recording ready (${Math.floor(secs/60)}:${String(secs%60).padStart(2,"0")}). Preview it, then publish when you are happy with it.`);
+             };
+             recordingStartedAt=Date.now(); podcastRecorder.start(1000);
+             $("recordBtn").hidden=true; $("stopRecordBtn").hidden=false; $("publishPodcastBtn").disabled=true;
+             setStudioStatus("recordStatus", "Recording… Speak clearly. Press Stop Recording when finished.");
+           } catch(e) { console.error(e); setStudioStatus("recordStatus", e.message || "Microphone permission was denied.", true); }
+         }
+
+         async function publishPodcast(event) {
+           event.preventDefault();
+           if (!podcastBlob?.size) { setStudioStatus("recordStatus", "Record a podcast first.", true); return; }
+           const title=safeText($("podcastTitle").value); if (!title) { setStudioStatus("recordStatus", "Enter a title for your podcast.", true); return; }
+           const btn=$("publishPodcastBtn"); btn.disabled=true; btn.textContent="Uploading…";
+           try {
+             const ext=podcastBlob.type.includes("mp4")?"m4a":"webm";
+             const path=`${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+             const uploadContentType=podcastBlob.type.includes("mp4")?"audio/mp4":"audio/webm";
+             const {error:uploadError}=await supabase.storage.from("podcasts").upload(path,podcastBlob,{contentType:uploadContentType,upsert:false});
+             if (uploadError) throw new Error("Audio upload failed: "+uploadError.message+". Check the podcasts storage bucket and policies.");
+             const name=currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Mac&Talk member";
+             const {error:insertError}=await supabase.from("podcast_episodes").insert({host_user_id:currentUser.id,host_name:name,title,description:safeText($("podcastDescription").value),audio_path:path,published:true});
+             if (insertError) { await supabase.storage.from("podcasts").remove([path]); throw new Error("Podcast details could not be saved: "+insertError.message); }
+             podcastBlob=null; podcastChunks=[]; $("recordPreview").hidden=true; $("podcastForm").reset();
+             setStudioStatus("recordStatus", "Published successfully! Your podcast is now available in the Podcast Library.");
+             showNotice("Podcast published for Mac&Talk users."); await loadPodcasts();
+           } catch(e) { console.error(e); setStudioStatus("recordStatus", e.message || "Could not publish podcast.", true); }
+           finally { btn.disabled=!podcastBlob; btn.textContent="📤 Publish Podcast"; }
+         }
+
+         $("liveForm").addEventListener("submit", startLive);
+         $("stopLiveBtn").addEventListener("click", stopLive);
+         $("recordBtn").addEventListener("click", startPodcastRecording);
+         $("stopRecordBtn").addEventListener("click",()=>{ if(podcastRecorder && podcastRecorder.state!=="inactive") podcastRecorder.stop(); });
+         $("podcastForm").addEventListener("submit", publishPodcast);
+         $("refreshPodcastsBtn").addEventListener("click",()=>loadPodcasts().catch(console.error));
 
         // =========================================
         // PROFILE
