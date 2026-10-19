@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="description"
+    content="Discover student podcasts, conversations, and live broadcasts on Mac&Talk."
+  >
+  <meta name="theme-color" content="#10243e">
+
+  <title>Mac&Talk — Our Voices, Better Ideas!</title>
+
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Load script.js once as a module because it imports Supabase -->
+  <script type="module" src="./script.js"></script>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header class="navbar">
+    <a href="#home" class="logo">
+      Mac<span>&</span>Talk<span class="logo-dot">.</span>
+    </a>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      id="menuToggle"
+      aria-label="Open navigation"
+      aria-controls="navLinks"
+      aria-expanded="false"
+    >
+      ☰
+    </button>
+
+    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+      <a href="#home">Home</a>
+      <a href="#live">Live</a>
+      <a href="#upcoming">Upcoming</a>
+      <a href="#podcasts">Podcasts</a>
+    </nav>
+
+    <a href="#podcasts" class="nav-button">
+      Explore Episodes ↗
+    </a>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <span class="eyebrow">
+          🎙️ STUDENT VOICES. REAL CONVERSATIONS.
+        </span>
+
+        <h1>
+          Our Voices,<br>
+          <span>Better Ideas!</span>
+        </h1>
+
+        <p>
+          Welcome to Mac&Talk — a place for conversations,
+          fresh perspectives, and stories told by students.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#podcasts" class="button button-dark">
+            Discover Podcasts ↗
+          </a>
+
+          <a href="#live" class="button button-light">
+            🔴 Watch Live
+          </a>
+        </div>
+
+        <div class="hero-note">
+          <span>✳</span>
+          Listen. Connect. Share ideas.
+        </div>
+
+        <div class="class-tag">
+          📚 Made for curious students ·
+          <strong>3ème Math</strong>
+        </div>
+      </div>
+
+      <div class="hero-art" aria-label="Podcast illustration">
+        <div class="art-star star-one">✳</div>
+        <div class="art-star star-two">✦</div>
+
+        <div class="art-circle">
+          <div class="mic">🎙️</div>
+        </div>
+
+        <div class="speech speech-one">YOUR VOICE!</div>
+        <div class="speech speech-two">LET'S TALK 💬</div>
+      </div>
+    </section>
+
+    <!-- Live broadcasts -->
+    <section class="section live-section" id="live">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">HAPPENING NOW</span>
+          <h2>Live on <span>Mac&Talk</span></h2>
+          <p>Join the conversation while it's happening.</p>
+        </div>
+
+        <span class="live-indicator">
+          <span class="live-dot"></span>
+          LIVE NOW
+        </span>
+      </div>
+
+      <div
+        class="connection-message"
+        id="liveMessage"
+        role="status"
+        aria-live="polite"
+      >
+        Loading live broadcasts…
+      </div>
+
+      <div class="live-grid" id="liveGrid"></div>
+
+      <p class="empty-message hidden" id="noLive">
+        No live broadcasts right now. Check out our upcoming sessions!
+      </p>
+    </section>
+
+    <!-- Upcoming broadcasts -->
+    <section class="section upcoming-section" id="upcoming">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">SAVE THE DATE</span>
+          <h2>Coming <span>Up</span></h2>
+          <p>Don't miss our next conversations.</p>
+        </div>
+      </div>
+
+      <div class="upcoming-grid" id="upcomingGrid"></div>
+
+      <p class="empty-message hidden" id="noUpcoming">
+        No upcoming broadcasts have been announced yet.
+      </p>
+    </section>
+
+    <!-- Podcasts -->
+    <section class="section podcast-section" id="podcasts">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">PRESS PLAY ▶</span>
+          <h2>Latest <span>Podcasts</span></h2>
+          <p>Great conversations, ready whenever you are.</p>
+        </div>
+      </div>
+
+      <div class="podcast-tools">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="Search episodes..."
+            aria-label="Search podcasts"
+          >
+        </label>
+
+        <select id="categoryFilter" aria-label="Filter podcasts">
+          <option value="all">All topics</option>
+          <option value="everyday">Everyday Life</option>
+          <option value="school">School Life</option>
+          <option value="technology">Technology</option>
+        </select>
+      </div>
+
+      <div class="podcast-grid" id="podcastGrid"></div>
+
+      <p class="empty-message" id="noPodcasts">
+        Podcast episodes will appear here when a podcast library is connected.
+      </p>
+    </section>
+
+    <!-- About -->
+    <section class="about-section">
+      <div class="about-symbol" aria-hidden="true">💬</div>
+
+      <div>
+        <span class="eyebrow">MORE THAN A PODCAST</span>
+        <h2>Every voice has a story.</h2>
+
+        <p>
+          Mac&Talk brings students together through honest conversations,
+          different opinions, and shared ideas.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a href="#home" class="logo">
+      Mac<span>&</span>Talk<span class="logo-dot">.</span>
+    </a>
+
+    <p>Our Voices, Better Ideas!</p>
+
+    <span class="footer-class">3ème Math</span>
+
+    <a href="#home">Back to top ↑</a>
+
+    <small>
+      © <span id="currentYear"></span> Mac&Talk. All rights reserved.
+    </small>
+
+    <small class="created-by">
+      Created by <strong>Yassine</strong> ✨
+    </small>
+  </footer>
+</body>
+</html>
