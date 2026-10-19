@@ -991,6 +991,8 @@ a:focus-visible {
 .studio-card,.podcast-card{background:#fff;border:1px solid var(--border);border-radius:17px;padding:23px;box-shadow:0 5px 20px rgba(16,36,62,.04)}
 .studio-card h3{margin-bottom:8px;font-size:17px}.studio-card>p{color:var(--muted);font-size:13px;line-height:1.65;margin-bottom:18px}
 .studio-form{display:grid;gap:13px}.studio-form label{display:grid;gap:7px;font-size:12px;font-weight:700}.studio-form input,.studio-form textarea{width:100%;padding:12px 13px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:13px}.studio-form textarea{min-height:82px;resize:vertical}
+.studio-form select{width:100%;padding:12px 13px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:13px}
+.nav-page-link{display:flex;align-items:center;text-decoration:none}
 .studio-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.studio-btn{border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:800;cursor:pointer;background:var(--navy);color:white}.studio-btn.yellow{background:var(--yellow);color:var(--navy)}.studio-btn.danger{background:#b42318;color:#fff}.studio-btn:disabled{opacity:.55;cursor:not-allowed}
 .studio-status{padding:11px 13px;border-radius:10px;background:#f2f5fa;color:var(--muted);font-size:12px;line-height:1.6;margin-top:13px;overflow-wrap:anywhere}.record-dot{display:inline-block;width:8px;height:8px;background:#e03131;border-radius:50%;margin-right:7px;animation:recordPulse 1s infinite}@keyframes recordPulse{50%{opacity:.25}}
 .podcast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.podcast-card h3{font-size:15px;margin-bottom:7px;overflow-wrap:anywhere}.podcast-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}.podcast-card audio{width:100%;height:38px}.podcast-meta{font-size:11px;color:var(--muted);margin-top:10px}.studio-intro{padding:22px 24px;border-radius:16px;background:linear-gradient(120deg,#10243e,#23476d);color:#fff;margin-bottom:20px}.studio-intro p{color:#d8e1ed;font-size:13px;line-height:1.7;margin-top:8px;max-width:780px}
@@ -1017,20 +1019,20 @@ a:focus-visible {
             <p class="nav-label">WORKSPACE</p>
 
             <nav class="nav" aria-label="Main navigation">
-                <button class="nav-link active" data-page="dashboard">
+                <a class="nav-link nav-page-link" href="user.html" data-page-link="dashboard">
                     <span class="nav-icon">⌂</span> Dashboard
-                </button>
+                </a>
 
                 <button class="nav-link" data-page="sessions">
                     <span class="nav-icon">🎙️</span> Live Sessions
                 </button>
 
-                <button class="nav-link" data-page="studio">
+                <a class="nav-link nav-page-link" href="studio.html" data-page-link="studio">
                     <span class="nav-icon">🎛️</span> Creator Studio
-                </button>
-                <button class="nav-link" data-page="podcasts">
+                </a>
+                <a class="nav-link nav-page-link" href="podcasts.html" data-page-link="podcasts">
                     <span class="nav-icon">🎧</span> Podcasts
-                </button>
+                </a>
                 <button class="nav-link" data-page="profile">
                     <span class="nav-icon">♙</span> My Profile
                 </button>
@@ -1160,11 +1162,12 @@ a:focus-visible {
 
                 <!-- CREATOR STUDIO -->
                 <section class="page-panel" id="studioPage">
-                    <div class="studio-intro"><h2>🎙️ Creator Studio</h2><p>Start an audio live session or record a podcast. Published podcasts are saved in your Mac&Talk library so signed-in users can listen later. Allow microphone access when your browser asks.</p></div>
+                    <div class="studio-intro"><h2>🎙️ Creator Studio</h2><p>Start an audio live session or record a podcast. Live sessions are recorded privately for you while you broadcast. When you end the live, you can preview the recording and choose to publish it as a podcast or as an ended live replay. Allow microphone access when your browser asks.</p></div>
                     <div class="studio-grid">
                       <article class="studio-card">
                         <h3>🔴 Start an audio live</h3><p>Go live with your microphone. Other signed-in Mac&Talk users can join and listen while your session is live.</p>
                         <form id="liveForm" class="studio-form">
+                          <label>Start an admin-created scheduled session (optional)<select id="scheduledSessionSelect"><option value="">Create a new live session</option></select></label>
                           <label>Live title<input id="liveTitle" maxlength="100" required placeholder="e.g. English speaking club"></label>
                           <label>Description (optional)<textarea id="liveDescription" maxlength="500" placeholder="What will you talk about?"></textarea></label>
                           <div class="studio-actions"><button class="studio-btn yellow" id="startLiveBtn" type="submit">🔴 Start Live</button><button class="studio-btn danger" id="stopLiveBtn" type="button" hidden>■ End Live</button></div>
@@ -1285,11 +1288,15 @@ a:focus-visible {
       );
 
       const $ = id => document.getElementById(id);
+      const PAGE_MODE = "dashboard";
 
       const loadingScreen = $("loadingScreen");
       const appElement = $("app");
       const sidebar = $("sidebar");
       const notice = $("notice");
+      document.querySelectorAll(".nav-page-link").forEach(link => link.classList.toggle("active", link.dataset.pageLink === PAGE_MODE));
+      document.querySelectorAll(".page-panel").forEach(panel => panel.classList.toggle("active", panel.id === `${PAGE_MODE}Page`));
+      if ($("pageTitle")) $("pageTitle").textContent = ({dashboard:"Dashboard",studio:"Creator Studio",podcasts:"Podcasts"})[PAGE_MODE] || "Dashboard";
 
       let currentUser = null;
       let noticeTimeout = null;
@@ -1524,6 +1531,16 @@ a:focus-visible {
           renderSessions("dashboardSessions", sessions.slice(0, 2));
           renderSessions("allSessions", sessions);
 
+          const scheduledSelect = $("scheduledSessionSelect");
+          if (scheduledSelect && currentUser) {
+            const keep = scheduledSelect.value;
+            scheduledSelect.replaceChildren(new Option("Create a new live session", ""));
+            sessions.filter(item => item.status === "scheduled" && item.host_user_id === currentUser.id).forEach(item => {
+              scheduledSelect.add(new Option(item.title, item.id));
+            });
+            if ([...scheduledSelect.options].some(option => option.value === keep)) scheduledSelect.value = keep;
+          }
+
           $("sessionCount").textContent = String(sessions.length);
         }
 
@@ -1534,6 +1551,8 @@ a:focus-visible {
         const pageTitles = {
           dashboard: "Dashboard",
           sessions: "Live Sessions",
+          studio: "Creator Studio",
+          podcasts: "Podcasts",
           profile: "My Profile",
           settings: "Settings"
         };
@@ -1587,6 +1606,15 @@ a:focus-visible {
          // CREATOR STUDIO: LIVE AUDIO + PODCASTS
          // Live audio uses Supabase Realtime for WebRTC signaling.
          // =========================================
+         // Live recordings stay in this browser until the host chooses to publish them.
+         let liveRecorder = null;
+         let liveRecordingChunks = [];
+         let liveRecordingBlob = null;
+         let liveRecordingTitle = "";
+         let liveRecordingDescription = "";
+         let liveRecordingStartedAt = 0;
+         let liveRecordingPreviewUrl = null;
+
          function setStudioStatus(id, message, isError = false) {
            const el = $(id); if (!el) return;
            el.textContent = message;
@@ -1601,7 +1629,7 @@ a:focus-visible {
            if (!grid) return;
            grid.replaceChildren();
            const { data, error } = await supabase.from("podcast_episodes")
-             .select("id,title,description,audio_path,audio_url,host_name,created_at")
+             .select("id,title,description,audio_path,audio_url,host_name,created_at,episode_type")
              .eq("published", true).order("created_at", { ascending: false }).limit(100);
            if (error) {
              console.error("Podcast library error:", error);
@@ -1614,7 +1642,7 @@ a:focus-visible {
            }
            for (const episode of data) {
              const card = document.createElement("article"); card.className = "podcast-card";
-             const title = document.createElement("h3"); title.textContent = episode.title || "Untitled podcast";
+             const title = document.createElement("h3"); title.textContent = (episode.episode_type === "live_replay" ? "🔴 Live replay · " : "🎧 Podcast · ") + (episode.title || "Untitled podcast");
              const desc = document.createElement("p"); desc.textContent = episode.description || "No description provided.";
              const audio = document.createElement("audio"); audio.controls = true; audio.preload = "none";
              let url = episode.audio_url;
@@ -1649,12 +1677,33 @@ a:focus-visible {
            try {
              if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone access requires HTTPS (your deployed Vercel website) or localhost.");
              liveStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
-             const { data: row, error } = await supabase.from("live_sessions").insert({
-               title, description, host: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
-               host_name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
-               host_user_id: currentUser.id, emoji: "🎙️", status: "live", approved: true
-             }).select("id,title,description,status,host_user_id").single();
-             if (error) throw new Error("Could not create the live session: " + error.message + ". Check the media SQL policies.");
+             // Record the same microphone stream used for the live broadcast.
+             liveRecordingChunks = [];
+             liveRecordingBlob = null;
+             liveRecordingTitle = title;
+             liveRecordingDescription = description;
+             const liveMime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find(t => MediaRecorder.isTypeSupported(t));
+             liveRecorder = liveMime ? new MediaRecorder(liveStream, { mimeType: liveMime }) : new MediaRecorder(liveStream);
+             liveRecorder.ondataavailable = e => { if (e.data?.size) liveRecordingChunks.push(e.data); };
+             liveRecorder.onstop = () => { liveRecordingBlob = new Blob(liveRecordingChunks, { type: liveRecorder?.mimeType || "audio/webm" }); };
+             liveRecordingStartedAt = Date.now();
+             liveRecorder.start(1000);
+             const scheduledId = $("scheduledSessionSelect")?.value || "";
+             let row, error;
+             if (scheduledId) {
+               const result = await supabase.from("live_sessions").update({ status: "live" })
+                 .eq("id", scheduledId).eq("host_user_id", currentUser.id).eq("status", "scheduled")
+                 .select("id,title,description,status,host_user_id").single();
+               row = result.data; error = result.error;
+             } else {
+               const result = await supabase.from("live_sessions").insert({
+                 title, description, host: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
+                 host_name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
+                 host_user_id: currentUser.id, emoji: "🎙️", status: "live", approved: true
+               }).select("id,title,description,status,host_user_id").single();
+               row = result.data; error = result.error;
+             }
+             if (error) throw new Error("Could not start the live session: " + error.message + ". Check the media SQL policies and make sure the scheduled session is assigned to your account.");
              activeLiveId = row.id;
              liveChannel = supabase.channel(`live-room-${activeLiveId}`, { config: { broadcast: { self: false } } });
              liveChannel.on("broadcast", { event: "signal" }, ({ payload }) => handleLiveSignal(payload).catch(err => console.error("Live signal:", err)));
@@ -1665,7 +1714,9 @@ a:focus-visible {
              showNotice("Your audio live is now active.");
              await loadLiveSessions(); await loadMyLiveSessions();
            } catch (err) {
-             console.error(err); liveStream?.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null;
+             console.error(err);
+             if (liveRecorder && liveRecorder.state !== "inactive") { try { liveRecorder.stop(); } catch (_) {} }
+             liveStream?.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null; liveRecorder=null;
              setStudioStatus("liveStatus", err.message || "Could not start live.", true);
            } finally { btn.disabled=false; }
          }
@@ -1733,14 +1784,92 @@ a:focus-visible {
 
          async function stopLive() {
            if (!activeLiveId) return;
-           const id=activeLiveId;
+           const id = activeLiveId;
+           const stopButton = $("stopLiveBtn");
+           stopButton.disabled = true;
+           setStudioStatus("liveStatus", "Ending live and finalizing your private recording…");
            try { await supabase.from("live_sessions").update({status:"ended"}).eq("id",id).eq("host_user_id",currentUser.id); } catch(e) { console.error(e); }
+           let recordingReady = Promise.resolve();
+           if (liveRecorder && liveRecorder.state !== "inactive") {
+             recordingReady = new Promise(resolve => {
+               const recorder = liveRecorder;
+               recorder.addEventListener("stop", () => {
+                 liveRecordingBlob = new Blob(liveRecordingChunks, { type: recorder.mimeType || "audio/webm" });
+                 resolve();
+               }, { once: true });
+               try { recorder.stop(); } catch (_) { resolve(); }
+             });
+           }
+           await recordingReady;
            livePeers.forEach(pc=>pc.close()); livePeers.clear();
            liveStream?.getTracks().forEach(track=>track.stop()); liveStream=null;
            if (liveChannel) await supabase.removeChannel(liveChannel); liveChannel=null; activeLiveId=null;
-           $("startLiveBtn").hidden=false; $("stopLiveBtn").hidden=true;
-           setStudioStatus("liveStatus", "Live ended. You can start another session whenever you are ready.");
+           liveRecorder = null;
+           $("startLiveBtn").hidden=false; $("stopLiveBtn").hidden=true; stopButton.disabled = false;
+           setStudioStatus("liveStatus", "Live ended. Choose whether to publish your recording or keep it private.");
            showNotice("Your live has ended."); await loadLiveSessions(); await loadMyLiveSessions();
+           if (liveRecordingBlob?.size) showLiveRecordingChoices();
+           else setStudioStatus("liveStatus", "Live ended, but no recording was captured. You can still record a podcast below.");
+         }
+
+         function showLiveRecordingChoices() {
+           const modal = document.createElement("div");
+           modal.style.cssText = "position:fixed;inset:0;z-index:1200;background:rgba(7,18,33,.76);display:grid;place-items:center;padding:18px;overflow:auto";
+           const box = document.createElement("div");
+           box.style.cssText = "width:min(100%,560px);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:24px;color:#10243e;box-shadow:0 20px 60px rgba(0,0,0,.25)";
+           const h = document.createElement("h2"); h.textContent = "Your live recording is ready";
+           const p = document.createElement("p"); p.textContent = "Your live has already ended. Preview the recording, then choose how you want users to find it.";
+           p.style.cssText = "color:#758195;font-size:13px;line-height:1.6;margin:10px 0 16px";
+           const audio = document.createElement("audio"); audio.controls = true; audio.style.width = "100%";
+           if (liveRecordingPreviewUrl) URL.revokeObjectURL(liveRecordingPreviewUrl);
+           liveRecordingPreviewUrl = URL.createObjectURL(liveRecordingBlob); audio.src = liveRecordingPreviewUrl;
+           const titleLabel = document.createElement("label"); titleLabel.textContent = "Recording title";
+           titleLabel.style.cssText = "display:block;font-size:12px;font-weight:700;margin-top:15px";
+           const titleInput = document.createElement("input"); titleInput.value = liveRecordingTitle || "Live recording"; titleInput.maxLength = 120;
+           titleInput.style.cssText = "display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:11px;border:1px solid #d7deea;border-radius:9px"; titleLabel.append(titleInput);
+           const descLabel = document.createElement("label"); descLabel.textContent = "Description (optional)";
+           descLabel.style.cssText = "display:block;font-size:12px;font-weight:700;margin-top:12px";
+           const descInput = document.createElement("textarea"); descInput.value = liveRecordingDescription || ""; descInput.maxLength = 700; descInput.rows = 3;
+           descInput.style.cssText = "display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:11px;border:1px solid #d7deea;border-radius:9px;resize:vertical"; descLabel.append(descInput);
+           const actions = document.createElement("div"); actions.style.cssText = "display:flex;flex-wrap:wrap;gap:9px;margin-top:18px";
+           const podcastBtn = document.createElement("button"); podcastBtn.className = "studio-btn"; podcastBtn.textContent = "🎧 Publish as podcast";
+           const replayBtn = document.createElement("button"); replayBtn.className = "studio-btn yellow"; replayBtn.textContent = "🔴 Publish as ended live replay";
+           const privateBtn = document.createElement("button"); privateBtn.className = "studio-btn danger"; privateBtn.textContent = "Discard recording";
+           const status = document.createElement("p"); status.style.cssText = "font-size:12px;color:#758195;margin-top:12px";
+           const publish = async (type) => {
+             const chosenTitle = safeText(titleInput.value);
+             if (!chosenTitle) { status.textContent = "Please enter a title."; titleInput.focus(); return; }
+             podcastBtn.disabled = replayBtn.disabled = privateBtn.disabled = true;
+             status.textContent = "Uploading recording… Please keep this page open.";
+             let objectPath = null;
+             try {
+               const blob = liveRecordingBlob;
+               const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+               objectPath = `${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+               const contentType = blob.type.includes("mp4") ? "audio/mp4" : "audio/webm";
+               const { error: uploadError } = await supabase.storage.from("podcasts").upload(objectPath, blob, { contentType, upsert: false });
+               if (uploadError) throw new Error("Audio upload failed: " + uploadError.message);
+               const name = currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Mac&Talk member";
+               const { error: insertError } = await supabase.from("podcast_episodes").insert({ host_user_id: currentUser.id, host_name: name, title: chosenTitle, description: safeText(descInput.value), audio_path: objectPath, published: true, episode_type: type });
+               if (insertError) throw new Error("Recording details could not be saved: " + insertError.message + ". Run the updated media SQL.");
+               modal.remove(); liveRecordingBlob = null; liveRecordingChunks = [];
+               if (liveRecordingPreviewUrl) URL.revokeObjectURL(liveRecordingPreviewUrl); liveRecordingPreviewUrl = null;
+               setStudioStatus("liveStatus", type === "live_replay" ? "Published as an ended live replay. Users can listen to it from the Podcast Library." : "Published as a podcast. Users can listen from the Podcast Library.");
+               showNotice(type === "live_replay" ? "Ended live replay published." : "Live recording published as a podcast."); await loadPodcasts();
+             } catch (e) {
+               console.error(e);
+               if (objectPath) { try { await supabase.storage.from("podcasts").remove([objectPath]); } catch (_) {} }
+               status.textContent = e.message || "Could not publish this recording.";
+               podcastBtn.disabled = replayBtn.disabled = privateBtn.disabled = false;
+             }
+           };
+           podcastBtn.onclick = () => publish("podcast"); replayBtn.onclick = () => publish("live_replay");
+           privateBtn.onclick = () => {
+             modal.remove(); liveRecordingBlob = null; liveRecordingChunks = [];
+             if (liveRecordingPreviewUrl) URL.revokeObjectURL(liveRecordingPreviewUrl); liveRecordingPreviewUrl = null;
+             setStudioStatus("liveStatus", "Recording discarded. The live session remains ended and was not published.");
+           };
+           actions.append(podcastBtn, replayBtn, privateBtn); box.append(h, p, audio, titleLabel, descLabel, actions, status); modal.append(box); document.body.append(modal);
          }
 
          async function startPodcastRecording() {
@@ -1780,7 +1909,7 @@ a:focus-visible {
              const {error:uploadError}=await supabase.storage.from("podcasts").upload(path,podcastBlob,{contentType:uploadContentType,upsert:false});
              if (uploadError) throw new Error("Audio upload failed: "+uploadError.message+". Check the podcasts storage bucket and policies.");
              const name=currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Mac&Talk member";
-             const {error:insertError}=await supabase.from("podcast_episodes").insert({host_user_id:currentUser.id,host_name:name,title,description:safeText($("podcastDescription").value),audio_path:path,published:true});
+             const {error:insertError}=await supabase.from("podcast_episodes").insert({host_user_id:currentUser.id,host_name:name,title,description:safeText($("podcastDescription").value),audio_path:path,published:true,episode_type:"podcast"});
              if (insertError) { await supabase.storage.from("podcasts").remove([path]); throw new Error("Podcast details could not be saved: "+insertError.message); }
              podcastBlob=null; podcastChunks=[]; $("recordPreview").hidden=true; $("podcastForm").reset();
              setStudioStatus("recordStatus", "Published successfully! Your podcast is now available in the Podcast Library.");
@@ -1789,6 +1918,19 @@ a:focus-visible {
            finally { btn.disabled=!podcastBlob; btn.textContent="📤 Publish Podcast"; }
          }
 
+         $("scheduledSessionSelect").addEventListener("change", async event => {
+           const id = event.target.value;
+           if (!id) return;
+           const { data, error } = await supabase.from("live_sessions").select("id,title,description,host_user_id,status").eq("id", id).maybeSingle();
+           if (error || !data || data.host_user_id !== currentUser?.id || data.status !== "scheduled") {
+             showNotice("That scheduled session is unavailable or is not assigned to your account.", "error");
+             event.target.value = "";
+             return;
+           }
+           $("liveTitle").value = data.title || "";
+           $("liveDescription").value = data.description || "";
+           setStudioStatus("liveStatus", "Ready to start the scheduled session: " + data.title);
+         });
          $("liveForm").addEventListener("submit", startLive);
          $("stopLiveBtn").addEventListener("click", stopLive);
          $("recordBtn").addEventListener("click", startPodcastRecording);
@@ -1895,6 +2037,8 @@ a:focus-visible {
           appElement.hidden = false;
 
           await loadLiveSessions();
+          if (PAGE_MODE === "studio") await loadMyLiveSessions();
+          if (PAGE_MODE === "podcasts") await loadPodcasts();
         }
 
         // Subscribe to sign-in, sign-out, and token/session changes.

@@ -1,0 +1,2101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcasts | Mac&Talk</title>
+
+    <style>
+        :root {
+            --navy: #10243e;
+            --navy-light: #1c3657;
+            --yellow: #ffc629;
+            --bg: #f4f6fa;
+            --white: #fff;
+            --muted: #758195;
+            --border: #e5e9f0;
+            --green: #18865a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--navy);
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .app {
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: 245px;
+            padding: 25px 17px;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 32px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--yellow);
+            color: var(--navy);
+            font-weight: 900;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-name span {
+            color: var(--yellow);
+        }
+
+        .nav-label {
+            margin: 0 12px 12px;
+            color: #aab6c8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 7px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            border-radius: 10px;
+            color: #d5ddea;
+            font-size: 14px;
+            cursor: pointer;
+            border: 0;
+            background: transparent;
+            text-align: left;
+            width: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--navy);
+            background: var(--yellow);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+        .sidebar-note {
+            padding: 17px;
+            border-radius: 13px;
+            background: rgba(255,255,255,.08);
+            margin-bottom: 18px;
+        }
+
+        .sidebar-note strong {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        .sidebar-note p {
+            color: #c3ccda;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .main {
+            margin-left: 245px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            min-height: 82px;
+            padding: 17px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar h2 {
+            font-size: 21px;
+        }
+
+        .topbar p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: var(--yellow);
+            display: grid;
+            place-items: center;
+            color: var(--navy);
+            font-size: 16px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .user-mini strong {
+            display: block;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .user-mini span {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: 0;
+            background: transparent;
+            font-size: 24px;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        .content {
+            max-width: 1450px;
+            padding: 30px 35px 45px;
+            margin: auto;
+        }
+
+        .welcome-banner {
+            position: relative;
+            overflow: hidden;
+            padding: 32px;
+            border-radius: 19px;
+            background: linear-gradient(120deg, var(--navy), #23476d);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+            right: 40px;
+            top: -115px;
+            background: rgba(255,198,41,.12);
+        }
+
+        .welcome-banner h1 {
+            font-size: clamp(24px, 3vw, 33px);
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-banner p {
+            max-width: 560px;
+            color: #d8e1ed;
+            font-size: 14px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--yellow);
+            color: var(--navy);
+            padding: 13px 17px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform .2s, background .2s;
+        }
+
+        .primary-btn:hover {
+            background: #ffd65e;
+            transform: translateY(-1px);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 32px 0 17px;
+        }
+
+        .section-heading h2 {
+            font-size: 19px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 17px;
+        }
+
+        .stat-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #fff3c8;
+            font-size: 20px;
+        }
+
+        .stat-card h3 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .stat-card p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #20b875;
+        }
+
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .session-card {
+            padding: 23px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: var(--white);
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 25px rgba(16,36,62,.07);
+        }
+
+        .session-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .session-emoji {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: #fff3c8;
+            font-size: 25px;
+        }
+
+        .session-tag {
+            border-radius: 30px;
+            background: #eaf8f0;
+            color: var(--green);
+            padding: 7px 10px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .session-card h3 {
+            font-size: 16px;
+            margin-bottom: 9px;
+        }
+
+        .session-card > p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+            min-height: 43px;
+        }
+
+        .session-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .host {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .join-btn {
+            border: 1px solid var(--navy);
+            border-radius: 8px;
+            background: white;
+            color: var(--navy);
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .join-btn:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+        .empty-state {
+            padding: 32px;
+            background: white;
+            border: 1px dashed #cbd3df;
+            border-radius: 15px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+            grid-column: 1 / -1;
+        }
+
+        .page-panel {
+            display: none;
+        }
+
+        .page-panel.active {
+            display: block;
+        }
+
+        .profile-card,
+        .settings-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 22px;
+        }
+
+        .profile-header .avatar {
+            width: 65px;
+            height: 65px;
+            font-size: 23px;
+        }
+
+        .profile-header h3 {
+            margin-bottom: 7px;
+        }
+
+        .profile-header p {
+            color: var(--muted);
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-row {
+            display: grid;
+            grid-template-columns: 150px minmax(0, 1fr);
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .profile-row:last-child {
+            border-bottom: 0;
+        }
+
+        .profile-row span {
+            color: var(--muted);
+        }
+
+        .profile-row strong {
+            overflow-wrap: anywhere;
+        }
+
+        .settings-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .settings-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .signout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 14px;
+            background: #fff0f0;
+            color: #b42318;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .signout-btn:hover {
+            background: #ffe2e2;
+        }
+
+        .notice {
+            display: none;
+            margin-bottom: 18px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .notice.show {
+            display: block;
+        }
+
+        .notice.error {
+            color: #b42318;
+            background: #fff0f0;
+        }
+
+        .notice.success {
+            color: var(--green);
+            background: #eaf8f0;
+        }
+
+        .page-footer {
+            padding-top: 28px;
+            text-align: center;
+            color: #98a1af;
+            font-size: 11px;
+        }
+
+        .loading-screen {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        .loading-screen span {
+            display: block;
+            margin-top: 10px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 1050px) {
+            .sidebar {
+                width: 215px;
+            }
+
+            .main {
+                margin-left: 215px;
+            }
+
+            .content {
+                padding: 25px 22px 35px;
+            }
+
+            .topbar {
+                padding: 17px 22px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .25s ease;
+                box-shadow: 10px 0 30px rgba(0,0,0,.12);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .topbar {
+                min-height: 75px;
+                padding: 14px 18px;
+            }
+
+            .topbar h2 {
+                font-size: 17px;
+            }
+
+            .user-mini {
+                display: none;
+            }
+
+            .content {
+                padding: 20px 16px 32px;
+            }
+
+            .welcome-banner {
+                padding: 25px 22px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .session-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 18px;
+            }
+
+            .section-heading h2 {
+                font-size: 17px;
+            }
+
+            .profile-row {
+                grid-template-columns: 1fr;
+                gap: 7px;
+            }
+        }
+
+
+/* =========================================
+   MODERN MAC&TALK DASHBOARD ENHANCEMENTS
+========================================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+button {
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 3px;
+}
+
+/* Sidebar */
+.sidebar {
+    padding: 28px 18px 20px;
+    box-shadow: 5px 0 25px rgba(16, 36, 62, .08);
+}
+
+.brand {
+    padding-bottom: 35px;
+}
+
+.brand-icon {
+    box-shadow: 0 5px 15px rgba(255, 198, 41, .18);
+}
+
+.nav-link {
+    min-height: 47px;
+    border: 1px solid transparent;
+    transition: background .2s ease, color .2s ease,
+                transform .2s ease;
+}
+
+.nav-link:hover {
+    transform: translateX(3px);
+}
+
+.nav-link.active {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
+}
+
+/* Header */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 3px 15px rgba(16, 36, 62, .035);
+}
+
+.topbar h2 {
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.avatar {
+    border: 3px solid #fff3c8;
+    box-shadow: 0 3px 10px rgba(16, 36, 62, .08);
+}
+
+/* Main content */
+.content {
+    padding-top: 32px;
+}
+
+.welcome-banner {
+    min-height: 205px;
+    padding: clamp(24px, 4vw, 38px);
+    border: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 12px 30px rgba(16, 36, 62, .12);
+}
+
+.welcome-banner h1 {
+    font-weight: 800;
+    letter-spacing: -.8px;
+    line-height: 1.25;
+}
+
+.welcome-banner p {
+    max-width: 580px;
+}
+
+.primary-btn {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .12);
+}
+
+.primary-btn:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
+}
+
+/* Section headings */
+.section-heading {
+    margin-top: 35px;
+    margin-bottom: 19px;
+}
+
+.section-heading h2 {
+    font-weight: 800;
+    letter-spacing: -.35px;
+}
+
+.section-heading p {
+    line-height: 1.6;
+}
+
+/* Overview cards */
+.stats-grid {
+    gap: 20px;
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 17px;
+    box-shadow: 0 4px 16px rgba(16, 36, 62, .035);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(16, 36, 62, .08);
+}
+
+.stat-card h3 {
+    font-weight: 800;
+    letter-spacing: -.6px;
+}
+
+.stat-icon {
+    border: 1px solid rgba(255, 198, 41, .22);
+}
+
+/* Session cards */
+.session-grid {
+    gap: 20px;
+}
+
+.session-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: 17px;
+    box-shadow: 0 4px 16px rgba(16, 36, 62, .035);
+}
+
+.session-card:hover {
+    border-color: #d5dce7;
+    box-shadow: 0 13px 28px rgba(16, 36, 62, .09);
+}
+
+.session-card h3 {
+    font-size: 17px;
+    line-height: 1.4;
+    letter-spacing: -.2px;
+}
+
+.session-card > p {
+    flex: 1;
+}
+
+.session-emoji {
+    border: 1px solid rgba(255, 198, 41, .22);
+}
+
+.session-footer {
+    margin-top: 22px;
+    flex-wrap: wrap;
+}
+
+.join-btn {
+    font-weight: 700;
+}
+
+.join-btn:hover {
+    box-shadow: 0 4px 12px rgba(16, 36, 62, .12);
+}
+
+/* Profile and settings */
+.profile-card,
+.settings-card {
+    border-radius: 18px;
+    box-shadow: 0 5px 22px rgba(16, 36, 62, .045);
+}
+
+.profile-row {
+    line-height: 1.6;
+}
+
+.profile-row span {
+    font-weight: 500;
+}
+
+/* Notification */
+.notice {
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 15px 17px;
+}
+
+.notice.success {
+    border-color: #c7ead6;
+}
+
+.notice.error {
+    border-color: #f4cccc;
+}
+
+/* Loading screen */
+.loading-screen {
+    padding: 24px;
+    background: var(--bg);
+    text-align: center;
+}
+
+.loading-screen > div {
+    width: min(100%, 360px);
+    padding: 34px 28px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--white);
+    box-shadow: 0 15px 45px rgba(16, 36, 62, .09);
+}
+
+.loading-screen strong {
+    display: block;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -.6px;
+}
+
+.loading-screen span {
+    line-height: 1.7;
+}
+
+/* Responsive refinements */
+@media (min-width: 1400px) {
+    .content {
+        padding-left: 42px;
+        padding-right: 42px;
+    }
+
+    .session-grid {
+        gap: 24px;
+    }
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        position: sticky;
+        top: 0;
+    }
+
+    .welcome-banner {
+        border-radius: 16px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .stat-card:hover,
+    .session-card:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}
+[hidden] {
+    display: none !important;
+}
+
+/* Creator studio and podcast library */
+.studio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.studio-card,.podcast-card{background:#fff;border:1px solid var(--border);border-radius:17px;padding:23px;box-shadow:0 5px 20px rgba(16,36,62,.04)}
+.studio-card h3{margin-bottom:8px;font-size:17px}.studio-card>p{color:var(--muted);font-size:13px;line-height:1.65;margin-bottom:18px}
+.studio-form{display:grid;gap:13px}.studio-form label{display:grid;gap:7px;font-size:12px;font-weight:700}.studio-form input,.studio-form textarea{width:100%;padding:12px 13px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:13px}.studio-form textarea{min-height:82px;resize:vertical}
+.studio-form select{width:100%;padding:12px 13px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:13px}
+.nav-page-link{display:flex;align-items:center;text-decoration:none}
+.studio-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.studio-btn{border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:800;cursor:pointer;background:var(--navy);color:white}.studio-btn.yellow{background:var(--yellow);color:var(--navy)}.studio-btn.danger{background:#b42318;color:#fff}.studio-btn:disabled{opacity:.55;cursor:not-allowed}
+.studio-status{padding:11px 13px;border-radius:10px;background:#f2f5fa;color:var(--muted);font-size:12px;line-height:1.6;margin-top:13px;overflow-wrap:anywhere}.record-dot{display:inline-block;width:8px;height:8px;background:#e03131;border-radius:50%;margin-right:7px;animation:recordPulse 1s infinite}@keyframes recordPulse{50%{opacity:.25}}
+.podcast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.podcast-card h3{font-size:15px;margin-bottom:7px;overflow-wrap:anywhere}.podcast-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}.podcast-card audio{width:100%;height:38px}.podcast-meta{font-size:11px;color:var(--muted);margin-top:10px}.studio-intro{padding:22px 24px;border-radius:16px;background:linear-gradient(120deg,#10243e,#23476d);color:#fff;margin-bottom:20px}.studio-intro p{color:#d8e1ed;font-size:13px;line-height:1.7;margin-top:8px;max-width:780px}
+@media(max-width:760px){.studio-grid,.podcast-grid{grid-template-columns:1fr}.studio-card,.podcast-card{padding:18px}}
+
+    </style>
+</head>
+
+<body>
+  <div class="loading-screen" id="loadingScreen">
+    <div>
+        <strong>Mac&Talk</strong>
+        <span>Checking your account...</span>
+    </div>
+  </div>
+
+    <div class="app" id="app" hidden>
+        <aside class="sidebar" id="sidebar">
+            <a href="user.html" class="brand">
+                <div class="brand-icon">M&T</div>
+                <div class="brand-name">Mac<span>&</span>Talk</div>
+            </a>
+
+            <p class="nav-label">WORKSPACE</p>
+
+            <nav class="nav" aria-label="Main navigation">
+                <a class="nav-link nav-page-link" href="user.html" data-page-link="dashboard">
+                    <span class="nav-icon">⌂</span> Dashboard
+                </a>
+
+                <button class="nav-link" data-page="sessions">
+                    <span class="nav-icon">🎙️</span> Live Sessions
+                </button>
+
+                <a class="nav-link nav-page-link" href="studio.html" data-page-link="studio">
+                    <span class="nav-icon">🎛️</span> Creator Studio
+                </a>
+                <a class="nav-link nav-page-link" href="podcasts.html" data-page-link="podcasts">
+                    <span class="nav-icon">🎧</span> Podcasts
+                </a>
+                <button class="nav-link" data-page="profile">
+                    <span class="nav-icon">♙</span> My Profile
+                </button>
+
+                <button class="nav-link" data-page="settings">
+                    <span class="nav-icon">⚙</span> Settings
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-note">
+                    <strong>💬 Keep talking!</strong>
+                    <p>Share ideas, discover conversations, and connect with your community.</p>
+                </div>
+
+                <button class="signout-btn" id="sidebarSignOut">
+                    <span>↪</span> Sign out
+                </button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:13px">
+                    <button class="menu-toggle" id="menuToggle"
+                            aria-label="Toggle navigation">☰</button>
+
+                    <div>
+                        <h2 id="pageTitle">Dashboard</h2>
+                        <p id="currentDate">Listen to the community</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="user-mini">
+                        <strong id="headerName">Member</strong>
+                        <span>Mac&Talk Member</span>
+                    </div>
+                    <div class="avatar" id="headerAvatar">M</div>
+                </div>
+            </header>
+
+            <div class="content">
+                <div id="notice" class="notice" role="status"
+                     aria-live="polite"></div>
+
+                <!-- DASHBOARD -->
+                <section class="page-panel" id="dashboardPage">
+                    <div class="welcome-banner">
+                        <div>
+                            <h1>Welcome back, <span id="welcomeName">Member</span>! 👋</h1>
+                            <p>
+                                Your voice matters. Discover conversations,
+                                listen to live sessions, and connect with people
+                                through Mac&Talk.
+                            </p>
+                        </div>
+
+                        <button class="primary-btn" data-go="sessions">
+                            🎙️ Explore Sessions
+                        </button>
+                    </div>
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Your Overview</h2>
+                            <p>Your account at a glance</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <article class="stat-card">
+                            <div class="stat-top">
+                                <div class="stat-icon">🎙️</div>
+                                <span class="live-indicator">
+                                    <span class="live-dot"></span> Explore
+                                </span>
+                            </div>
+                            <h3 id="sessionCount">0</h3>
+                            <p>Available demo sessions</p>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-top">
+                                <div class="stat-icon">👤</div>
+                            </div>
+                            <h3 id="accountStatus">Active</h3>
+                            <p>Your account status</p>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-top">
+                                <div class="stat-icon">📅</div>
+                            </div>
+                            <h3 id="memberSince">Today</h3>
+                            <p>Member since</p>
+                        </article>
+                    </div>
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Discover Sessions</h2>
+                            <p>Explore conversations from the Mac&Talk community</p>
+                        </div>
+                        <button class="join-btn" data-go="sessions">
+                            View all
+                        </button>
+                    </div>
+
+                    <div class="session-grid" id="dashboardSessions"></div>
+                </section>
+
+                <!-- SESSIONS -->
+                <section class="page-panel" id="sessionsPage">
+                    <div class="section-heading" style="margin-top:0">
+                        <div>
+                            <h2>Live Sessions</h2>
+                            <p>Explore the sample sessions below.</p>
+                        </div>
+                        <span class="live-indicator">
+                            <span class="live-dot"></span> Demo content
+                        </span>
+                    </div>
+
+                    <div class="session-grid" id="allSessions"></div>
+                </section>
+
+                <!-- CREATOR STUDIO -->
+                <section class="page-panel" id="studioPage">
+                    <div class="studio-intro"><h2>🎙️ Creator Studio</h2><p>Start an audio live session or record a podcast. Live sessions are recorded privately for you while you broadcast. When you end the live, you can preview the recording and choose to publish it as a podcast or as an ended live replay. Allow microphone access when your browser asks.</p></div>
+                    <div class="studio-grid">
+                      <article class="studio-card">
+                        <h3>🔴 Start an audio live</h3><p>Go live with your microphone. Other signed-in Mac&Talk users can join and listen while your session is live.</p>
+                        <form id="liveForm" class="studio-form">
+                          <label>Start an admin-created scheduled session (optional)<select id="scheduledSessionSelect"><option value="">Create a new live session</option></select></label>
+                          <label>Live title<input id="liveTitle" maxlength="100" required placeholder="e.g. English speaking club"></label>
+                          <label>Description (optional)<textarea id="liveDescription" maxlength="500" placeholder="What will you talk about?"></textarea></label>
+                          <div class="studio-actions"><button class="studio-btn yellow" id="startLiveBtn" type="submit">🔴 Start Live</button><button class="studio-btn danger" id="stopLiveBtn" type="button" hidden>■ End Live</button></div>
+                        </form><div class="studio-status" id="liveStatus" role="status">Not live yet. Use headphones to reduce echo.</div>
+                      </article>
+                      <article class="studio-card">
+                        <h3>⏺️ Record a podcast</h3><p>Record audio directly in your browser, review it, then publish it for the community.</p>
+                        <form id="podcastForm" class="studio-form">
+                          <label>Podcast title<input id="podcastTitle" maxlength="120" required placeholder="Episode title"></label>
+                          <label>Description (optional)<textarea id="podcastDescription" maxlength="700" placeholder="Describe this episode"></textarea></label>
+                          <div class="studio-actions"><button class="studio-btn yellow" id="recordBtn" type="button">⏺️ Start Recording</button><button class="studio-btn danger" id="stopRecordBtn" type="button" hidden>■ Stop Recording</button><button class="studio-btn" id="publishPodcastBtn" type="submit" disabled>📤 Publish Podcast</button></div>
+                        </form><div class="studio-status" id="recordStatus" role="status">Ready to record. Your browser may ask for microphone permission.</div><audio id="recordPreview" controls hidden style="width:100%;margin-top:12px"></audio>
+                      </article>
+                    </div>
+                    <div class="section-heading"><div><h2>Your live sessions</h2><p>Sessions you are currently hosting</p></div></div><div class="session-grid" id="myLiveSessions"></div>
+                </section>
+
+                <!-- PODCAST LIBRARY -->
+                <section class="page-panel active" id="podcastsPage">
+                  <div class="section-heading" style="margin-top:0"><div><h2>🎧 Podcast Library</h2><p>Listen to episodes published by the Mac&Talk community.</p></div><button class="join-btn" id="refreshPodcastsBtn" type="button">↻ Refresh</button></div>
+                  <div class="podcast-grid" id="podcastLibrary"><div class="empty-state">Loading podcasts…</div></div>
+                </section>
+
+                <!-- PROFILE -->
+                <section class="page-panel" id="profilePage">
+                    <div class="section-heading" style="margin-top:0">
+                        <div>
+                            <h2>My Profile</h2>
+                            <p>Your signed-in account information</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="avatar" id="profileAvatar">M</div>
+                            <div>
+                                <h3 id="profileName">Member</h3>
+                                <p id="profileEmail">Loading email...</p>
+                            </div>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Full name</span>
+                            <strong id="profileFullName">—</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Email address</span>
+                            <strong id="profileEmailRow">—</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Account status</span>
+                            <strong>Active</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>Email verified</span>
+                            <strong id="profileVerified">Not verified</strong>
+                        </div>
+
+                        <div class="profile-row">
+                            <span>User ID</span>
+                            <strong id="profileUid">—</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SETTINGS -->
+                <section class="page-panel" id="settingsPage">
+                    <div class="section-heading" style="margin-top:0">
+                        <div>
+                            <h2>Settings</h2>
+                            <p>Manage your current session</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Account and security</h3>
+                        <p>
+                            You are signed in with Supabase Authentication.
+                            Sign out when you have finished using this device.
+                        </p>
+
+                        <button class="signout-btn" id="settingsSignOut">
+                            <span>↪</span> Sign out of Mac&Talk
+                        </button>
+                    </div>
+                </section>
+
+                <footer class="page-footer">
+                    © <span id="footerYear"></span> Mac&Talk · Made for conversations.
+                </footer>
+            </div>
+        </main>
+    </div>
+
+
+    <script type="module">
+      // =========================================
+      // MAC&TALK — SUPABASE DASHBOARD
+      // =========================================
+
+      import { createClient } from
+        "https://esm.sh/@supabase/supabase-js@2";
+
+      const SUPABASE_URL =
+        "https://gprdmwjqgyrvqrgjkycc.supabase.co";
+
+      // A publishable key is safe to use in browser code.
+      // Never put a Supabase secret/service_role key here.
+      const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+
+      const supabase = createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+      const $ = id => document.getElementById(id);
+      const PAGE_MODE = "podcasts";
+
+      const loadingScreen = $("loadingScreen");
+      const appElement = $("app");
+      const sidebar = $("sidebar");
+      const notice = $("notice");
+      document.querySelectorAll(".nav-page-link").forEach(link => link.classList.toggle("active", link.dataset.pageLink === PAGE_MODE));
+      document.querySelectorAll(".page-panel").forEach(panel => panel.classList.toggle("active", panel.id === `${PAGE_MODE}Page`));
+      if ($("pageTitle")) $("pageTitle").textContent = ({dashboard:"Dashboard",studio:"Creator Studio",podcasts:"Podcasts"})[PAGE_MODE] || "Dashboard";
+
+      let currentUser = null;
+      let noticeTimeout = null;
+      let sessionRequest = 0;
+      let signingOut = false;
+
+      // =========================================
+      // ERROR AND NOTICE HANDLING
+      // =========================================
+
+      function showError(message) {
+        if (appElement) appElement.hidden = true;
+        if (!loadingScreen) return;
+
+        loadingScreen.hidden = false;
+        loadingScreen.replaceChildren();
+
+        const box = document.createElement("div");
+        const title = document.createElement("strong");
+        const description = document.createElement("p");
+        const link = document.createElement("a");
+        const retry = document.createElement("button");
+
+        title.textContent = "Unable to load Mac&Talk";
+        description.textContent = message;
+        description.style.marginTop = "12px";
+        description.style.lineHeight = "1.6";
+
+        link.href = "login.html";
+        link.textContent = "Return to login";
+        link.style.display = "inline-block";
+        link.style.marginTop = "16px";
+
+        retry.type = "button";
+        retry.textContent = "Try again";
+        retry.style.display = "block";
+        retry.style.margin = "14px auto 0";
+        retry.style.padding = "10px 16px";
+        retry.addEventListener("click", () => location.reload());
+
+        box.append(title, description, link, retry);
+        loadingScreen.append(box);
+      }
+
+      function showNotice(message, type = "success") {
+        if (!notice) return;
+
+        notice.textContent = message;
+        notice.className = `notice show ${type}`;
+
+        clearTimeout(noticeTimeout);
+
+        noticeTimeout = setTimeout(() => {
+          notice.className = "notice";
+        }, 4500);
+      }
+
+      // =========================================
+      // PAGE INITIALIZATION
+      // =========================================
+
+      try {
+        if (!loadingScreen || !appElement) {
+          throw new Error("Required dashboard HTML elements are missing.");
+        }
+
+        $("footerYear").textContent = new Date().getFullYear();
+
+        $("currentDate").textContent =
+          new Intl.DateTimeFormat(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          }).format(new Date());
+
+        // =========================================
+        // HELPERS
+        // =========================================
+
+        function initials(name) {
+          return String(name || "Member")
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part[0])
+            .join("")
+            .toUpperCase() || "M";
+        }
+
+        function formatDate(value, options = {}) {
+          if (!value) return "Unknown";
+
+          const date = new Date(value);
+
+          if (Number.isNaN(date.getTime())) return "Unknown";
+
+          return new Intl.DateTimeFormat(undefined, options).format(date);
+        }
+
+        // =========================================
+        // SESSION CARDS
+        // =========================================
+
+        function createSessionCard(session) {
+          const card = document.createElement("article");
+          card.className = "session-card";
+
+          const top = document.createElement("div");
+          top.className = "session-card-top";
+
+          const emoji = document.createElement("div");
+          emoji.className = "session-emoji";
+          emoji.setAttribute("aria-hidden", "true");
+          emoji.textContent = session.emoji || "🎙️";
+
+          const tag = document.createElement("span");
+          tag.className = "session-tag";
+          tag.textContent =
+            session.status === "live" ? "Live now" : "Scheduled";
+
+          top.append(emoji, tag);
+
+          const title = document.createElement("h3");
+          title.textContent = session.title || "Untitled session";
+
+          const description = document.createElement("p");
+          description.textContent =
+            session.description || "Join the Mac&Talk community.";
+
+          const footer = document.createElement("div");
+          footer.className = "session-footer";
+
+          const host = document.createElement("span");
+          host.className = "host";
+          host.textContent =
+            `Hosted by ${session.host || session.host_name || "Mac&Talk Community"}`;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "join-btn";
+          button.textContent = "View session";
+
+          button.addEventListener("click", () => {
+            if (session.status === "live") joinLiveSession(session).catch(err => { console.error(err); showNotice(err.message || "Could not join this live.", "error"); });
+            else showNotice("This session is not live yet. Check back when the host starts broadcasting.");
+          });
+
+          footer.append(host, button);
+          card.append(top, title, description, footer);
+
+          return card;
+        }
+
+        function renderSessions(containerId, sessions) {
+          const container = $(containerId);
+          if (!container) return;
+
+          container.replaceChildren();
+
+          if (!sessions.length) {
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.textContent =
+              "No approved sessions are available right now. Check back later!";
+            container.append(empty);
+            return;
+          }
+
+          sessions.forEach(session => {
+            container.append(createSessionCard(session));
+          });
+        }
+
+        function showSessionsError(message) {
+          ["dashboardSessions", "allSessions"].forEach(id => {
+            const container = $(id);
+            if (!container) return;
+
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.textContent = message;
+            container.replaceChildren(empty);
+          });
+
+          $("sessionCount").textContent = "—";
+        }
+
+        // =========================================
+        // LOAD LIVE SESSIONS FROM SUPABASE
+        // Table: public.live_sessions
+        // =========================================
+
+        async function loadLiveSessions() {
+          const requestId = ++sessionRequest;
+
+          const { data, error } = await supabase
+            .from("live_sessions")
+            .select("*")
+            .eq("approved", true)
+            .in("status", ["live", "scheduled"]);
+
+          if (requestId !== sessionRequest) return;
+
+          if (error) {
+            console.error("Supabase live_sessions error:", error);
+
+            showSessionsError(
+              "Could not load sessions. Check the live_sessions table, its column names, and its Row Level Security policies."
+            );
+
+            return;
+          }
+
+          const sessions = (data || []).map(row => ({
+            id: row.id,
+            title: row.title || "Untitled session",
+            host: row.host || row.host_name || "Mac&Talk Community",
+            host_user_id: row.host_user_id || null,
+            description: row.description || "",
+            emoji: row.emoji || "🎙️",
+            status: row.status
+          }));
+
+          sessions.sort((a, b) => {
+            if (a.status === "live" && b.status !== "live") return -1;
+            if (b.status === "live" && a.status !== "live") return 1;
+            return a.title.localeCompare(b.title);
+          });
+
+          renderSessions("dashboardSessions", sessions.slice(0, 2));
+          renderSessions("allSessions", sessions);
+
+          const scheduledSelect = $("scheduledSessionSelect");
+          if (scheduledSelect && currentUser) {
+            const keep = scheduledSelect.value;
+            scheduledSelect.replaceChildren(new Option("Create a new live session", ""));
+            sessions.filter(item => item.status === "scheduled" && item.host_user_id === currentUser.id).forEach(item => {
+              scheduledSelect.add(new Option(item.title, item.id));
+            });
+            if ([...scheduledSelect.options].some(option => option.value === keep)) scheduledSelect.value = keep;
+          }
+
+          $("sessionCount").textContent = String(sessions.length);
+        }
+
+        // =========================================
+        // NAVIGATION
+        // =========================================
+
+        const pageTitles = {
+          dashboard: "Dashboard",
+          sessions: "Live Sessions",
+          studio: "Creator Studio",
+          podcasts: "Podcasts",
+          profile: "My Profile",
+          settings: "Settings"
+        };
+
+        function showPage(page) {
+          const target = $(`${page}Page`);
+          if (!target || !pageTitles[page]) return;
+
+          document.querySelectorAll(".page-panel").forEach(panel => {
+            panel.classList.toggle("active", panel === target);
+          });
+
+          document.querySelectorAll(".nav-link[data-page]").forEach(link => {
+            link.classList.toggle("active", link.dataset.page === page);
+          });
+
+          $("pageTitle").textContent = pageTitles[page];
+          sidebar?.classList.remove("open");
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.querySelectorAll(".nav-link[data-page]").forEach(button => {
+          button.addEventListener("click", () => {
+            showPage(button.dataset.page);
+          });
+        });
+
+        document.querySelectorAll("[data-go]").forEach(button => {
+          button.addEventListener("click", () => {
+            showPage(button.dataset.go);
+          });
+        });
+
+        $("menuToggle").addEventListener("click", () => {
+          sidebar?.classList.toggle("open");
+        });
+
+        document.addEventListener("click", event => {
+          if (
+            window.innerWidth <= 760 &&
+            sidebar?.classList.contains("open") &&
+            !sidebar.contains(event.target) &&
+            !$("menuToggle").contains(event.target)
+          ) {
+            sidebar.classList.remove("open");
+          }
+        });
+
+         // =========================================
+         // CREATOR STUDIO: LIVE AUDIO + PODCASTS
+         // Live audio uses Supabase Realtime for WebRTC signaling.
+         // =========================================
+         // Live recordings stay in this browser until the host chooses to publish them.
+         let liveRecorder = null;
+         let liveRecordingChunks = [];
+         let liveRecordingBlob = null;
+         let liveRecordingTitle = "";
+         let liveRecordingDescription = "";
+         let liveRecordingStartedAt = 0;
+         let liveRecordingPreviewUrl = null;
+
+         function setStudioStatus(id, message, isError = false) {
+           const el = $(id); if (!el) return;
+           el.textContent = message;
+           el.style.background = isError ? "#fff0f0" : "#f2f5fa";
+           el.style.color = isError ? "#b42318" : "var(--muted)";
+         }
+
+         function safeText(value) { return String(value || "").trim(); }
+
+         async function loadPodcasts() {
+           const grid = $("podcastLibrary");
+           if (!grid) return;
+           grid.replaceChildren();
+           const { data, error } = await supabase.from("podcast_episodes")
+             .select("id,title,description,audio_path,audio_url,host_name,created_at,episode_type")
+             .eq("published", true).order("created_at", { ascending: false }).limit(100);
+           if (error) {
+             console.error("Podcast library error:", error);
+             const empty = document.createElement("div"); empty.className = "empty-state";
+             empty.textContent = "Podcast library is not configured yet. Run the Mac&Talk media SQL setup first."; grid.append(empty); return;
+           }
+           if (!data || !data.length) {
+             const empty = document.createElement("div"); empty.className = "empty-state";
+             empty.textContent = "No podcasts published yet. Be the first to record and publish an episode from Creator Studio!"; grid.append(empty); return;
+           }
+           for (const episode of data) {
+             const card = document.createElement("article"); card.className = "podcast-card";
+             const title = document.createElement("h3"); title.textContent = (episode.episode_type === "live_replay" ? "🔴 Live replay · " : "🎧 Podcast · ") + (episode.title || "Untitled podcast");
+             const desc = document.createElement("p"); desc.textContent = episode.description || "No description provided.";
+             const audio = document.createElement("audio"); audio.controls = true; audio.preload = "none";
+             let url = episode.audio_url;
+             if (!url && episode.audio_path) {
+               const { data: signed, error: signedError } = await supabase.storage.from("podcasts").createSignedUrl(episode.audio_path, 3600);
+               if (!signedError) url = signed?.signedUrl;
+             }
+             if (url) audio.src = url; else { audio.disabled = true; }
+             const meta = document.createElement("div"); meta.className = "podcast-meta";
+             meta.textContent = `By ${episode.host_name || "Mac&Talk member"} · ${formatDate(episode.created_at, { month: "short", day: "numeric", year: "numeric" })}`;
+             card.append(title, desc, audio, meta); grid.append(card);
+           }
+         }
+
+         async function loadMyLiveSessions() {
+           const grid = $("myLiveSessions"); if (!grid || !currentUser) return;
+           grid.replaceChildren();
+           const { data, error } = await supabase.from("live_sessions").select("id,title,description,status,host_user_id")
+             .eq("host_user_id", currentUser.id).in("status", ["live", "ended"]).order("created_at", { ascending: false }).limit(10);
+           if (error) { const e = document.createElement("div"); e.className="empty-state"; e.textContent="Your live sessions will appear here after the media database setup is applied."; grid.append(e); return; }
+           if (!data?.length) { const e=document.createElement("div"); e.className="empty-state"; e.textContent="You have not hosted a live session yet."; grid.append(e); return; }
+           data.forEach(item => { const card=document.createElement("article"); card.className="session-card"; const h=document.createElement("h3"); h.textContent=item.title; const p=document.createElement("p"); p.textContent=item.description || ""; const f=document.createElement("div"); f.className="session-footer"; const st=document.createElement("span"); st.className="host"; st.textContent=item.status === "live" ? "🔴 Live now" : "Ended"; f.append(st); card.append(h,p,f); grid.append(card); });
+         }
+
+         async function startLive(event) {
+           event.preventDefault();
+           if (activeLiveId) return;
+           const title = safeText($("liveTitle").value);
+           const description = safeText($("liveDescription").value);
+           if (!title) { setStudioStatus("liveStatus", "Please enter a live title.", true); return; }
+           const btn=$("startLiveBtn"); btn.disabled=true;
+           try {
+             if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone access requires HTTPS (your deployed Vercel website) or localhost.");
+             liveStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+             // Record the same microphone stream used for the live broadcast.
+             liveRecordingChunks = [];
+             liveRecordingBlob = null;
+             liveRecordingTitle = title;
+             liveRecordingDescription = description;
+             const liveMime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find(t => MediaRecorder.isTypeSupported(t));
+             liveRecorder = liveMime ? new MediaRecorder(liveStream, { mimeType: liveMime }) : new MediaRecorder(liveStream);
+             liveRecorder.ondataavailable = e => { if (e.data?.size) liveRecordingChunks.push(e.data); };
+             liveRecorder.onstop = () => { liveRecordingBlob = new Blob(liveRecordingChunks, { type: liveRecorder?.mimeType || "audio/webm" }); };
+             liveRecordingStartedAt = Date.now();
+             liveRecorder.start(1000);
+             const scheduledId = $("scheduledSessionSelect")?.value || "";
+             let row, error;
+             if (scheduledId) {
+               const result = await supabase.from("live_sessions").update({ status: "live" })
+                 .eq("id", scheduledId).eq("host_user_id", currentUser.id).eq("status", "scheduled")
+                 .select("id,title,description,status,host_user_id").single();
+               row = result.data; error = result.error;
+             } else {
+               const result = await supabase.from("live_sessions").insert({
+                 title, description, host: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
+                 host_name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
+                 host_user_id: currentUser.id, emoji: "🎙️", status: "live", approved: true
+               }).select("id,title,description,status,host_user_id").single();
+               row = result.data; error = result.error;
+             }
+             if (error) throw new Error("Could not start the live session: " + error.message + ". Check the media SQL policies and make sure the scheduled session is assigned to your account.");
+             activeLiveId = row.id;
+             liveChannel = supabase.channel(`live-room-${activeLiveId}`, { config: { broadcast: { self: false } } });
+             liveChannel.on("broadcast", { event: "signal" }, ({ payload }) => handleLiveSignal(payload).catch(err => console.error("Live signal:", err)));
+             const sub = await liveChannel.subscribe();
+             if (sub === "CHANNEL_ERROR" || sub === "TIMED_OUT") throw new Error("Could not connect to live signaling. Check Supabase Realtime is enabled.");
+             $("startLiveBtn").hidden=true; $("stopLiveBtn").hidden=false;
+             setStudioStatus("liveStatus", `🔴 You are LIVE: ${title}. Keep this tab open while broadcasting. Listeners can join from Live Sessions.`);
+             showNotice("Your audio live is now active.");
+             await loadLiveSessions(); await loadMyLiveSessions();
+           } catch (err) {
+             console.error(err);
+             if (liveRecorder && liveRecorder.state !== "inactive") { try { liveRecorder.stop(); } catch (_) {} }
+             liveStream?.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null; liveRecorder=null;
+             setStudioStatus("liveStatus", err.message || "Could not start live.", true);
+           } finally { btn.disabled=false; }
+         }
+
+         async function sendLiveSignal(payload) {
+           if (!liveChannel) return;
+           await liveChannel.send({ type: "broadcast", event: "signal", payload });
+         }
+
+         async function handleLiveSignal(payload) {
+           if (!payload || (!activeLiveId && !listenerConnections.size)) return;
+           // Host receives join/answer/candidate messages from listeners.
+           if (liveStream && payload.to === currentUser.id) {
+             const peerId = payload.from;
+             if (payload.kind === "join") {
+               if (livePeers.has(peerId)) return;
+               const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+               livePeers.set(peerId, pc);
+               liveStream.getTracks().forEach(track => pc.addTrack(track, liveStream));
+               pc.onicecandidate = e => { if (e.candidate) sendLiveSignal({ kind:"candidate", from:currentUser.id, to:peerId, candidate:e.candidate }); };
+               const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+               await sendLiveSignal({ kind:"offer", from:currentUser.id, to:peerId, sdp:pc.localDescription });
+               pc.onconnectionstatechange = () => { if (["failed","closed","disconnected"].includes(pc.connectionState)) { pc.close(); livePeers.delete(peerId); } };
+             } else if (payload.kind === "answer") {
+               const pc=livePeers.get(peerId); if (pc) await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+             } else if (payload.kind === "candidate") {
+               const pc=livePeers.get(peerId); if (pc && payload.candidate) { try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn(e); } }
+             }
+             return;
+           }
+           // Listener receives offer/candidates addressed to this account.
+           if (payload.to !== currentUser.id || !listenerConnections.has(payload.from)) return;
+           const state = listenerConnections.get(payload.from); const pc = state.pc;
+           if (payload.kind === "offer") {
+             await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+             const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
+             await state.channel.send({ type:"broadcast", event:"signal", payload:{kind:"answer",from:currentUser.id,to:payload.from,sdp:pc.localDescription} });
+           } else if (payload.kind === "candidate" && payload.candidate) {
+             try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn(e); }
+           }
+         }
+
+         async function joinLiveSession(session) {
+           if (!session?.id) throw new Error("This live session has no valid ID.");
+           if (session.host_user_id === currentUser.id) { showNotice("You are hosting this live from Creator Studio."); return; }
+           const channel=supabase.channel(`live-room-${session.id}`, { config:{broadcast:{self:false}} });
+           const peerId=session.host_user_id;
+           const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+           const audio=document.createElement("audio"); audio.autoplay=true; audio.controls=true; audio.style.width="100%"; audio.style.marginTop="12px";
+           const modal=document.createElement("div"); modal.style.cssText="position:fixed;inset:0;z-index:1000;background:rgba(7,18,33,.72);display:grid;place-items:center;padding:20px";
+           const box=document.createElement("div"); box.style.cssText="width:min(100%,460px);background:white;border-radius:18px;padding:24px;color:#10243e";
+           const heading=document.createElement("h2"); heading.textContent="🎙️ Live: "+(session.title||"Mac&Talk live");
+           const info=document.createElement("p"); info.textContent="Connecting to the host… If you hear nothing, check your device volume."; info.style.cssText="font-size:13px;color:#758195;margin:12px 0";
+           const close=document.createElement("button"); close.className="studio-btn"; close.textContent="Leave live"; close.style.marginTop="14px";
+           box.append(heading,info,audio,close); modal.append(box); document.body.append(modal);
+           const state={pc,channel,modal}; listenerConnections.set(peerId,state);
+           pc.ontrack=e=>{ audio.srcObject=e.streams[0]; info.textContent="Connected. You are listening live."; audio.play().catch(()=>{info.textContent="Connected. Press play to hear the live.";}); };
+           pc.onicecandidate=e=>{ if(e.candidate) channel.send({type:"broadcast",event:"signal",payload:{kind:"candidate",from:currentUser.id,to:peerId,candidate:e.candidate}}); };
+           channel.on("broadcast",{event:"signal"},({payload})=>handleLiveSignal(payload).catch(console.error));
+           const result=await channel.subscribe();
+           if (result === "CHANNEL_ERROR" || result === "TIMED_OUT") { modal.remove(); listenerConnections.delete(peerId); pc.close(); throw new Error("Could not connect to the live room. Please try again."); }
+           await channel.send({type:"broadcast",event:"signal",payload:{kind:"join",from:currentUser.id,to:peerId}});
+           close.onclick=async()=>{ listenerConnections.delete(peerId); pc.close(); await supabase.removeChannel(channel); modal.remove(); };
+         }
+
+         async function stopLive() {
+           if (!activeLiveId) return;
+           const id = activeLiveId;
+           const stopButton = $("stopLiveBtn");
+           stopButton.disabled = true;
+           setStudioStatus("liveStatus", "Ending live and finalizing your private recording…");
+           try { await supabase.from("live_sessions").update({status:"ended"}).eq("id",id).eq("host_user_id",currentUser.id); } catch(e) { console.error(e); }
+           let recordingReady = Promise.resolve();
+           if (liveRecorder && liveRecorder.state !== "inactive") {
+             recordingReady = new Promise(resolve => {
+               const recorder = liveRecorder;
+               recorder.addEventListener("stop", () => {
+                 liveRecordingBlob = new Blob(liveRecordingChunks, { type: recorder.mimeType || "audio/webm" });
+                 resolve();
+               }, { once: true });
+               try { recorder.stop(); } catch (_) { resolve(); }
+             });
+           }
+           await recordingReady;
+           livePeers.forEach(pc=>pc.close()); livePeers.clear();
+           liveStream?.getTracks().forEach(track=>track.stop()); liveStream=null;
+           if (liveChannel) await supabase.removeChannel(liveChannel); liveChannel=null; activeLiveId=null;
+           liveRecorder = null;
+           $("startLiveBtn").hidden=false; $("stopLiveBtn").hidden=true; stopButton.disabled = false;
+           setStudioStatus("liveStatus", "Live ended. Choose whether to publish your recording or keep it private.");
+           showNotice("Your live has ended."); await loadLiveSessions(); await loadMyLiveSessions();
+           if (liveRecordingBlob?.size) showLiveRecordingChoices();
+           else setStudioStatus("liveStatus", "Live ended, but no recording was captured. You can still record a podcast below.");
+         }
+
+         function showLiveRecordingChoices() {
+           const modal = document.createElement("div");
+           modal.style.cssText = "position:fixed;inset:0;z-index:1200;background:rgba(7,18,33,.76);display:grid;place-items:center;padding:18px;overflow:auto";
+           const box = document.createElement("div");
+           box.style.cssText = "width:min(100%,560px);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:24px;color:#10243e;box-shadow:0 20px 60px rgba(0,0,0,.25)";
+           const h = document.createElement("h2"); h.textContent = "Your live recording is ready";
+           const p = document.createElement("p"); p.textContent = "Your live has already ended. Preview the recording, then choose how you want users to find it.";
+           p.style.cssText = "color:#758195;font-size:13px;line-height:1.6;margin:10px 0 16px";
+           const audio = document.createElement("audio"); audio.controls = true; audio.style.width = "100%";
+           if (liveRecordingPreviewUrl) URL.revokeObjectURL(liveRecordingPreviewUrl);
+           liveRecordingPreviewUrl = URL.createObjectURL(liveRecordingBlob); audio.src = liveRecordingPreviewUrl;
+           const titleLabel = document.createElement("label"); titleLabel.textContent = "Recording title";
+           titleLabel.style.cssText = "display:block;font-size:12px;font-weight:700;margin-top:15px";
+           const titleInput = document.createElement("input"); titleInput.value = liveRecordingTitle || "Live recording"; titleInput.maxLength = 120;
+           titleInput.style.cssText = "display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:11px;border:1px solid #d7deea;border-radius:9px"; titleLabel.append(titleInput);
+           const descLabel = document.createElement("label"); descLabel.textContent = "Description (optional)";
+           descLabel.style.cssText = "display:block;font-size:12px;font-weight:700;margin-top:12px";
+           const descInput = document.createElement("textarea"); descInput.value = liveRecordingDescription || ""; descInput.maxLength = 700; descInput.rows = 3;
+           descInput.style.cssText = "display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:11px;border:1px solid #d7deea;border-radius:9px;resize:vertical"; descLabel.append(descInput);
+           const actions = document.createElement("div"); actions.style.cssText = "display:flex;flex-wrap:wrap;gap:9px;margin-top:18px";
+           const podcastBtn = document.createElement("button"); podcastBtn.className = "studio-btn"; podcastBtn.textContent = "🎧 Publish as podcast";
+           const replayBtn = document.createElement("button"); replayBtn.className = "studio-btn yellow"; replayBtn.textContent = "🔴 Publish as ended live replay";
+           const privateBtn = document.createElement("button"); privateBtn.className = "studio-btn danger"; privateBtn.textContent = "Discard recording";
+           const status = document.createElement("p"); status.style.cssText = "font-size:12px;color:#758195;margin-top:12px";
+           const publish = async (type) => {
+             const chosenTitle = safeText(titleInput.value);
+             if (!chosenTitle) { status.textContent = "Please enter a title."; titleInput.focus(); return; }
+             podcastBtn.disabled = replayBtn.disabled = privateBtn.disabled = true;
+             status.textContent = "Uploading recording… Please keep this page open.";
+             let objectPath = null;
+             try {
+               const blob = liveRecordingBlob;
+               const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+               objectPath = `${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+               const contentType = blob.type.includes("mp4") ? "audio/mp4" : "audio/webm";
+               const { error: uploadError } = await supabase.storage.from("podcasts").upload(objectPath, blob, { contentType, upsert: false });
+               if (uploadError) throw new Error("Audio upload failed: " + uploadError.message);
+               const name = currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Mac&Talk member";
+               const { error: insertError } = await supabase.from("podcast_episodes").insert({ host_user_id: currentUser.id, host_name: name, title: chosenTitle, description: safeText(descInput.value), audio_path: objectPath, published: true, episode_type: type });
+               if (insertError) throw new Error("Recording details could not be saved: " + insertError.message + ". Run the updated media SQL.");
+               modal.remove(); liveRecordingBlob = null; liveRecordingChunks = [];
+               if (liveRecordingPreviewUrl) URL.revokeObjectURL(liveRecordingPreviewUrl); liveRecordingPreviewUrl = null;
+               setStudioStatus("liveStatus", type === "live_replay" ? "Published as an ended live replay. Users can listen to it from the Podcast Library." : "Published as a podcast. Users can listen from the Podcast Library.");
+               showNotice(type === "live_replay" ? "Ended live replay published." : "Live recording published as a podcast."); await loadPodcasts();
+             } catch (e) {
+               console.error(e);
+               if (objectPath) { try { await supabase.storage.from("podcasts").remove([objectPath]); } catch (_) {} }
+               status.textContent = e.message || "Could not publish this recording.";
+               podcastBtn.disabled = replayBtn.disabled = privateBtn.disabled = false;
+             }
+           };
+           podcastBtn.onclick = () => publish("podcast"); replayBtn.onclick = () => publish("live_replay");
+           privateBtn.onclick = () => {
+             modal.remove(); liveRecordingBlob = null; liveRecordingChunks = [];
+             if (liveRecordingPreviewUrl) URL.revokeObjectURL(liveRecordingPreviewUrl); liveRecordingPreviewUrl = null;
+             setStudioStatus("liveStatus", "Recording discarded. The live session remains ended and was not published.");
+           };
+           actions.append(podcastBtn, replayBtn, privateBtn); box.append(h, p, audio, titleLabel, descLabel, actions, status); modal.append(box); document.body.append(modal);
+         }
+
+         async function startPodcastRecording() {
+           if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { setStudioStatus("recordStatus", "Audio recording needs a modern browser and HTTPS (or localhost).", true); return; }
+           if (!safeText($("podcastTitle").value)) { setStudioStatus("recordStatus", "Enter a podcast title before recording.", true); $("podcastTitle").focus(); return; }
+           try {
+             const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
+             podcastChunks=[]; podcastBlob=null;
+             const mimeType=["audio/webm;codecs=opus","audio/webm","audio/mp4"].find(t=>MediaRecorder.isTypeSupported(t));
+             podcastRecorder=mimeType?new MediaRecorder(stream,{mimeType}):new MediaRecorder(stream);
+             podcastRecorder.ondataavailable=e=>{if(e.data?.size) podcastChunks.push(e.data);};
+             podcastRecorder.onstop=()=>{
+               podcastBlob=new Blob(podcastChunks,{type:podcastRecorder.mimeType||"audio/webm"});
+               if (podcastPreviewUrl) URL.revokeObjectURL(podcastPreviewUrl);
+               podcastPreviewUrl=URL.createObjectURL(podcastBlob); $("recordPreview").src=podcastPreviewUrl; $("recordPreview").hidden=false;
+               $("publishPodcastBtn").disabled=!podcastBlob.size;
+               $("recordBtn").hidden=false; $("stopRecordBtn").hidden=true;
+               stream.getTracks().forEach(t=>t.stop());
+               const secs=Math.max(1,Math.round((Date.now()-recordingStartedAt)/1000));
+               setStudioStatus("recordStatus", `Recording ready (${Math.floor(secs/60)}:${String(secs%60).padStart(2,"0")}). Preview it, then publish when you are happy with it.`);
+             };
+             recordingStartedAt=Date.now(); podcastRecorder.start(1000);
+             $("recordBtn").hidden=true; $("stopRecordBtn").hidden=false; $("publishPodcastBtn").disabled=true;
+             setStudioStatus("recordStatus", "Recording… Speak clearly. Press Stop Recording when finished.");
+           } catch(e) { console.error(e); setStudioStatus("recordStatus", e.message || "Microphone permission was denied.", true); }
+         }
+
+         async function publishPodcast(event) {
+           event.preventDefault();
+           if (!podcastBlob?.size) { setStudioStatus("recordStatus", "Record a podcast first.", true); return; }
+           const title=safeText($("podcastTitle").value); if (!title) { setStudioStatus("recordStatus", "Enter a title for your podcast.", true); return; }
+           const btn=$("publishPodcastBtn"); btn.disabled=true; btn.textContent="Uploading…";
+           try {
+             const ext=podcastBlob.type.includes("mp4")?"m4a":"webm";
+             const path=`${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+             const uploadContentType=podcastBlob.type.includes("mp4")?"audio/mp4":"audio/webm";
+             const {error:uploadError}=await supabase.storage.from("podcasts").upload(path,podcastBlob,{contentType:uploadContentType,upsert:false});
+             if (uploadError) throw new Error("Audio upload failed: "+uploadError.message+". Check the podcasts storage bucket and policies.");
+             const name=currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Mac&Talk member";
+             const {error:insertError}=await supabase.from("podcast_episodes").insert({host_user_id:currentUser.id,host_name:name,title,description:safeText($("podcastDescription").value),audio_path:path,published:true,episode_type:"podcast"});
+             if (insertError) { await supabase.storage.from("podcasts").remove([path]); throw new Error("Podcast details could not be saved: "+insertError.message); }
+             podcastBlob=null; podcastChunks=[]; $("recordPreview").hidden=true; $("podcastForm").reset();
+             setStudioStatus("recordStatus", "Published successfully! Your podcast is now available in the Podcast Library.");
+             showNotice("Podcast published for Mac&Talk users."); await loadPodcasts();
+           } catch(e) { console.error(e); setStudioStatus("recordStatus", e.message || "Could not publish podcast.", true); }
+           finally { btn.disabled=!podcastBlob; btn.textContent="📤 Publish Podcast"; }
+         }
+
+         $("scheduledSessionSelect").addEventListener("change", async event => {
+           const id = event.target.value;
+           if (!id) return;
+           const { data, error } = await supabase.from("live_sessions").select("id,title,description,host_user_id,status").eq("id", id).maybeSingle();
+           if (error || !data || data.host_user_id !== currentUser?.id || data.status !== "scheduled") {
+             showNotice("That scheduled session is unavailable or is not assigned to your account.", "error");
+             event.target.value = "";
+             return;
+           }
+           $("liveTitle").value = data.title || "";
+           $("liveDescription").value = data.description || "";
+           setStudioStatus("liveStatus", "Ready to start the scheduled session: " + data.title);
+         });
+         $("liveForm").addEventListener("submit", startLive);
+         $("stopLiveBtn").addEventListener("click", stopLive);
+         $("recordBtn").addEventListener("click", startPodcastRecording);
+         $("stopRecordBtn").addEventListener("click",()=>{ if(podcastRecorder && podcastRecorder.state!=="inactive") podcastRecorder.stop(); });
+         $("podcastForm").addEventListener("submit", publishPodcast);
+         $("refreshPodcastsBtn").addEventListener("click",()=>loadPodcasts().catch(console.error));
+
+        // =========================================
+        // PROFILE
+        // =========================================
+
+        function renderProfile(user) {
+          const metadata = user.user_metadata || {};
+
+          const name =
+            metadata.full_name ||
+            metadata.name ||
+            metadata.display_name ||
+            user.email?.split("@")[0] ||
+            "Member";
+
+          const email = user.email || "No email available";
+          const avatarText = initials(name);
+
+          $("welcomeName").textContent = name;
+          $("headerName").textContent = name;
+          $("headerAvatar").textContent = avatarText;
+
+          $("profileAvatar").textContent = avatarText;
+          $("profileName").textContent = name;
+          $("profileEmail").textContent = email;
+          $("profileFullName").textContent = name;
+          $("profileEmailRow").textContent = email;
+          $("profileUid").textContent = user.id;
+
+          $("profileVerified").textContent =
+            user.email_confirmed_at ? "Verified" : "Not verified";
+
+          $("accountStatus").textContent = "Active";
+
+          $("memberSince").textContent = user.created_at
+            ? formatDate(user.created_at, {
+                month: "short",
+                year: "numeric"
+              })
+            : "Unknown";
+        }
+
+        // =========================================
+        // SIGN OUT
+        // =========================================
+
+        async function handleSignOut() {
+          if (signingOut) return;
+          signingOut = true;
+
+          const buttons = [
+            $("sidebarSignOut"),
+            $("settingsSignOut")
+          ].filter(Boolean);
+
+          buttons.forEach(button => {
+            button.disabled = true;
+          });
+
+          const { error } = await supabase.auth.signOut();
+
+          if (error) {
+            console.error("Supabase sign-out error:", error);
+            signingOut = false;
+
+            buttons.forEach(button => {
+              button.disabled = false;
+            });
+
+            showNotice("Could not sign out. Please try again.", "error");
+            return;
+          }
+
+          location.replace("login.html");
+        }
+
+        $("sidebarSignOut").addEventListener("click", handleSignOut);
+        $("settingsSignOut").addEventListener("click", handleSignOut);
+
+        // =========================================
+        // AUTHENTICATION
+        // =========================================
+
+        async function handleSession(session) {
+          if (signingOut) return;
+
+          if (!session?.user) {
+            currentUser = null;
+            sessionRequest++;
+            location.replace("login.html");
+            return;
+          }
+
+          currentUser = session.user;
+          renderProfile(currentUser);
+
+          loadingScreen.hidden = true;
+          appElement.hidden = false;
+
+          await loadLiveSessions();
+          if (PAGE_MODE === "studio") await loadMyLiveSessions();
+          if (PAGE_MODE === "podcasts") await loadPodcasts();
+        }
+
+        // Subscribe to sign-in, sign-out, and token/session changes.
+        // Defer processing to avoid calling other Supabase Auth methods
+        // while the auth-state callback is executing.
+        const {
+          data: { subscription }
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+          setTimeout(() => {
+            handleSession(session).catch(error => {
+              console.error("Dashboard session error:", error);
+              showError("Could not load your account. Please sign in again.");
+            });
+          }, 0);
+        });
+
+        // Explicit initial check as a fallback.
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.session) {
+          await handleSession(data.session);
+        } else {
+          // The auth listener will also handle the initial session event.
+          // Redirect if there is no signed-in account.
+          location.replace("login.html");
+        }
+
+        // Update email-verification display when returning to the page.
+        document.addEventListener("visibilitychange", async () => {
+          if (document.visibilityState !== "visible" || !currentUser) return;
+
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (!sessionData.session?.user) return;
+
+          currentUser = sessionData.session.user;
+
+          $("profileVerified").textContent =
+            currentUser.email_confirmed_at ? "Verified" : "Not verified";
+        });
+
+        window.addEventListener("pagehide", () => {
+          subscription.unsubscribe();
+        });
+
+      } catch (error) {
+        console.error("Mac&Talk Supabase dashboard error:", error);
+
+        showError(
+          error?.message ||
+          "Could not initialize Supabase. Check your project URL, publishable key, and internet connection."
+        );
+      }
+    </script>
+
+  </body>
+  </html>
