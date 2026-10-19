@@ -1162,7 +1162,11 @@ a:focus-visible {
 
                 <!-- CREATOR STUDIO -->
                 <section class="page-panel active" id="studioPage">
-                    <div class="studio-intro"><h2>🎙️ Creator Studio</h2><p>Start an audio live session or record a podcast. Live sessions are recorded privately for you while you broadcast. When you end the live, you can preview the recording and choose to publish it as a podcast or as an ended live replay. Allow microphone access when your browser asks.</p></div>
+                    <div class="studio-intro"><h2>🎙️ Creator Studio</h2><p>Start an admin-assigned live session with invited presenters, or create your own audio live. Live sessions are recorded privately for you while you broadcast. When you end the live, you can preview the recording and choose to publish it as a podcast or as an ended live replay. Allow microphone access when your browser asks.</p></div>
+                    <article class="studio-card" style="margin-bottom:18px">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3>📅 Sessions assigned by the admin</h3><p>Sessions where you are the host or an invited presenter appear here. Choose a scheduled session to start it, or join one that is already live.</p></div><button class="studio-btn" id="refreshAssignedSessionsBtn" type="button">↻ Refresh sessions</button></div>
+                      <div class="session-grid" id="assignedSessions" style="margin-top:14px"><div class="empty-state">Loading your assigned sessions…</div></div>
+                    </article>
                     <div class="studio-grid">
                       <article class="studio-card">
                         <h3>🔴 Start an audio live</h3><p>Go live with your microphone. Other signed-in Mac&Talk users can join and listen while your session is live.</p>
@@ -1302,6 +1306,16 @@ a:focus-visible {
       let noticeTimeout = null;
       let sessionRequest = 0;
       let signingOut = false;
+      let loadedLiveSessions = [];
+      let assignedSessionIds = new Set();
+      let sessionPresenterIds = new Map();
+      let sessionHostIds = new Map();
+      let activeLiveId = null;
+      let liveChannel = null;
+      let liveStream = null;
+      let livePeers = new Map();
+      let listenerConnections = new Map();
+      let isLiveHost = false;
 
       // =========================================
       // ERROR AND NOTICE HANDLING
@@ -1493,55 +1507,122 @@ a:focus-visible {
 
         async function loadLiveSessions() {
           const requestId = ++sessionRequest;
-
-          const { data, error } = await supabase
-            .from("live_sessions")
-            .select("*")
-            .eq("approved", true)
-            .in("status", ["live", "scheduled"]);
-
+          const { data, error } = await supabase.from("live_sessions").select("*").eq("approved", true).in("status", ["live", "scheduled"]);
           if (requestId !== sessionRequest) return;
-
           if (error) {
             console.error("Supabase live_sessions error:", error);
-
-            showSessionsError(
-              "Could not load sessions. Check the live_sessions table, its column names, and its Row Level Security policies."
-            );
-
+            showSessionsError("Could not load sessions. Check live_sessions table columns and Row Level Security policies.");
+            const assigned = $("assignedSessions");
+            if (assigned) assigned.textContent = "Could not load admin-assigned sessions: " + error.message;
             return;
           }
-
-          const sessions = (data || []).map(row => ({
+          const rows = data || [];
+          const ids = rows.map(row => row.id).filter(Boolean);
+          let invitedRows = [];
+          if (currentUser && ids.length) {
+            const { data: invitations, error: inviteError } = await supabase.from("live_session_invitees").select("session_id,user_id").eq("user_id", currentUser.id).in("session_id", ids);
+            if (inviteError) {
+              console.warn("Could not load live presenter invitations:", inviteError);
+              const assigned = $("assignedSessions");
+              if (assigned) assigned.textContent = "Sessions loaded, but presenter invitations could not be read. Check live_session_invitees SELECT policy: " + inviteError.message;
+            } else invitedRows = invitations || [];
+          }
+          assignedSessionIds = new Set(invitedRows.map(row => row.session_id));
+          sessionPresenterIds = new Map();
+          sessionHostIds = new Map();
+          // Load all assigned speakers for mesh audio and distinguish hosts from regular presenters.
+          const assignedIds = [...new Set([...assignedSessionIds, ...rows.filter(row => row.owner_id === currentUser?.id || row.host_user_id === currentUser?.id).map(row => row.id)])];
+          if (assignedIds.length) {
+            const { data: allInvitees, error: allInviteesError } = await supabase.from("live_session_invitees").select("session_id,user_id").in("session_id", assignedIds);
+            if (!allInviteesError) for (const invite of (allInvitees || [])) {
+              if (!sessionPresenterIds.has(invite.session_id)) sessionPresenterIds.set(invite.session_id, new Set());
+              sessionPresenterIds.get(invite.session_id).add(invite.user_id);
+            }
+            const { data: allHosts, error: allHostsError } = await supabase.from("live_session_hosts").select("session_id,user_id").in("session_id", assignedIds);
+            if (!allHostsError) for (const host of (allHosts || [])) {
+              if (!sessionHostIds.has(host.session_id)) sessionHostIds.set(host.session_id, new Set());
+              sessionHostIds.get(host.session_id).add(host.user_id);
+            } else console.warn("Could not load host assignments; primary host fallback will be used:", allHostsError);
+            for (const row of rows) {
+              if (!assignedIds.includes(row.id)) continue;
+              if (!sessionHostIds.has(row.id)) sessionHostIds.set(row.id, new Set());
+              if (row.owner_id) sessionHostIds.get(row.id).add(row.owner_id);
+            }
+          }
+          const sessions = rows.map(row => ({
             id: row.id,
             title: row.title || "Untitled session",
             host: row.host || row.host_name || "Mac&Talk Community",
-            host_user_id: row.host_user_id || null,
+            host_user_id: row.host_user_id || row.owner_id || null,
+            owner_id: row.owner_id || row.host_user_id || null,
+            scheduled_at: row.scheduled_at || null,
+            join_url: row.join_url || null,
             description: row.description || "",
             emoji: row.emoji || "🎙️",
-            status: row.status
+            status: row.status,
+            assigned_to_me: Boolean(currentUser && (row.owner_id === currentUser.id || row.host_user_id === currentUser.id || assignedSessionIds.has(row.id)))
           }));
-
+          loadedLiveSessions = sessions;
           sessions.sort((a, b) => {
             if (a.status === "live" && b.status !== "live") return -1;
             if (b.status === "live" && a.status !== "live") return 1;
             return a.title.localeCompare(b.title);
           });
-
           renderSessions("dashboardSessions", sessions.slice(0, 2));
           renderSessions("allSessions", sessions);
-
+          renderAssignedSessions(sessions.filter(item => item.assigned_to_me));
           const scheduledSelect = $("scheduledSessionSelect");
           if (scheduledSelect && currentUser) {
             const keep = scheduledSelect.value;
             scheduledSelect.replaceChildren(new Option("Create a new live session", ""));
-            sessions.filter(item => item.status === "scheduled" && item.host_user_id === currentUser.id).forEach(item => {
-              scheduledSelect.add(new Option(item.title, item.id));
+            sessions.filter(item => item.status === "scheduled" && item.assigned_to_me).forEach(item => {
+              const label = item.scheduled_at ? `${item.title} — ${formatDate(item.scheduled_at, {dateStyle:"medium",timeStyle:"short"})}` : item.title;
+              scheduledSelect.add(new Option(label, item.id));
             });
             if ([...scheduledSelect.options].some(option => option.value === keep)) scheduledSelect.value = keep;
           }
-
           $("sessionCount").textContent = String(sessions.length);
+        }
+
+        function renderAssignedSessions(sessions) {
+          const container = $("assignedSessions");
+          if (!container) return;
+          container.replaceChildren();
+          if (!sessions.length) {
+            const empty = document.createElement("div"); empty.className = "empty-state";
+            empty.textContent = "No admin-assigned sessions found for your account. Ask the admin to select your account as the host or add you under Invite users, then approve the session.";
+            container.append(empty); return;
+          }
+          sessions.forEach(session => {
+            const card = document.createElement("article"); card.className = "session-card";
+            const top = document.createElement("div"); top.className = "session-card-top";
+            const emoji = document.createElement("div"); emoji.className = "session-emoji"; emoji.textContent = session.emoji || "🎙️";
+            const tag = document.createElement("span"); tag.className = "session-tag"; tag.textContent = session.status === "live" ? "Live now" : "Scheduled";
+            top.append(emoji, tag);
+            const title = document.createElement("h3"); title.textContent = session.title;
+            const desc = document.createElement("p"); desc.textContent = session.description || "You have been assigned as a presenter for this session.";
+            const details = document.createElement("p"); details.style.cssText = "font-size:12px;color:#758195;margin-top:8px";
+            details.textContent = (session.scheduled_at ? "Scheduled: " + formatDate(session.scheduled_at, {dateStyle:"medium",timeStyle:"short"}) + " · " : "") + (session.owner_id === currentUser?.id ? "You are the host" : "You are an invited presenter");
+            const footer = document.createElement("div"); footer.className = "session-footer";
+            const btn = document.createElement("button"); btn.className = "join-btn"; btn.type = "button";
+            const hostSet = sessionHostIds.get(session.id) || new Set([session.owner_id].filter(Boolean));
+            const canStart = hostSet.has(currentUser?.id) || session.owner_id === currentUser?.id || session.host_user_id === currentUser?.id;
+            btn.textContent = session.status === "live" ? "Join as presenter" : (canStart ? "Start this session" : "Waiting for host");
+            btn.disabled = session.status !== "live" && !canStart;
+            if (btn.disabled) btn.title = "The assigned host must start this session first.";
+            btn.addEventListener("click", async () => {
+              try {
+                if (session.status === "live") await joinLiveSession(session, true);
+                else {
+                  if (!canStart) throw new Error("Only an admin-assigned host can start this session. Wait for the host, then join as presenter.");
+                  const select = $("scheduledSessionSelect"); if (select) select.value = session.id;
+                  $("liveTitle").value = session.title; $("liveDescription").value = session.description || "";
+                  $("liveForm").requestSubmit();
+                }
+              } catch (err) { console.error(err); showNotice(err.message || "Could not open this session.", "error"); }
+            });
+            footer.append(btn); card.append(top,title,desc,details,footer); container.append(card);
+          });
         }
 
         // =========================================
@@ -1691,24 +1772,36 @@ a:focus-visible {
              const scheduledId = $("scheduledSessionSelect")?.value || "";
              let row, error;
              if (scheduledId) {
-               const result = await supabase.from("live_sessions").update({ status: "live" })
-                 .eq("id", scheduledId).eq("host_user_id", currentUser.id).eq("status", "scheduled")
-                 .select("id,title,description,status,host_user_id").single();
+               const scheduledSession = loadedLiveSessions.find(item => item.id === scheduledId && item.assigned_to_me);
+               if (!scheduledSession) throw new Error("This session was not assigned to your account. Ask the admin to add you as host or presenter.");
+               const hostSet = sessionHostIds.get(scheduledId) || new Set([scheduledSession.owner_id].filter(Boolean));
+               if (!hostSet.has(currentUser.id) && scheduledSession.owner_id !== currentUser.id && scheduledSession.host_user_id !== currentUser.id) throw new Error("Only a host selected by the admin can start this scheduled session. You are invited as a presenter; wait for the host to start it.");
+               const presenterName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.display_name || currentUser.email?.split("@")[0] || "Mac&Talk member";
+               const result = await supabase.from("live_sessions").update({ status: "live", owner_id: currentUser.id, host_user_id: currentUser.id, host: presenterName, host_name: presenterName, updated_at: new Date().toISOString() })
+                 .eq("id", scheduledId).eq("status", "scheduled")
+                 .select("id,title,description,status,host_user_id,owner_id").single();
                row = result.data; error = result.error;
              } else {
                const result = await supabase.from("live_sessions").insert({
                  title, description, host: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
                  host_name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Mac&Talk member",
-                 host_user_id: currentUser.id, emoji: "🎙️", status: "live", approved: true
-               }).select("id,title,description,status,host_user_id").single();
+                 host_user_id: currentUser.id, owner_id: currentUser.id, emoji: "🎙️", status: "live", approved: true
+               }).select("id,title,description,status,host_user_id,owner_id").single();
                row = result.data; error = result.error;
              }
              if (error) throw new Error("Could not start the live session: " + error.message + ". Check the media SQL policies and make sure the scheduled session is assigned to your account.");
              activeLiveId = row.id;
+             isLiveHost = true;
              liveChannel = supabase.channel(`live-room-${activeLiveId}`, { config: { broadcast: { self: false } } });
              liveChannel.on("broadcast", { event: "signal" }, ({ payload }) => handleLiveSignal(payload).catch(err => console.error("Live signal:", err)));
-             const sub = await liveChannel.subscribe();
-             if (sub === "CHANNEL_ERROR" || sub === "TIMED_OUT") throw new Error("Could not connect to live signaling. Check Supabase Realtime is enabled.");
+             const sub = await new Promise(resolve => {
+               let settled = false;
+               liveChannel.subscribe(status => { if (!settled && ["SUBSCRIBED","CHANNEL_ERROR","TIMED_OUT","CLOSED"].includes(status)) { settled = true; resolve(status); } });
+               setTimeout(() => { if (!settled) { settled = true; resolve("TIMED_OUT"); } }, 10000);
+             });
+             if (sub !== "SUBSCRIBED") throw new Error("Could not connect to live signaling (" + sub + "). Check Supabase Realtime is enabled.");
+             // Notify assigned presenters that the room is live.
+             await sendLiveSignal({kind:"join",from:currentUser.id,to:"*",session_id:activeLiveId});
              $("startLiveBtn").hidden=true; $("stopLiveBtn").hidden=false;
              setStudioStatus("liveStatus", `🔴 You are LIVE: ${title}. Keep this tab open while broadcasting. Listeners can join from Live Sessions.`);
              showNotice("Your audio live is now active.");
@@ -1716,7 +1809,7 @@ a:focus-visible {
            } catch (err) {
              console.error(err);
              if (liveRecorder && liveRecorder.state !== "inactive") { try { liveRecorder.stop(); } catch (_) {} }
-             liveStream?.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null; liveRecorder=null;
+             liveStream?.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null; liveChannel=null; liveRecorder=null; isLiveHost=false;
              setStudioStatus("liveStatus", err.message || "Could not start live.", true);
            } finally { btn.disabled=false; }
          }
@@ -1727,59 +1820,96 @@ a:focus-visible {
          }
 
          async function handleLiveSignal(payload) {
-           if (!payload || (!activeLiveId && !listenerConnections.size)) return;
-           // Host receives join/answer/candidate messages from listeners.
-           if (liveStream && payload.to === currentUser.id) {
-             const peerId = payload.from;
-             if (payload.kind === "join") {
-               if (livePeers.has(peerId)) return;
-               const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-               livePeers.set(peerId, pc);
-               liveStream.getTracks().forEach(track => pc.addTrack(track, liveStream));
-               pc.onicecandidate = e => { if (e.candidate) sendLiveSignal({ kind:"candidate", from:currentUser.id, to:peerId, candidate:e.candidate }); };
-               const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
-               await sendLiveSignal({ kind:"offer", from:currentUser.id, to:peerId, sdp:pc.localDescription });
-               pc.onconnectionstatechange = () => { if (["failed","closed","disconnected"].includes(pc.connectionState)) { pc.close(); livePeers.delete(peerId); } };
-             } else if (payload.kind === "answer") {
-               const pc=livePeers.get(peerId); if (pc) await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-             } else if (payload.kind === "candidate") {
-               const pc=livePeers.get(peerId); if (pc && payload.candidate) { try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn(e); } }
-             }
+           if (!payload || payload.session_id && activeLiveId && payload.session_id !== activeLiveId) return;
+           const roomId = activeLiveId || [...listenerConnections.values()][0]?.sessionId;
+           if (!roomId || (payload.session_id && payload.session_id !== roomId)) return;
+           const peerId = payload.from;
+           if (!peerId || peerId === currentUser.id) return;
+           // Any active presenter offers their microphone to a newly joining presenter.
+           if (payload.kind === "join" && (payload.to === "*" || payload.to === currentUser.id) && liveStream && activeLiveId === roomId) {
+             if (livePeers.has(peerId)) return;
+             const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+             livePeers.set(peerId, pc);
+             liveStream.getTracks().forEach(track => pc.addTrack(track, liveStream));
+             pc.ontrack = event => attachPresenterAudio(peerId, event.streams[0]);
+             pc.onicecandidate = event => { if (event.candidate) sendLiveSignal({kind:"candidate",from:currentUser.id,to:peerId,candidate:event.candidate,session_id:roomId}); };
+             pc.onconnectionstatechange = () => { if (["failed","closed","disconnected"].includes(pc.connectionState)) { pc.close(); livePeers.delete(peerId); } };
+             const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+             await sendLiveSignal({kind:"offer",from:currentUser.id,to:peerId,sdp:pc.localDescription,session_id:roomId});
              return;
            }
-           // Listener receives offer/candidates addressed to this account.
-           if (payload.to !== currentUser.id || !listenerConnections.has(payload.from)) return;
-           const state = listenerConnections.get(payload.from); const pc = state.pc;
+           if (payload.to !== currentUser.id) return;
            if (payload.kind === "offer") {
+             let state = listenerConnections.get(peerId);
+             if (!state) {
+               const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+               state = {pc, sessionId:roomId}; listenerConnections.set(peerId,state);
+               if (liveStream) liveStream.getTracks().forEach(track => pc.addTrack(track, liveStream));
+               pc.ontrack = event => attachPresenterAudio(peerId, event.streams[0]);
+               pc.onicecandidate = event => { if (event.candidate) sendLiveSignal({kind:"candidate",from:currentUser.id,to:peerId,candidate:event.candidate,session_id:roomId}); };
+             }
+             const pc=state.pc;
              await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-             const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
-             await state.channel.send({ type:"broadcast", event:"signal", payload:{kind:"answer",from:currentUser.id,to:payload.from,sdp:pc.localDescription} });
+             const answer=await pc.createAnswer(); await pc.setLocalDescription(answer);
+             await sendLiveSignal({kind:"answer",from:currentUser.id,to:peerId,sdp:pc.localDescription,session_id:roomId});
+           } else if (payload.kind === "answer") {
+             const pc=livePeers.get(peerId); if (pc && !pc.currentRemoteDescription) await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
            } else if (payload.kind === "candidate" && payload.candidate) {
-             try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn(e); }
+             const pc=livePeers.get(peerId) || listenerConnections.get(peerId)?.pc;
+             if (pc) { try { await pc.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) { console.warn("ICE candidate:",e); } }
            }
          }
 
-         async function joinLiveSession(session) {
+         function attachPresenterAudio(peerId, stream) {
+           let audio = document.getElementById("presenter-audio-" + peerId);
+           if (!audio) {
+             audio = document.createElement("audio"); audio.id = "presenter-audio-" + peerId; audio.autoplay = true; audio.playsInline = true; audio.hidden = true; document.body.append(audio);
+           }
+           audio.srcObject = stream; audio.play().catch(() => showNotice("A presenter connected. Click the page once if your browser blocks audio autoplay."));
+         }
+
+         async function joinLiveSession(session, asPresenter = false) {
            if (!session?.id) throw new Error("This live session has no valid ID.");
-           if (session.host_user_id === currentUser.id) { showNotice("You are hosting this live from Creator Studio."); return; }
-           const channel=supabase.channel(`live-room-${session.id}`, { config:{broadcast:{self:false}} });
-           const peerId=session.host_user_id;
-           const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
-           const audio=document.createElement("audio"); audio.autoplay=true; audio.controls=true; audio.style.width="100%"; audio.style.marginTop="12px";
-           const modal=document.createElement("div"); modal.style.cssText="position:fixed;inset:0;z-index:1000;background:rgba(7,18,33,.72);display:grid;place-items:center;padding:20px";
-           const box=document.createElement("div"); box.style.cssText="width:min(100%,460px);background:white;border-radius:18px;padding:24px;color:#10243e";
-           const heading=document.createElement("h2"); heading.textContent="🎙️ Live: "+(session.title||"Mac&Talk live");
-           const info=document.createElement("p"); info.textContent="Connecting to the host… If you hear nothing, check your device volume."; info.style.cssText="font-size:13px;color:#758195;margin:12px 0";
-           const close=document.createElement("button"); close.className="studio-btn"; close.textContent="Leave live"; close.style.marginTop="14px";
-           box.append(heading,info,audio,close); modal.append(box); document.body.append(modal);
-           const state={pc,channel,modal}; listenerConnections.set(peerId,state);
-           pc.ontrack=e=>{ audio.srcObject=e.streams[0]; info.textContent="Connected. You are listening live."; audio.play().catch(()=>{info.textContent="Connected. Press play to hear the live.";}); };
-           pc.onicecandidate=e=>{ if(e.candidate) channel.send({type:"broadcast",event:"signal",payload:{kind:"candidate",from:currentUser.id,to:peerId,candidate:e.candidate}}); };
-           channel.on("broadcast",{event:"signal"},({payload})=>handleLiveSignal(payload).catch(console.error));
-           const result=await channel.subscribe();
-           if (result === "CHANNEL_ERROR" || result === "TIMED_OUT") { modal.remove(); listenerConnections.delete(peerId); pc.close(); throw new Error("Could not connect to the live room. Please try again."); }
-           await channel.send({type:"broadcast",event:"signal",payload:{kind:"join",from:currentUser.id,to:peerId}});
-           close.onclick=async()=>{ listenerConnections.delete(peerId); pc.close(); await supabase.removeChannel(channel); modal.remove(); };
+           if (session.status !== "live") throw new Error("This session has not started yet. Use Start this session if it is assigned to you.");
+           if (activeLiveId && activeLiveId !== session.id) throw new Error("Leave your current live session before joining another one.");
+           if (activeLiveId === session.id && liveStream) { showNotice("You are already connected to this live session."); return; }
+           if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone access requires HTTPS or localhost.");
+           const presenterIds = sessionPresenterIds.get(session.id) || new Set();
+           const canPresent = Boolean(session.assigned_to_me || session.owner_id === currentUser.id || session.host_user_id === currentUser.id);
+           if (asPresenter && !canPresent) throw new Error("The admin has not assigned you as a presenter for this session.");
+           const mic = canPresent ? await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false}) : null;
+           liveStream = mic; activeLiveId = session.id; isLiveHost = false;
+           liveChannel = supabase.channel(`live-room-${session.id}`, {config:{broadcast:{self:false}}});
+           liveChannel.on("broadcast",{event:"signal"},({payload})=>handleLiveSignal(payload).catch(err=>console.error("Live signal:",err)));
+           const status = await new Promise(resolve => {
+             let settled = false;
+             liveChannel.subscribe(value => { if (!settled && ["SUBSCRIBED","CHANNEL_ERROR","TIMED_OUT","CLOSED"].includes(value)) { settled = true; resolve(value); } });
+             setTimeout(() => { if (!settled) { settled = true; resolve("TIMED_OUT"); } },10000);
+           });
+           if (status !== "SUBSCRIBED") { mic.getTracks().forEach(t=>t.stop()); liveStream=null; activeLiveId=null; await supabase.removeChannel(liveChannel); liveChannel=null; throw new Error("Could not join the live room: " + status); }
+           const modal=document.createElement("div"); modal.style.cssText="position:fixed;inset:0;z-index:1200;background:rgba(7,18,33,.76);display:grid;place-items:center;padding:18px";
+           const box=document.createElement("div"); box.style.cssText="width:min(100%,500px);background:white;border-radius:18px;padding:24px;color:#10243e";
+           const heading=document.createElement("h2"); heading.textContent="🎙️ Presenter room: " + session.title;
+           const info=document.createElement("p"); info.textContent=canPresent ? "Your microphone is on. Use headphones to reduce echo. Other assigned presenters can join this room." : "You are listening to this live session. Only admin-assigned presenters can use their microphones."; info.style.cssText="font-size:13px;color:#758195;margin:12px 0";
+           const audioArea=document.createElement("div"); audioArea.id="presenterAudioArea";
+           const leave=document.createElement("button"); leave.className="studio-btn danger"; leave.textContent="Leave session"; leave.style.marginTop="16px";
+           box.append(heading,info,audioArea,leave); modal.append(box); document.body.append(modal);
+           // Store the modal with the presenter session so ICE and offers can be handled from this channel.
+           listenerConnections.set("__modal__",{modal,sessionId:session.id});
+           const targets = new Set([session.owner_id || session.host_user_id, ...presenterIds]); targets.delete(currentUser.id); targets.delete(undefined); targets.delete(null);
+           for (const peerId of targets) await sendLiveSignal({kind:"join",from:currentUser.id,to:peerId,session_id:session.id});
+           // Presenter broadcasts to the room so other already-connected speakers can offer their audio too.
+           if (canPresent) await sendLiveSignal({kind:"join",from:currentUser.id,to:"*",session_id:session.id});
+           leave.onclick=async()=>{
+             modal.remove();
+             for (const [peerId,pc] of livePeers) { pc.close(); livePeers.delete(peerId); }
+             for (const [peerId,state] of listenerConnections) { if (peerId === "__modal__") continue; state.pc?.close(); listenerConnections.delete(peerId); }
+             document.querySelectorAll('[id^="presenter-audio-"]').forEach(el=>el.remove());
+             liveStream?.getTracks().forEach(track=>track.stop()); liveStream=null;
+             if (liveChannel) await supabase.removeChannel(liveChannel); liveChannel=null; activeLiveId=null; isLiveHost=false;
+             listenerConnections.delete("__modal__"); showNotice("You left the presenter room.");
+           };
+           showNotice(canPresent ? "You joined as a presenter. Allow microphone access and use headphones." : "You joined the live as a listener.");
          }
 
          async function stopLive() {
@@ -1788,7 +1918,7 @@ a:focus-visible {
            const stopButton = $("stopLiveBtn");
            stopButton.disabled = true;
            setStudioStatus("liveStatus", "Ending live and finalizing your private recording…");
-           try { await supabase.from("live_sessions").update({status:"ended"}).eq("id",id).eq("host_user_id",currentUser.id); } catch(e) { console.error(e); }
+           try { const {error} = await supabase.from("live_sessions").update({status:"ended",updated_at:new Date().toISOString()}).eq("id",id); if (error) console.error("Could not mark live as ended:",error); } catch(e) { console.error(e); }
            let recordingReady = Promise.resolve();
            if (liveRecorder && liveRecorder.state !== "inactive") {
              recordingReady = new Promise(resolve => {
@@ -1802,8 +1932,10 @@ a:focus-visible {
            }
            await recordingReady;
            livePeers.forEach(pc=>pc.close()); livePeers.clear();
+           for (const state of listenerConnections.values()) state.pc?.close(); listenerConnections.clear();
+           document.querySelectorAll('[id^="presenter-audio-"]').forEach(el=>el.remove());
            liveStream?.getTracks().forEach(track=>track.stop()); liveStream=null;
-           if (liveChannel) await supabase.removeChannel(liveChannel); liveChannel=null; activeLiveId=null;
+           if (liveChannel) await supabase.removeChannel(liveChannel); liveChannel=null; activeLiveId=null; isLiveHost=false;
            liveRecorder = null;
            $("startLiveBtn").hidden=false; $("stopLiveBtn").hidden=true; stopButton.disabled = false;
            setStudioStatus("liveStatus", "Live ended. Choose whether to publish your recording or keep it private.");
@@ -1918,12 +2050,14 @@ a:focus-visible {
            finally { btn.disabled=!podcastBlob; btn.textContent="📤 Publish Podcast"; }
          }
 
-         $("scheduledSessionSelect").addEventListener("change", async event => {
+         $("refreshAssignedSessionsBtn")?.addEventListener("click", () => loadLiveSessions().catch(err => showNotice(err.message || "Could not refresh sessions.", "error")));
+
+        $("scheduledSessionSelect").addEventListener("change", async event => {
            const id = event.target.value;
            if (!id) return;
-           const { data, error } = await supabase.from("live_sessions").select("id,title,description,host_user_id,status").eq("id", id).maybeSingle();
-           if (error || !data || data.host_user_id !== currentUser?.id || data.status !== "scheduled") {
-             showNotice("That scheduled session is unavailable or is not assigned to your account.", "error");
+           const data = loadedLiveSessions.find(item => item.id === id);
+           if (!data || !data.assigned_to_me || data.status !== "scheduled") {
+             showNotice("That scheduled session is unavailable or is not assigned to your account. Ask the admin to select you as host or presenter.", "error");
              event.target.value = "";
              return;
            }
