@@ -3,17 +3,22 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 /* =========================================
    MAC&TALK — MAIN WEBSITE SCRIPT
+   Podcasts + Audio + Live + Upcoming
 ========================================= */
 
-const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+const SUPABASE_URL =
+  "https://gprdmwjqgyrvqrgjkycc.supabase.co";
 
-// IMPORTANT: This must exactly match your Supabase Storage bucket name.
+const SUPABASE_KEY =
+  "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+
 const AUDIO_BUCKET = "podcasts";
+const LIVE_REFRESH_MS = 30000;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = (selector) => document.querySelector(selector);
+const byId = (id) => document.getElementById(id);
 
 let allEpisodes = [];
 let refreshInProgress = false;
@@ -34,7 +39,7 @@ function safe(value) {
 
 function validHttpUrl(value) {
   try {
-    const url = new URL(value);
+    const url = new URL(String(value || "").trim());
     return url.protocol === "https:" || url.protocol === "http:";
   } catch {
     return false;
@@ -56,29 +61,32 @@ function niceDate(value) {
   });
 }
 
-function getElement(id) {
-  return document.getElementById(id);
-}
-
 function setMessage(id, message) {
-  const element = getElement(id);
+  const element = byId(id);
   if (element) element.textContent = message;
 }
 
 function showElement(id, show) {
-  const element = getElement(id);
+  const element = byId(id);
   if (element) element.hidden = !show;
 }
 
-function escapeAttribute(value) {
-  return safe(value);
+function logSupabaseError(label, error) {
+  console.error(label, {
+    message: error?.message || String(error),
+    code: error?.code,
+    details: error?.details,
+    hint: error?.hint,
+    status: error?.status
+  });
 }
 
 /* =========================================
-   PODCAST CATEGORY
-   Your current database schema does not
-   contain a category column, so categories
-   are inferred from the episode information.
+   CATEGORY HELPERS
+
+   Your database table does not contain a
+   category column, so categories are inferred
+   from the title and description.
 ========================================= */
 
 function inferCategory(episode) {
@@ -114,91 +122,126 @@ function categoryLabel(category) {
 }
 
 /* =========================================
-   AUDIO URL RESOLUTION
+   STORAGE PATH HELPERS
 
-   Storage paths should look like:
+   Example audio_path:
    user-id/file-name.webm
 
-   Do not include the bucket name at
-   the beginning of audio_path.
+   Do not include "podcasts/" at the start
+   of audio_path.
 ========================================= */
 
-function cleanStoragePath(path) {
-  let result = String(path || "").trim();
+function cleanStoragePath(value) {
+  let path = String(value || "").trim();
 
-  if (!result) return "";
+  if (!path) return "";
 
-  // If a full URL was stored in audio_path,
-  // use it directly instead.
-  if (validHttpUrl(result)) return result;
+  // A complete URL is not a Storage object path.
+  if (validHttpUrl(path)) return path;
 
-  result = result.replace(/^\/+/, "");
+  path = path.replace(/^\/+/, "");
 
-  // Remove an accidentally duplicated bucket prefix.
-  const bucketPrefix = `${AUDIO_BUCKET}/`;
+  // Remove the bucket name if it was saved
+  // accidentally as part of audio_path.
+  const prefix = `${AUDIO_BUCKET}/`;
 
-  if (result.startsWith(bucketPrefix)) {
-    result = result.slice(bucketPrefix.length);
+  if (path.startsWith(prefix)) {
+    path = path.slice(prefix.length);
   }
 
-  return result;
+  return path;
 }
+
+/* =========================================
+   RESOLVE PODCAST AUDIO URL
+
+   1. Use audio_path if it is already a URL.
+   2. Request a fresh signed URL.
+   3. Try a saved audio_url.
+   4. Try a public Storage URL.
+
+   IMPORTANT:
+   A generated URL does not prove that the
+   object exists or that playback will work.
+========================================= */
 
 async function resolveAudioUrl(episode) {
   const rawPath = cleanStoragePath(episode.audio_path);
+  const savedUrl = String(episode.audio_url || "").trim();
 
-  // A full URL in audio_path is already usable.
+  // audio_path can contain a complete external URL.
   if (validHttpUrl(rawPath)) {
     return rawPath;
   }
 
-  // Prefer a signed URL. This also works with a private
-  // bucket if the signed URL request is permitted.
-  if (rawPath) {
-    try {
-      const { data, error } = await supabase.storage
-        .from(AUDIO_BUCKET)
-        .createSignedUrl(rawPath, 3600);
+  if (!rawPath) {
+    console.error("Podcast has no audio_path:", {
+      title: episode.title,
+      id: episode.id
+    });
 
-      if (!error && data?.signedUrl && validHttpUrl(data.signedUrl)) {
-        return data.signedUrl;
-      }
-
-      if (error) {
-        console.warn(
-          "Could not create a signed audio URL:",
-          error.message
-        );
-      }
-    } catch (error) {
-      console.warn("Signed audio URL request failed:", error);
-    }
-
-    // Try the public URL as a fallback. This only works
-    // when the bucket is public and the object is accessible.
-    try {
-      const { data } = supabase.storage
-        .from(AUDIO_BUCKET)
-        .getPublicUrl(rawPath);
-
-      if (data?.publicUrl && validHttpUrl(data.publicUrl)) {
-        return data.publicUrl;
-      }
-    } catch (error) {
-      console.warn("Could not create a public audio URL:", error);
-    }
+    return validHttpUrl(savedUrl) ? savedUrl : "";
   }
 
-  // Last fallback: an already-saved absolute URL.
-  if (validHttpUrl(episode.audio_url)) {
-    return episode.audio_url;
+  // First try a fresh signed URL.
+  try {
+    const { data, error } = await supabase.storage
+      .from(AUDIO_BUCKET)
+      .createSignedUrl(rawPath, 3600);
+
+    if (!error && data?.signedUrl && validHttpUrl(data.signedUrl)) {
+      return data.signedUrl;
+    }
+
+    if (error) {
+      logSupabaseError(
+        `Signed URL failed for "${episode.title}"`,
+        error
+      );
+    }
+  } catch (error) {
+    logSupabaseError(
+      `Signed URL request failed for "${episode.title}"`,
+      error
+    );
+  }
+
+  // A saved URL may still work if it is a valid public
+  // URL or a signed URL that has not expired.
+  if (validHttpUrl(savedUrl)) {
+    console.warn(
+      `Trying saved audio_url for "${episode.title}".`
+    );
+
+    return savedUrl;
+  }
+
+  // Try a public URL. This works only when the bucket
+  // and object are publicly accessible.
+  try {
+    const { data } = supabase.storage
+      .from(AUDIO_BUCKET)
+      .getPublicUrl(rawPath);
+
+    if (data?.publicUrl && validHttpUrl(data.publicUrl)) {
+      console.warn(
+        `Trying public Storage URL for "${episode.title}".`
+      );
+
+      return data.publicUrl;
+    }
+  } catch (error) {
+    logSupabaseError(
+      `Public URL creation failed for "${episode.title}"`,
+      error
+    );
   }
 
   return "";
 }
 
 /* =========================================
-   PODCAST CARD
+   PODCAST CARDS
 ========================================= */
 
 function podcastCard(episode) {
@@ -207,8 +250,9 @@ function podcastCard(episode) {
   const host = episode.host_name || "Mac&Talk Creator";
   const type = episode.episode_type || "podcast";
 
-  const coverEmoji = type === "live_replay" ? "🔴" : "🎙️";
-  const coverLabel = type === "live_replay"
+  const isReplay = type === "live_replay";
+  const coverEmoji = isReplay ? "🔴" : "🎙️";
+  const coverLabel = isReplay
     ? "Live Replay"
     : categoryLabel(category);
 
@@ -220,9 +264,10 @@ function podcastCard(episode) {
           controls
           preload="metadata"
           playsinline
-          src="${escapeAttribute(audioUrl)}"
-          aria-label="Listen to ${safe(episode.title)}"
+          src="${safe(audioUrl)}"
+          aria-label="Listen to ${safe(episode.title || "podcast")}"
         ></audio>
+
         <p class="audio-status" aria-live="polite">
           Loading audio…
         </p>
@@ -230,7 +275,7 @@ function podcastCard(episode) {
     `
     : `
       <p class="audio-status audio-error" role="status">
-        Audio unavailable. Check the Storage bucket and file path.
+        Audio URL unavailable. Check the audio file and Storage permissions.
       </p>
     `;
 
@@ -250,13 +295,16 @@ function podcastCard(episode) {
         <span class="podcast-cover-emoji" aria-hidden="true">
           ${coverEmoji}
         </span>
+
         <span class="podcast-category">
           ${safe(coverLabel)}
         </span>
       </div>
 
       <div class="podcast-content">
-        <p class="podcast-host">Hosted by ${safe(host)}</p>
+        <p class="podcast-host">
+          Hosted by ${safe(host)}
+        </p>
 
         <h3 class="podcast-title">
           ${safe(episode.title || "Untitled episode")}
@@ -277,86 +325,42 @@ function podcastCard(episode) {
 }
 
 /* =========================================
-   PODCAST SEARCH AND CATEGORY FILTER
-========================================= */
-
-function filterPodcasts() {
-  const grid = getElement("podcastGrid");
-  if (!grid) return;
-
-  const searchInput = getElement("searchInput");
-  const categoryFilter = getElement("categoryFilter");
-
-  const query = (searchInput?.value || "").trim().toLowerCase();
-  const selectedCategory = categoryFilter?.value || "all";
-
-  const cards = grid.querySelectorAll(".podcast-card");
-  let visibleCount = 0;
-
-  cards.forEach((card) => {
-    const searchText = card.dataset.search || "";
-    const category = card.dataset.category || "everyday";
-
-    const matchesSearch = !query || searchText.includes(query);
-    const matchesCategory =
-      selectedCategory === "all" ||
-      selectedCategory === category;
-
-    const visible = matchesSearch && matchesCategory;
-
-    card.hidden = !visible;
-
-    if (visible) visibleCount++;
-  });
-
-  const noPodcasts = getElement("noPodcasts");
-
-  if (noPodcasts) {
-    noPodcasts.hidden = visibleCount !== 0;
-
-    if (visibleCount === 0) {
-      noPodcasts.textContent = allEpisodes.length
-        ? "No episodes match your search. Try another keyword or category."
-        : "No published podcasts are available yet.";
-    }
-  }
-}
-
-function setupPodcastSearch() {
-  getElement("searchInput")?.addEventListener(
-    "input",
-    filterPodcasts
-  );
-
-  getElement("categoryFilter")?.addEventListener(
-    "change",
-    filterPodcasts
-  );
-}
-
-/* =========================================
-   AUDIO PLAYER STATUS
+   AUDIO PLAYER EVENTS
 ========================================= */
 
 function setupAudioPlayers() {
   document.querySelectorAll(".podcast-audio").forEach((audio) => {
+    if (audio.dataset.listenersReady === "true") return;
+
+    audio.dataset.listenersReady = "true";
+
     const card = audio.closest(".podcast-card");
     const status = card?.querySelector(".audio-status");
 
     if (!status) return;
 
-    audio.addEventListener("loadedmetadata", () => {
-      status.textContent = "";
+    audio.addEventListener("loadstart", () => {
+      status.textContent = "Loading audio…";
+      status.classList.remove("audio-error");
+    });
 
-      if (Number.isFinite(audio.duration) && audio.duration > 0) {
+    audio.addEventListener("loadedmetadata", () => {
+      if (
+        Number.isFinite(audio.duration) &&
+        audio.duration > 0
+      ) {
         const minutes = Math.floor(audio.duration / 60);
         const seconds = Math.floor(audio.duration % 60)
           .toString()
           .padStart(2, "0");
 
         status.textContent = `Duration: ${minutes}:${seconds}`;
+        status.classList.remove("audio-error");
+      } else if (audio.duration === Infinity) {
+        status.textContent = "Audio stream ready.";
       } else {
-        status.textContent = "Audio loaded.";
+        status.textContent =
+          "Audio loaded, but duration is unavailable.";
       }
     });
 
@@ -365,31 +369,13 @@ function setupAudioPlayers() {
       status.classList.remove("audio-error");
     });
 
-    audio.addEventListener("error", () => {
-      const code = audio.error?.code;
-
-      const messages = {
-        1: "Audio loading was interrupted. Try again.",
-        2: "Network error while loading audio.",
-        3: "The audio file could not be decoded. The format or codec may be unsupported.",
-        4: "Audio source unavailable. Check the file URL, Storage permissions, and file format."
-      };
-
-      status.textContent = messages[code] ||
-        "Unable to load audio. Check the file URL and format.";
-
-      status.classList.add("audio-error");
-
-      console.error("Podcast audio error:", {
-        title: card?.querySelector(".podcast-title")?.textContent,
-        source: audio.currentSrc,
-        errorCode: code,
-        errorMessage: audio.error?.message
-      });
-    });
-
     audio.addEventListener("playing", () => {
       status.textContent = "Playing";
+      status.classList.remove("audio-error");
+    });
+
+    audio.addEventListener("waiting", () => {
+      status.textContent = "Buffering audio…";
     });
 
     audio.addEventListener("pause", () => {
@@ -403,22 +389,126 @@ function setupAudioPlayers() {
     audio.addEventListener("ended", () => {
       status.textContent = "Episode finished.";
     });
+
+    audio.addEventListener("error", () => {
+      const code = audio.error?.code;
+
+      const messages = {
+        1: "Audio loading was interrupted. Try again.",
+        2: "Network error. Check your connection and audio URL.",
+        3: "Audio could not be decoded. Check the file format or codec.",
+        4: "Audio file missing or inaccessible. Check its Storage path and permissions."
+      };
+
+      status.textContent = messages[code] ||
+        "Unable to load audio. Check the audio URL and file.";
+
+      status.classList.add("audio-error");
+
+      const title = card?.querySelector(".podcast-title")?.textContent;
+
+      const episode = allEpisodes.find(
+        (item) => item.title === title
+      );
+
+      console.error("Mac&Talk podcast playback failed:", {
+        title,
+        episodeId: episode?.id,
+        audioPath: episode?.audio_path,
+        savedAudioUrl: episode?.audio_url,
+        source: audio.currentSrc,
+        errorCode: code,
+        errorMessage: audio.error?.message
+      });
+    });
+
+    // Recheck the source after listeners have been attached.
+    audio.load();
   });
 }
 
 /* =========================================
-   LOAD PUBLISHED PODCASTS FROM SUPABASE
+   SEARCH AND CATEGORY FILTER
+========================================= */
+
+function filterPodcasts() {
+  const grid = byId("podcastGrid");
+  if (!grid) return;
+
+  const query = (byId("searchInput")?.value || "")
+    .trim()
+    .toLowerCase();
+
+  const selectedCategory =
+    byId("categoryFilter")?.value || "all";
+
+  let visibleCount = 0;
+
+  grid.querySelectorAll(".podcast-card").forEach((card) => {
+    const searchText = card.dataset.search || "";
+    const category = card.dataset.category || "everyday";
+
+    const matchesSearch =
+      !query || searchText.includes(query);
+
+    const matchesCategory =
+      selectedCategory === "all" ||
+      selectedCategory === category;
+
+    const visible = matchesSearch && matchesCategory;
+
+    card.hidden = !visible;
+
+    if (visible) visibleCount++;
+  });
+
+  const noPodcasts = byId("noPodcasts");
+
+  if (noPodcasts) {
+    noPodcasts.hidden = visibleCount !== 0;
+
+    if (visibleCount === 0) {
+      noPodcasts.textContent = allEpisodes.length
+        ? "No episodes match your search. Try another keyword or category."
+        : "No published podcasts are available yet.";
+    }
+  }
+}
+
+function setupPodcastSearch() {
+  byId("searchInput")?.addEventListener(
+    "input",
+    filterPodcasts
+  );
+
+  byId("categoryFilter")?.addEventListener(
+    "change",
+    filterPodcasts
+  );
+}
+
+/* =========================================
+   LOAD LATEST PUBLISHED PODCASTS
+
+   Required HTML:
+   <div id="podcastGrid"></div>
+   <p id="noPodcasts" hidden></p>
+
+   Optional:
+   <input id="searchInput">
+   <select id="categoryFilter">...</select>
 ========================================= */
 
 async function loadPodcasts() {
-  const grid = getElement("podcastGrid");
+  const grid = byId("podcastGrid");
 
   if (!grid) {
-    console.warn("Element #podcastGrid was not found.");
+    console.warn("Mac&Talk: #podcastGrid was not found.");
     return;
   }
 
   setMessage("noPodcasts", "Loading podcasts…");
+  showElement("noPodcasts", true);
 
   try {
     const { data, error } = await supabase
@@ -440,30 +530,42 @@ async function loadPodcasts() {
 
     if (error) throw error;
 
-    allEpisodes = data || [];
+    const episodes = data || [];
 
-    if (allEpisodes.length === 0) {
+    if (episodes.length === 0) {
+      allEpisodes = [];
       grid.innerHTML = "";
+
       showElement("noPodcasts", true);
-      setMessage("noPodcasts", "No published podcasts are available yet.");
+      setMessage(
+        "noPodcasts",
+        "No published podcasts are available yet."
+      );
+
       return;
     }
 
-    // Resolve audio URLs without stopping other episodes
-    // from displaying if one file has a problem.
+    // Resolve each episode independently. One broken file
+    // should not prevent other podcast cards from appearing.
     allEpisodes = await Promise.all(
-      allEpisodes.map(async (episode) => {
+      episodes.map(async (episode) => {
         try {
           const resolvedAudioUrl = await resolveAudioUrl(episode);
-          return { ...episode, resolvedAudioUrl };
+
+          return {
+            ...episode,
+            resolvedAudioUrl
+          };
         } catch (error) {
-          console.error(
-            "Could not resolve audio for:",
-            episode.title,
+          logSupabaseError(
+            `Audio resolution failed for "${episode.title}"`,
             error
           );
 
-          return { ...episode, resolvedAudioUrl: "" };
+          return {
+            ...episode,
+            resolvedAudioUrl: ""
+          };
         }
       })
     );
@@ -473,21 +575,32 @@ async function loadPodcasts() {
     setupAudioPlayers();
     filterPodcasts();
 
+    console.info("Mac&Talk podcasts loaded:", {
+      total: allEpisodes.length,
+      withAudioUrl: allEpisodes.filter(
+        (episode) => Boolean(episode.resolvedAudioUrl)
+      ).length,
+      withoutAudioUrl: allEpisodes.filter(
+        (episode) => !episode.resolvedAudioUrl
+      ).length
+    });
+
   } catch (error) {
-    console.error("Could not load Mac&Talk podcasts:", error);
+    logSupabaseError("Could not load Mac&Talk podcasts", error);
 
     grid.innerHTML = "";
+    allEpisodes = [];
 
     showElement("noPodcasts", true);
     setMessage(
       "noPodcasts",
-      "Could not load podcasts. Check your Supabase connection, table permissions, and browser console."
+      "Could not load podcasts. Check Supabase table permissions and the browser console."
     );
   }
 }
 
 /* =========================================
-   LIVE AND UPCOMING BROADCAST CARDS
+   LIVE SESSION COVER
 ========================================= */
 
 function cover(session) {
@@ -495,15 +608,23 @@ function cover(session) {
     return `
       <img
         class="session-cover-image"
-        src="${escapeAttribute(session.cover_image_url)}"
+        src="${safe(session.cover_image_url)}"
         alt=""
         loading="lazy"
       >
     `;
   }
 
-  return `<span class="session-cover-emoji" aria-hidden="true">🎙️</span>`;
+  return `
+    <span class="session-cover-emoji" aria-hidden="true">
+      ${safe(session.emoji || "🎙️")}
+    </span>
+  `;
 }
+
+/* =========================================
+   LIVE SESSION CARDS
+========================================= */
 
 function liveCard(session) {
   const joinUrl = validHttpUrl(session.join_url || "")
@@ -520,14 +641,29 @@ function liveCard(session) {
       <div class="session-content">
         <h3>${safe(session.title || "Live broadcast")}</h3>
 
-        <p>${safe(session.description || "Join the conversation on Mac&Talk.")}</p>
+        <p>
+          ${safe(session.description || "Join the conversation on Mac&Talk.")}
+        </p>
 
         <p class="session-date">Live now</p>
 
         ${
           joinUrl
-            ? `<a class="session-button" href="${escapeAttribute(joinUrl)}" target="_blank" rel="noopener noreferrer">Join Live</a>`
-            : `<p class="session-note">The listening link is not available yet.</p>`
+            ? `
+              <a
+                class="session-button"
+                href="${safe(joinUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Join Live
+              </a>
+            `
+            : `
+              <p class="session-note">
+                The listening link is not available yet.
+              </p>
+            `
         }
       </div>
     </article>
@@ -549,7 +685,9 @@ function upcomingCard(session) {
       <div class="session-content">
         <h3>${safe(session.title || "Upcoming broadcast")}</h3>
 
-        <p>${safe(session.description || "A new Mac&Talk broadcast is coming soon.")}</p>
+        <p>
+          ${safe(session.description || "A new Mac&Talk broadcast is coming soon.")}
+        </p>
 
         <p class="session-date">
           ${safe(niceDate(session.scheduled_at))}
@@ -557,36 +695,66 @@ function upcomingCard(session) {
 
         ${
           joinUrl
-            ? `<a class="session-button" href="${escapeAttribute(joinUrl)}" target="_blank" rel="noopener noreferrer">Open Session</a>`
-            : `<p class="session-note">The session link will be available when provided by the administrator.</p>`
+            ? `
+              <a
+                class="session-button"
+                href="${safe(joinUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Session
+              </a>
+            `
+            : `
+              <p class="session-note">
+                The session link will be available when provided.
+              </p>
+            `
         }
       </div>
     </article>
   `;
 }
 
+/* =========================================
+   LIVE EMPTY STATES
+========================================= */
+
 function showEmptyStates(liveCount, upcomingCount) {
   showElement("noLive", liveCount === 0);
   showElement("noUpcoming", upcomingCount === 0);
 
   if (liveCount === 0) {
-    setMessage("noLive", "There are no live broadcasts right now.");
+    setMessage(
+      "noLive",
+      "There are no live broadcasts right now."
+    );
   }
 
   if (upcomingCount === 0) {
-    setMessage("noUpcoming", "There are no upcoming broadcasts yet.");
+    setMessage(
+      "noUpcoming",
+      "There are no upcoming broadcasts yet."
+    );
   }
 }
 
 /* =========================================
-   LOAD LIVE SESSIONS FROM SUPABASE
+   LOAD LIVE AND UPCOMING SESSIONS
+
+   Reads the columns from your live_sessions table.
 ========================================= */
 
 async function loadLiveSessions() {
-  const liveGrid = getElement("liveGrid");
-  const upcomingGrid = getElement("upcomingGrid");
+  const liveGrid = byId("liveGrid");
+  const upcomingGrid = byId("upcomingGrid");
 
-  if (!liveGrid || !upcomingGrid) return;
+  if (!liveGrid || !upcomingGrid) {
+    console.warn(
+      "Mac&Talk: #liveGrid or #upcomingGrid was not found."
+    );
+    return;
+  }
 
   try {
     const { data, error } = await supabase
@@ -598,6 +766,7 @@ async function loadLiveSessions() {
         scheduled_at,
         join_url,
         cover_image_url,
+        emoji,
         status,
         approved,
         created_at
@@ -610,34 +779,58 @@ async function loadLiveSessions() {
     const sessions = data || [];
     const now = Date.now();
 
-    const liveSessions = sessions.filter(
-      (session) => session.status === "live"
-    );
+    const liveSessions = sessions.filter((session) => {
+      return String(session.status || "").toLowerCase() === "live";
+    });
 
     const upcomingSessions = sessions.filter((session) => {
-      if (session.status !== "scheduled") return false;
+      if (
+        String(session.status || "").toLowerCase() !== "scheduled"
+      ) {
+        return false;
+      }
 
-      // Keep scheduled sessions without a date visible.
+      // Scheduled sessions without a date remain visible.
       if (!session.scheduled_at) return true;
 
-      const scheduledTime = new Date(session.scheduled_at).getTime();
+      const scheduledTime = new Date(
+        session.scheduled_at
+      ).getTime();
 
-      return Number.isFinite(scheduledTime) && scheduledTime >= now;
+      return (
+        Number.isFinite(scheduledTime) &&
+        scheduledTime >= now
+      );
     });
 
     liveGrid.innerHTML = liveSessions.map(liveCard).join("");
-    upcomingGrid.innerHTML = upcomingSessions.map(upcomingCard).join("");
 
-    showEmptyStates(liveSessions.length, upcomingSessions.length);
+    upcomingGrid.innerHTML = upcomingSessions
+      .map(upcomingCard)
+      .join("");
+
+    showEmptyStates(
+      liveSessions.length,
+      upcomingSessions.length
+    );
 
     setMessage("liveMessage", "");
 
+    console.info("Mac&Talk sessions loaded:", {
+      totalRows: sessions.length,
+      live: liveSessions.length,
+      upcoming: upcomingSessions.length
+    });
+
   } catch (error) {
-    console.error("Could not load live sessions:", error);
+    logSupabaseError(
+      "Could not load Mac&Talk live sessions",
+      error
+    );
 
     setMessage(
       "liveMessage",
-      "Live broadcasts could not be loaded. Check the live_sessions table permissions."
+      "Live broadcasts could not be loaded. Check the live_sessions columns and Supabase permissions."
     );
 
     liveGrid.innerHTML = "";
@@ -652,26 +845,36 @@ async function loadLiveSessions() {
 ========================================= */
 
 function setupNavigation() {
-  const menuToggle = getElement("menuToggle");
-  const navLinks = getElement("navLinks");
+  const menuToggle = byId("menuToggle");
+  const navLinks = byId("navLinks");
 
   if (!menuToggle || !navLinks) return;
 
   menuToggle.addEventListener("click", () => {
     const isOpen = navLinks.classList.toggle("active");
 
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.setAttribute(
+      "aria-expanded",
+      String(isOpen)
+    );
+
     menuToggle.setAttribute(
       "aria-label",
-      isOpen ? "Close navigation menu" : "Open navigation menu"
+      isOpen
+        ? "Close navigation menu"
+        : "Open navigation menu"
     );
   });
 
   navLinks.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => {
       navLinks.classList.remove("active");
+
       menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.setAttribute("aria-label", "Open navigation menu");
+      menuToggle.setAttribute(
+        "aria-label",
+        "Open navigation menu"
+      );
     });
   });
 }
@@ -681,7 +884,7 @@ function setupNavigation() {
 ========================================= */
 
 async function initialize() {
-  const year = getElement("currentYear");
+  const year = byId("currentYear");
 
   if (year) {
     year.textContent = new Date().getFullYear();
@@ -690,7 +893,7 @@ async function initialize() {
   setupNavigation();
   setupPodcastSearch();
 
-  await Promise.all([
+  await Promise.allSettled([
     loadPodcasts(),
     loadLiveSessions()
   ]);
@@ -698,8 +901,13 @@ async function initialize() {
 
 initialize();
 
-// Refresh live/upcoming sessions every 30 seconds.
-// Do not reload the audio player on every refresh.
+/* =========================================
+   AUTOMATIC LIVE SESSION REFRESH
+
+   Refreshes live sessions every 30 seconds.
+   Podcast audio players are not rebuilt.
+========================================= */
+
 setInterval(async () => {
   if (refreshInProgress) return;
 
@@ -707,7 +915,12 @@ setInterval(async () => {
 
   try {
     await loadLiveSessions();
+  } catch (error) {
+    console.error(
+      "Mac&Talk automatic session refresh failed:",
+      error
+    );
   } finally {
     refreshInProgress = false;
   }
-}, 30000);
+}, LIVE_REFRESH_MS);
