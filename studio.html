@@ -2531,8 +2531,8 @@ setInterval(()=>{if(document.visibilityState==="visible")refreshNoticeSessions()
 
 <script>
 /* mactalk-shared-menu-toggle */
-document.getElementById("menuToggle")?.addEventListener("click",()=>document.querySelector(".sidebar")?.classList.toggle("open"));
-document.addEventListener("click",e=>{const side=document.querySelector(".sidebar"),toggle=document.getElementById("menuToggle");if(window.innerWidth<=760&&side?.classList.contains("open")&&!side.contains(e.target)&&!toggle?.contains(e.target))side.classList.remove("open");});
+document.getElementById("menuToggle")?.addEventListener("click",()=>document.querySelector("#sidebar")?.classList.toggle("open"));
+document.addEventListener("click",e=>{const side=document.querySelector("#sidebar"),toggle=document.getElementById("menuToggle");if(window.innerWidth<=760&&side?.classList.contains("open")&&!side.contains(e.target)&&!toggle?.contains(e.target))side.classList.remove("open");});
 </script>
 
 <script>
@@ -2646,6 +2646,83 @@ body { background:#fff; }
   .topbar { padding:13px 16px !important; }
 }
 @media(max-width:440px) { .content { padding:15px 12px 26px !important; } }
+
+
+/* MODERN CREATOR STUDIO — FLUSH SIDEBAR + REFINED UI */
+:root {
+  --mt-navy: #10243e;
+  --mt-yellow: #ffc629;
+  --mt-page-bg: #f5f7fb;
+  --mt-card-border: #e7ebf2;
+  --mt-muted: #758195;
+}
+html { scroll-behavior: smooth; }
+body {
+  width: 100%; min-height: 100vh; padding-left: 0 !important;
+  background: var(--mt-page-bg) !important;
+  color: var(--mt-navy); line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.app { width: 100%; min-height: 100vh; }
+#sidebar.mt-sidebar {
+  position: fixed !important; inset: 0 auto 0 0 !important;
+  width: 260px !important; min-width: 260px !important;
+  height: 100vh !important; height: 100dvh !important; min-height: 100vh !important;
+  margin: 0 !important; padding: 26px 18px 20px !important;
+  display: flex !important; flex-direction: column !important; gap: 20px !important;
+  overflow-y: auto !important; border-radius: 0 !important;
+  background: #10243e !important; color: #fff !important;
+  z-index: 1000 !important; box-shadow: 5px 0 25px rgba(16,36,62,.08) !important;
+  transform: none !important;
+}
+#sidebar .brand { display:flex !important; align-items:center !important; gap:12px !important; padding:0 8px 10px !important; }
+#sidebar .brand-icon { width:45px !important; height:45px !important; min-width:45px !important; border-radius:13px !important; background:#ffc629 !important; color:#10243e !important; display:grid !important; place-items:center !important; font-size:17px !important; box-shadow:0 5px 15px rgba(255,198,41,.19) !important; }
+#sidebar .brand-name { color:#fff !important; font-size:21px !important; font-weight:800 !important; white-space:nowrap !important; }
+#sidebar .workspace-label { margin:0 12px !important; color:#aab6c8 !important; font-size:11px !important; font-weight:700 !important; letter-spacing:1.3px !important; }
+#sidebar nav { display:flex !important; flex-direction:column !important; gap:6px !important; margin:0 !important; padding:0 !important; }
+#sidebar nav .nav-link { display:flex !important; align-items:center !important; gap:12px !important; width:100% !important; min-height:46px !important; padding:12px 14px !important; border:1px solid transparent !important; border-radius:10px !important; background:transparent !important; color:#d5ddea !important; font-size:13px !important; font-weight:500 !important; text-decoration:none !important; transition:background .2s,color .2s,transform .2s !important; }
+#sidebar nav .nav-link > span { display:inline-block !important; width:21px !important; min-width:21px !important; text-align:center !important; font-size:17px !important; }
+#sidebar nav .nav-link:hover { color:#fff !important; background:rgba(255,255,255,.08) !important; transform:translateX(2px); }
+#sidebar nav .nav-link.active { background:#ffc629 !important; color:#10243e !important; font-weight:800 !important; box-shadow:0 5px 15px rgba(0,0,0,.08); }
+#sidebar .sidebar-spacer { flex:1 !important; min-height:15px !important; }
+#sidebar .sidebar-footer { padding:15px !important; border-radius:12px !important; background:rgba(255,255,255,.06) !important; }
+#sidebar .sidebar-footer strong { color:#fff !important; font-size:13px !important; }
+#sidebar .sidebar-footer p { margin:8px 0 0 !important; color:#c3ccda !important; font-size:12px !important; line-height:1.6 !important; }
+#sidebar .signout { width:100% !important; border:0 !important; border-radius:10px !important; padding:12px 14px !important; background:#fff0f0 !important; color:#b42318 !important; cursor:pointer !important; font-size:13px !important; font-weight:800 !important; text-align:left !important; }
+#sidebar .signout:hover { background:#ffe2e2 !important; }
+/* The content starts immediately after the fixed sidebar: no extra body padding or blank gutter. */
+.main { margin:0 0 0 260px !important; width:calc(100% - 260px) !important; min-width:0 !important; min-height:100vh; background:var(--mt-page-bg) !important; }
+.topbar { position:sticky !important; top:0 !important; z-index:15 !important; width:100% !important; min-height:78px; padding:15px 30px !important; background:rgba(255,255,255,.92) !important; backdrop-filter:blur(14px); border-bottom:1px solid var(--mt-card-border) !important; box-shadow:0 3px 16px rgba(16,36,62,.035) !important; }
+.topbar h2 { font-weight:800; letter-spacing:-.45px; }
+.content { width:100% !important; max-width:none !important; margin:0 !important; padding:30px !important; background:transparent !important; }
+.welcome-banner, .studio-intro { border-radius:19px !important; box-shadow:0 12px 30px rgba(16,36,62,.10) !important; }
+.welcome-banner { background:linear-gradient(120deg,#10243e 0%,#23476d 72%,#2d557e 100%) !important; }
+.studio-intro { background:linear-gradient(120deg,#fff9df 0%,#fffdf5 58%,#fff2bd 100%) !important; color:#10243e !important; border:1px solid #f4df91 !important; }
+.studio-intro p { color:#586579 !important; }
+.stats-grid, .session-grid, .studio-grid { gap:20px !important; }
+.stat-card, .session-card, .studio-card, .podcast-card, .profile-card, .settings-card { border:1px solid var(--mt-card-border) !important; border-radius:17px !important; box-shadow:0 4px 18px rgba(16,36,62,.04) !important; transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
+.stat-card:hover, .session-card:hover, .studio-card:hover, .podcast-card:hover { transform:translateY(-3px); border-color:#d5dce7 !important; box-shadow:0 12px 28px rgba(16,36,62,.085) !important; }
+.stat-card h3, .section-heading h2 { font-weight:800; letter-spacing:-.35px; }
+.studio-form input, .studio-form textarea, .studio-form select { border-color:#dce3ed !important; border-radius:10px !important; transition:border-color .2s,box-shadow .2s; }
+.studio-form input:focus, .studio-form textarea:focus, .studio-form select:focus { outline:none; border-color:#8b9db7 !important; box-shadow:0 0 0 3px rgba(16,36,62,.08); }
+button, a { -webkit-tap-highlight-color:transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline:3px solid #ffc629 !important; outline-offset:3px; }
+.primary-btn, .studio-btn, .join-btn { transition:transform .2s ease,box-shadow .2s ease,background .2s ease,color .2s ease; }
+.primary-btn:hover, .studio-btn:hover, .join-btn:hover { transform:translateY(-1px); }
+.loading-screen { background:var(--mt-page-bg) !important; }
+@media (min-width:1400px) { .content { padding:36px 40px !important; } }
+@media (max-width:800px) {
+  #sidebar.mt-sidebar { width:260px !important; min-width:260px !important; transform:translateX(-105%) !important; box-shadow:10px 0 30px rgba(0,0,0,.18) !important; }
+  #sidebar.mt-sidebar.open { transform:translateX(0) !important; }
+  .main { margin-left:0 !important; width:100% !important; }
+  .topbar { min-height:72px; padding:13px 16px !important; }
+  .content { padding:20px 16px 30px !important; }
+  .welcome-banner { border-radius:16px !important; }
+  .stat-card:hover, .session-card:hover, .studio-card:hover, .podcast-card:hover { transform:none; }
+}
+@media (max-width:440px) { .content { padding:15px 12px 26px !important; } }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
+
 </style>
 
 </body>

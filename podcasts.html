@@ -998,8 +998,155 @@ a:focus-visible {
 .podcast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.podcast-card h3{font-size:15px;margin-bottom:7px;overflow-wrap:anywhere}.podcast-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}.podcast-card audio{width:100%;height:38px}.podcast-meta{font-size:11px;color:var(--muted);margin-top:10px}.studio-intro{padding:22px 24px;border-radius:16px;background:linear-gradient(120deg,#10243e,#23476d);color:#fff;margin-bottom:20px}.studio-intro p{color:#d8e1ed;font-size:13px;line-height:1.7;margin-top:8px;max-width:780px}
 @media(max-width:760px){.studio-grid,.podcast-grid{grid-template-columns:1fr}.studio-card,.podcast-card{padding:18px}}
 
-    </style>
-</head>
+
+/* Shared Mac&Talk notifications */
+.notification-wrap{position:relative}
+.notification-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:9px;position:relative;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:white;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800;box-shadow:0 3px 10px #10243e08;transition:.18s}
+.notification-button:hover,.notification-button[aria-expanded=true]{background:#f4f7fb;border-color:#cbd5e1;transform:translateY(-1px)}
+.notification-bell{font-size:20px;line-height:1}
+.notification-badge{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#e5484d;color:white;font-size:10px;font-weight:800}
+.notification-panel{position:absolute;top:calc(100% + 12px);right:0;z-index:999;width:min(365px,calc(100vw - 28px));overflow:hidden;border:1px solid #e4e9f1;border-radius:17px;background:white;box-shadow:0 18px 55px #10243e2b;animation:notificationAppear .18s ease-out}
+@keyframes notificationAppear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.notification-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:19px 18px 15px}
+.notification-panel-header h3{font-size:16px;font-weight:800}
+.notification-panel-header p{margin-top:5px;color:var(--muted);font-size:11px;line-height:1.5}
+.notification-close{width:29px;height:29px;border:0;border-radius:8px;background:#f1f4f8;color:var(--navy);cursor:pointer;font-size:21px}
+.notification-tabs{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 18px 12px;border-bottom:1px solid #edf0f5}
+.notification-tab{padding-bottom:9px;border-bottom:2px solid var(--yellow);font-size:12px;font-weight:800}
+.notification-count{color:var(--muted);font-size:10px}
+.notification-list{max-height:330px;overflow-y:auto}
+.notification-item{display:flex;align-items:flex-start;gap:12px;padding:14px 17px;border-bottom:1px solid #f0f2f6;cursor:pointer;transition:background .15s}
+.notification-item:hover,.notification-item:focus{background:#f7f9fc}
+.notification-item-icon{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#fff4ce;font-size:20px}
+.notification-item-icon.is-live{background:#e7f8ef}
+.notification-item-content{flex:1;min-width:0}
+.notification-item-content h4{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.notification-item-content p{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.55;overflow-wrap:anywhere}
+.notification-item-time{display:block;margin-top:6px;color:#8792a3;font-size:10px}
+.notification-empty{padding:28px 18px;text-align:center}
+.notification-empty>span{display:block;margin-bottom:9px;font-size:27px}
+.notification-empty p{color:var(--muted);font-size:12px;line-height:1.7}
+.notification-view-all{width:100%;padding:14px;border:0;border-top:1px solid #edf0f5;background:#fafbfe;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}
+.notification-view-all:hover{background:#f0f4fa}
+@media(max-width:760px){.notification-label{display:none}.notification-button{width:43px;padding:0}.notification-panel{position:fixed;top:80px;right:12px}}
+
+</style>
+<style>
+/* Shared Mac&Talk sidebar — consistent across all workspace pages */
+:root {
+  --mt-navy: #10243e;
+  --mt-navy-light: #1c3657;
+  --mt-yellow: #ffc629;
+  --mt-text: #d6deea;
+  --mt-muted: #aab7ca;
+}
+.mt-sidebar, .sidebar, aside.sidebar, .app-sidebar {
+  background: var(--mt-navy) !important;
+  color: var(--mt-text);
+}
+.mt-sidebar .brand, .sidebar .brand, .app-sidebar .brand,
+.mt-sidebar .brand-name, .sidebar .brand-name {
+  display:flex; align-items:center; gap:14px;
+  color:#fff; font-weight:800; font-size:26px;
+}
+.mt-sidebar .brand-icon, .sidebar .brand-icon, .app-sidebar .brand-icon {
+  width:54px;height:54px;min-width:54px;border-radius:17px;
+  background:var(--mt-yellow);color:var(--mt-navy);
+  display:grid;place-items:center;font-weight:900;font-size:22px;
+  box-shadow:0 8px 22px rgba(255,198,41,.12);
+}
+.mt-sidebar .workspace-label, .sidebar .workspace-label, .app-sidebar .workspace-label,
+.mt-sidebar .nav-section-title, .sidebar .nav-section-title {
+  color:var(--mt-muted);font-size:13px;font-weight:800;
+  letter-spacing:1.7px;text-transform:uppercase;
+}
+.mt-sidebar .nav-link, .sidebar .nav-link, .app-sidebar .nav-link,
+.mt-sidebar .sidebar-link, .sidebar .sidebar-link, .app-sidebar .sidebar-link,
+.mt-sidebar nav a, .sidebar nav a, .app-sidebar nav a,
+.mt-sidebar nav button, .sidebar nav button, .app-sidebar nav button {
+  color:var(--mt-text);border:0;border-radius:13px;
+  background:transparent;text-decoration:none;
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;font-size:16px;font-weight:500;
+  width:100%;box-sizing:border-box;transition:background .18s,color .18s;
+}
+.mt-sidebar .nav-link:hover, .sidebar .nav-link:hover, .app-sidebar .nav-link:hover,
+.mt-sidebar .sidebar-link:hover, .sidebar .sidebar-link:hover, .app-sidebar .sidebar-link:hover,
+.mt-sidebar nav a:hover, .sidebar nav a:hover, .app-sidebar nav a:hover,
+.mt-sidebar nav button:hover, .sidebar nav button:hover, .app-sidebar nav button:hover {
+  background:rgba(255,255,255,.08);color:#fff;
+}
+.mt-sidebar .nav-link.active, .sidebar .nav-link.active, .app-sidebar .nav-link.active,
+.mt-sidebar .sidebar-link.active, .sidebar .sidebar-link.active, .app-sidebar .sidebar-link.active,
+.mt-sidebar nav a.active, .sidebar nav a.active, .app-sidebar nav a.active,
+.mt-sidebar nav button.active, .sidebar nav button.active, .app-sidebar nav button.active {
+  background:var(--mt-yellow)!important;color:#10243e!important;
+}
+.mt-sidebar .sidebar-footer, .sidebar .sidebar-footer, .app-sidebar .sidebar-footer,
+.mt-sidebar .sidebar-tip, .sidebar .sidebar-tip {
+  background:rgba(255,255,255,.09);border-radius:17px;padding:20px;color:#fff;
+}
+.mt-sidebar .signout, .sidebar .signout, .app-sidebar .signout,
+.mt-sidebar .logout-btn, .sidebar .logout-btn, .app-sidebar .logout-btn {
+  background:#fff0f0;color:#bd1e16;border-radius:13px;font-weight:800;
+}
+
+#mtSharedSidebar{width:292px;min-width:292px;min-height:100vh;padding:36px 23px 22px;box-sizing:border-box;display:flex;flex-direction:column;gap:28px;}
+#mtSharedSidebar nav{display:flex;flex-direction:column;gap:8px;}
+#mtSharedSidebar .sidebar-spacer{flex:1;min-height:18px;}
+#mtSharedSidebar .sidebar-footer p{color:#c5d0df;line-height:1.55;margin:12px 0 0;font-size:14px;}
+#mtSharedSidebar .signout{width:100%;border:0;padding:18px 16px;text-align:left;font-size:15px;cursor:pointer;}
+@media(max-width:800px){#mtSharedSidebar{width:100%;min-width:0;min-height:auto;padding:20px;gap:16px;}#mtSharedSidebar nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}#mtSharedSidebar .sidebar-spacer{display:none;}}
+
+/* FINAL SHARED SIDEBAR — MATCHES USER DASHBOARD AND CREATOR STUDIO */
+:root{--mt-navy:#10243e;--mt-yellow:#ffc629;--mt-bg:#fff;--mt-border:#ece7d8}
+#sidebar,#mtSharedSidebar,.mt-sidebar,.sidebar{
+  position:fixed!important;inset:0 auto 0 0!important;width:260px!important;min-width:260px!important;
+  height:100vh!important;height:100dvh!important;min-height:100vh!important;margin:0!important;
+  padding:26px 18px 20px!important;display:flex!important;flex-direction:column!important;gap:20px!important;
+  overflow-y:auto!important;border-radius:0!important;background:#10243e!important;color:#fff!important;
+  z-index:1000!important;box-shadow:5px 0 25px rgba(16,36,62,.08)!important;transform:none;
+}
+#sidebar .brand,#mtSharedSidebar .brand,.mt-sidebar .brand,.sidebar .brand{
+  display:flex!important;align-items:center!important;gap:12px!important;padding:0 8px 10px!important;
+}
+#sidebar .brand-icon,#mtSharedSidebar .brand-icon,.mt-sidebar .brand-icon,.sidebar .brand-icon{
+  width:45px!important;height:45px!important;min-width:45px!important;display:grid!important;place-items:center!important;
+  border-radius:13px!important;background:#ffc629!important;color:#10243e!important;font-size:17px!important;
+}
+#sidebar .brand-name,#mtSharedSidebar .brand-name,.mt-sidebar .brand-name,.sidebar .brand-name{
+  font-size:21px!important;font-weight:800!important;white-space:nowrap!important;color:#fff!important;
+}
+#sidebar .workspace-label,#mtSharedSidebar .workspace-label{margin:0 12px!important;color:#aab6c8!important;font-size:11px!important;font-weight:700!important;letter-spacing:1.3px!important}
+#sidebar nav,#mtSharedSidebar nav,.mt-sidebar nav,.sidebar nav{display:flex!important;flex-direction:column!important;gap:6px!important}
+#sidebar .nav-link,#mtSharedSidebar .nav-link,.mt-sidebar .nav-link,.sidebar .nav-link{
+  display:flex!important;align-items:center!important;gap:12px!important;min-height:46px!important;padding:12px 14px!important;
+  border:1px solid transparent!important;border-radius:10px!important;color:#d5ddea!important;font-size:13px!important;
+  background:transparent!important;text-decoration:none!important;width:100%!important;box-sizing:border-box!important;
+}
+#sidebar .nav-link:hover,#mtSharedSidebar .nav-link:hover,.mt-sidebar .nav-link:hover,.sidebar .nav-link:hover{background:#ffffff12!important;color:#fff!important}
+#sidebar .nav-link.active,#mtSharedSidebar .nav-link.active,.mt-sidebar .nav-link.active,.sidebar .nav-link.active{background:#ffc629!important;color:#10243e!important;font-weight:800!important;box-shadow:0 5px 15px rgba(0,0,0,.08)!important}
+#sidebar .nav-icon,#mtSharedSidebar .nav-icon{width:21px;min-width:21px;text-align:center;font-size:17px}
+#sidebar .sidebar-spacer,#mtSharedSidebar .sidebar-spacer{flex:1!important;min-height:15px!important}
+#sidebar .sidebar-footer,#mtSharedSidebar .sidebar-footer{padding:15px!important;border-radius:12px!important;background:#ffffff0d!important;color:#fff!important}
+#sidebar .sidebar-footer p,#mtSharedSidebar .sidebar-footer p{margin-top:8px!important;color:#c3ccda!important;font-size:12px!important;line-height:1.6!important}
+#sidebar .signout,#mtSharedSidebar .signout{width:100%!important;border:0!important;border-radius:10px!important;padding:12px 14px!important;background:#fff0f0!important;color:#b42318!important;cursor:pointer!important;font-size:13px!important;font-weight:800!important;text-align:left!important}
+.main{margin:0 0 0 260px!important;width:calc(100% - 260px)!important;min-width:0!important;min-height:100vh;background:#fff}
+.topbar{width:100%;padding:16px 28px!important}
+.content{width:100%;max-width:none!important;margin:0!important;padding:28px!important;background:#fff}
+@media(max-width:800px){
+  #sidebar,#mtSharedSidebar,.mt-sidebar,.sidebar{width:260px!important;min-width:260px!important;height:100vh!important;height:100dvh!important;min-height:100vh!important;padding:26px 18px 20px!important;transform:translateX(-105%)!important;box-shadow:10px 0 30px rgba(0,0,0,.18)!important}
+  #sidebar.open,#mtSharedSidebar.open,.mt-sidebar.open,.sidebar.open{transform:translateX(0)!important}
+  #sidebar nav,#mtSharedSidebar nav,.mt-sidebar nav,.sidebar nav{display:flex!important;flex-direction:column!important;gap:6px!important}
+  #sidebar .sidebar-spacer,#mtSharedSidebar .sidebar-spacer{display:block!important}
+  .main{margin-left:0!important;width:100%!important}
+  .menu-toggle{display:block!important}
+  .content{padding:18px 16px 30px!important}
+  .topbar{padding:13px 16px!important}
+}
+@media(max-width:440px){.content{padding:15px 12px 26px!important}}
+
+</style></head>
 
 <body>
   <div class="loading-screen" id="loadingScreen">
@@ -1010,49 +1157,29 @@ a:focus-visible {
   </div>
 
     <div class="app" id="app" hidden>
-        <aside class="sidebar" id="sidebar">
-            <a href="user.html" class="brand">
-                <div class="brand-icon">M&T</div>
-                <div class="brand-name">Mac<span>&</span>Talk</div>
-            </a>
 
-            <p class="nav-label">WORKSPACE</p>
+<aside class="mt-sidebar sidebar" id="mtSharedSidebar" aria-label="Main sidebar">
+  <div class="brand">
+    <div class="brand-icon" aria-label="Mac&Talk logo">M&amp;T</div>
+    <div class="brand-name">Mac<span style="color:#ffc629">&amp;</span>Talk</div>
+  </div>
+  <div class="workspace-label">WORKSPACE</div>
+  <nav aria-label="Workspace navigation">
+    <a class="nav-link" data-page="user.html" href="user.html"><span>⌂</span> Dashboard</a>
+    <a class="nav-link" data-page="sessions.html" href="sessions.html"><span>🎙️</span> Live Sessions</a>
+    <a class="nav-link" data-page="studio.html" href="studio.html"><span>🎛️</span> Creator Studio</a>
+    <a class="nav-link" data-page="podcasts.html" href="podcasts.html"><span>🎧</span> Podcasts</a>
+    <a class="nav-link" data-page="profile.html" href="profile.html"><span>♙</span> My Profile</a>
+    <a class="nav-link" data-page="settings.html" href="settings.html"><span>⚙</span> Settings</a>
+  </nav>
+  <div class="sidebar-spacer"></div>
+  <div class="sidebar-footer">
+    <strong>🗨️ Keep talking!</strong>
+    <p>Share ideas, discover conversations, and connect with your community.</p>
+  </div>
+  <button class="signout" id="sidebarSignOut" type="button">↪ &nbsp; Sign out</button>
+</aside>
 
-            <nav class="nav" aria-label="Main navigation">
-                <a class="nav-link nav-page-link" href="user.html" data-page-link="dashboard">
-                    <span class="nav-icon">⌂</span> Dashboard
-                </a>
-
-                <button class="nav-link" data-page="sessions">
-                    <span class="nav-icon">🎙️</span> Live Sessions
-                </button>
-
-                <a class="nav-link nav-page-link" href="studio.html" data-page-link="studio">
-                    <span class="nav-icon">🎛️</span> Creator Studio
-                </a>
-                <a class="nav-link nav-page-link" href="podcasts.html" data-page-link="podcasts">
-                    <span class="nav-icon">🎧</span> Podcasts
-                </a>
-                <button class="nav-link" data-page="profile">
-                    <span class="nav-icon">♙</span> My Profile
-                </button>
-
-                <button class="nav-link" data-page="settings">
-                    <span class="nav-icon">⚙</span> Settings
-                </button>
-            </nav>
-
-            <div class="sidebar-bottom">
-                <div class="sidebar-note">
-                    <strong>💬 Keep talking!</strong>
-                    <p>Share ideas, discover conversations, and connect with your community.</p>
-                </div>
-
-                <button class="signout-btn" id="sidebarSignOut">
-                    <span>↪</span> Sign out
-                </button>
-            </div>
-        </aside>
 
         <main class="main">
             <header class="topbar">
@@ -1067,7 +1194,20 @@ a:focus-visible {
                 </div>
 
                 <div class="topbar-right">
-                    <div class="user-mini">
+
+<div class="notification-wrap" id="notificationWrap">
+  <button type="button" class="notification-button" id="notificationButton" aria-label="Open session notifications" aria-expanded="false" aria-controls="notificationPanel">
+    <span class="notification-bell">🔔</span><span class="notification-label">Notifications</span><span class="notification-badge" id="notificationBadge" hidden>0</span>
+  </button>
+  <div class="notification-panel" id="notificationPanel" role="region" aria-label="New live sessions" hidden>
+    <div class="notification-panel-header"><div><h3>Notifications</h3><p>Discover what's happening on Mac&Talk.</p></div><button type="button" id="closeNotifications" class="notification-close" aria-label="Close notifications">×</button></div>
+    <div class="notification-tabs"><span class="notification-tab">New sessions</span><span class="notification-count" id="notificationCount">0 sessions</span></div>
+    <div id="notificationList" class="notification-list"><div class="notification-empty"><span>🎙️</span><p>Loading sessions...</p></div></div>
+    <button type="button" class="notification-view-all" id="notificationViewAll">Explore all sessions →</button>
+  </div>
+</div>
+
+<div class="user-mini">
                         <strong id="headerName">Member</strong>
                         <span>Mac&Talk Member</span>
                     </div>
@@ -1292,7 +1432,7 @@ a:focus-visible {
 
       const loadingScreen = $("loadingScreen");
       const appElement = $("app");
-      const sidebar = $("sidebar");
+      const sidebar = $("mtSharedSidebar");
       const notice = $("notice");
       document.querySelectorAll(".nav-page-link").forEach(link => link.classList.toggle("active", link.dataset.pageLink === PAGE_MODE));
       document.querySelectorAll(".page-panel").forEach(panel => panel.classList.toggle("active", panel.id === `${PAGE_MODE}Page`));
@@ -1942,6 +2082,26 @@ a:focus-visible {
         // PROFILE
         // =========================================
 
+async function loadMacTalkMemberId(user) {
+  const target = user?.id;
+  if (!target || !supabase) return "Not assigned";
+  // mac_talk_id is the public member identifier. Never display the Supabase Auth UUID.
+  for (const key of ["id", "user_id"]) {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("mac_talk_id")
+        .eq(key, target)
+        .maybeSingle();
+      if (!error && data?.mac_talk_id) return String(data.mac_talk_id);
+    } catch (e) {
+      console.warn("Could not load mac_talk_id using", key, e);
+    }
+  }
+  return "Not assigned";
+}
+
+
         function renderProfile(user) {
           const metadata = user.user_metadata || {};
 
@@ -1964,7 +2124,8 @@ a:focus-visible {
           $("profileEmail").textContent = email;
           $("profileFullName").textContent = name;
           $("profileEmailRow").textContent = email;
-          $("profileUid").textContent = user.id;
+          $("profileUid").textContent = "Loading...";
+          loadMacTalkMemberId(user).then(id => { $("profileUid").textContent = id; if ($("welcomeMemberId")) $("welcomeMemberId").textContent = id; });
 
           $("profileVerified").textContent =
             user.email_confirmed_at ? "Verified" : "Not verified";
@@ -2097,5 +2258,109 @@ a:focus-visible {
       }
     </script>
 
-  </body>
+
+<script type="module">/* Shared session notification behavior */
+import { createClient as createNotificationClient } from "https://esm.sh/@supabase/supabase-js@2";
+const notifyClient = createNotificationClient(
+  "https://gprdmwjqgyrvqrgjkycc.supabase.co",
+  "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4"
+);
+const $n = id => document.getElementById(id);
+const seenKey = "mactalk_seen_sessions_v1";
+let loadedOnce = false, currentSessions = [];
+const getSeen = () => { try { return new Set(JSON.parse(localStorage.getItem(seenKey)||"[]")); } catch { return new Set(); } };
+const setSeen = s => { try { localStorage.setItem(seenKey, JSON.stringify([...s].slice(-300))); } catch {} };
+const dateLabel = value => { const d = new Date(value); return Number.isNaN(d.getTime()) ? "Recently added" : new Intl.DateTimeFormat(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d); };
+function renderNoticeSessions(list) {
+  const seen=getSeen();
+  if(!loadedOnce){ if(!seen.size){list.forEach(s=>seen.add(String(s.id)));setSeen(seen);} loadedOnce=true; }
+  const fresh=list.filter(s=>!seen.has(String(s.id)));
+  $n("notificationBadge").textContent=fresh.length>99?"99+":String(fresh.length);
+  $n("notificationBadge").hidden=!fresh.length;
+  $n("notificationCount").textContent=`${list.length} session${list.length===1?"":"s"}`;
+  const container=$n("notificationList"); container.replaceChildren();
+  if(!list.length){const empty=document.createElement("div");empty.className="notification-empty";empty.innerHTML="<span>🎙️</span><p>No approved sessions yet. Check back soon!</p>";container.append(empty);return;}
+  const sorted=[...list].sort((a,b)=>Number(!seen.has(String(b.id)))-Number(!seen.has(String(a.id))) || (a.status==="live"?-1:0)-(b.status==="live"?-1:0));
+  sorted.slice(0,12).forEach(s=>{
+    const item=document.createElement("div");item.className="notification-item";item.tabIndex=0;item.setAttribute("role","button");
+    const icon=document.createElement("div");icon.className="notification-item-icon"+(s.status==="live"?" is-live":"");icon.textContent=s.emoji||"🎙️";
+    const content=document.createElement("div");content.className="notification-item-content";
+    const h=document.createElement("h4");h.textContent=(!seen.has(String(s.id))?"● ":"")+(s.title||"New session");
+    const p=document.createElement("p");p.textContent=(s.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(s.host||s.host_name||"Mac&Talk Community");
+    const t=document.createElement("span");t.className="notification-item-time";t.textContent=s.created_at?dateLabel(s.created_at):"Recently added";
+    content.append(h,p,t);item.append(icon,content);
+    const open=()=>{const updated=getSeen();updated.add(String(s.id));setSeen(updated);renderNoticeSessions(currentSessions);$n("notificationPanel").hidden=true;$n("notificationButton").setAttribute("aria-expanded","false");if(s.status==="live"){window.location.href="sessions.html?session="+encodeURIComponent(s.id);}else{window.location.href="sessions.html";}};
+    item.addEventListener("click",open);item.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});container.append(item);
+  });
+}
+async function refreshNoticeSessions(){
+  const {data,error}=await notifyClient.from("live_sessions").select("id,title,description,status,host,host_name,emoji,created_at,approved").eq("approved",true).in("status",["live","scheduled"]).order("created_at",{ascending:false}).limit(50);
+  if(error){console.warn("Session notifications:",error);return;}
+  currentSessions=data||[];renderNoticeSessions(currentSessions);
+}
+const button=$n("notificationButton"),panel=$n("notificationPanel");
+button?.addEventListener("click",async()=>{const opening=panel.hidden;panel.hidden=!opening;button.setAttribute("aria-expanded",String(opening));if(opening)await refreshNoticeSessions();});
+$n("closeNotifications")?.addEventListener("click",()=>{panel.hidden=true;button.setAttribute("aria-expanded","false");});
+$n("notificationViewAll")?.addEventListener("click",()=>window.location.href="sessions.html");
+document.addEventListener("click",e=>{if(panel&&!panel.hidden&&!$n("notificationWrap").contains(e.target)){panel.hidden=true;button.setAttribute("aria-expanded","false");}});
+refreshNoticeSessions().catch(console.warn);
+setInterval(()=>{if(document.visibilityState==="visible")refreshNoticeSessions().catch(console.warn);},30000);
+</script>
+
+<script>
+/* mactalk-shared-menu-toggle */
+document.getElementById("menuToggle")?.addEventListener("click",()=>document.querySelector(".sidebar")?.classList.toggle("open"));
+document.addEventListener("click",e=>{const side=document.querySelector(".sidebar"),toggle=document.getElementById("menuToggle");if(window.innerWidth<=760&&side?.classList.contains("open")&&!side.contains(e.target)&&!toggle?.contains(e.target))side.classList.remove("open");});
+</script>
+
+<script>
+(() => {
+  const current = 'podcasts.html';
+  const nav = document.querySelector('#mtSharedSidebar');
+  if (!nav) return;
+  nav.querySelectorAll('[data-page]').forEach(a => {
+    if (a.getAttribute('data-page') === current) a.classList.add('active');
+  });
+  const signout = document.getElementById('sidebarSignOut');
+  if (signout) signout.addEventListener('click', async () => {
+    try {
+      const client = window.supabaseClient || window.supabase;
+      if (client?.auth) await client.auth.signOut();
+    } catch (e) { console.warn('Sign out:', e); }
+    location.href = 'index.html';
+  });
+  document.body.classList.add('mt-has-shared-sidebar');
+})();
+</script>
+<style>
+/* Modern layout polish: flush sidebar, consistent spacing, refined cards and controls */
+html{scroll-behavior:smooth}
+body.mt-has-shared-sidebar{padding:0!important;background:#f4f7fb!important;color:#17263b}
+body.mt-has-shared-sidebar #mtSharedSidebar{position:fixed!important;left:0!important;top:0!important;bottom:0!important;overflow-y:auto!important;z-index:1000!important}
+body.mt-has-shared-sidebar .main{margin:0 0 0 260px!important;width:calc(100% - 260px)!important;min-width:0!important;}
+body.mt-has-shared-sidebar .topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #e7edf5!important;box-shadow:0 4px 20px rgba(16,36,62,.035);padding:16px 30px!important}
+body.mt-has-shared-sidebar .content{padding:30px!important;background:transparent!important;max-width:none!important;width:100%!important;margin:0!important}
+body.mt-has-shared-sidebar .page-panel{animation:mtFadeIn .28s ease both}
+body.mt-has-shared-sidebar .page-panel h1,body.mt-has-shared-sidebar .page-panel h2{letter-spacing:-.025em}
+body.mt-has-shared-sidebar .session-card,body.mt-has-shared-sidebar .podcast-card,body.mt-has-shared-sidebar .stat-card,body.mt-has-shared-sidebar .panel-card,body.mt-has-shared-sidebar .profile-card,body.mt-has-shared-sidebar .settings-card{border:1px solid #e8edf4!important;border-radius:18px!important;box-shadow:0 8px 26px rgba(16,36,62,.045)!important;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+body.mt-has-shared-sidebar .session-card:hover,body.mt-has-shared-sidebar .podcast-card:hover{transform:translateY(-3px);box-shadow:0 15px 34px rgba(16,36,62,.10)!important;border-color:#d9e2ef!important}
+body.mt-has-shared-sidebar input,body.mt-has-shared-sidebar select,body.mt-has-shared-sidebar textarea{border-radius:11px;transition:border-color .18s,box-shadow .18s}
+body.mt-has-shared-sidebar input:focus,body.mt-has-shared-sidebar select:focus,body.mt-has-shared-sidebar textarea:focus{outline:none;border-color:#e4ad0a!important;box-shadow:0 0 0 3px rgba(255,198,41,.2)!important}
+body.mt-has-shared-sidebar button,body.mt-has-shared-sidebar a{ -webkit-tap-highlight-color:transparent }
+body.mt-has-shared-sidebar .primary-btn{box-shadow:0 6px 15px rgba(255,198,41,.22);transition:transform .18s,box-shadow .18s}
+body.mt-has-shared-sidebar .primary-btn:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(255,198,41,.3)}
+body.mt-has-shared-sidebar .page-footer{color:#7a8799}
+@keyframes mtFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){
+ body.mt-has-shared-sidebar .main{margin-left:0!important;width:100%!important}
+ body.mt-has-shared-sidebar #mtSharedSidebar{position:fixed!important;left:0!important;top:0!important;bottom:0!important;transform:translateX(-105%)!important}
+ body.mt-has-shared-sidebar #mtSharedSidebar.open{transform:translateX(0)!important}
+ body.mt-has-shared-sidebar .content{padding:20px 17px 30px!important}
+ body.mt-has-shared-sidebar .topbar{padding:13px 17px!important}
+}
+@media(max-width:440px){body.mt-has-shared-sidebar .content{padding:16px 12px 26px!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body.mt-has-shared-sidebar *,body.mt-has-shared-sidebar *::before,body.mt-has-shared-sidebar *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
+</body>
   </html>
