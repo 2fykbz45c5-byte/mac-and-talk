@@ -129,7 +129,7 @@ function renderManagedUsers(){
   }
   actionButtons+=`<button type="button" class="btn ${blocked?"btn-yellow":"btn-light"} btn-small" data-user-action="block" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot block your own account here'":""}>${blocked?"Unblock":"Block"}</button>`;
   actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="delete" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot delete your own profile here'":""}>Delete profile</button>`;
-  return `<tr><td><div class="session-title">${esc(user.display_name||"Unnamed user")}</div><div class="session-sub">${esc(user.username||user.id)}</div></td><td>${esc(user.email||"No email")}</td><td><div class="actions"><select class="field-control" data-user-role="${esc(user.id)}" aria-label="Role for ${esc(user.email||user.id)}" ${isSelf||status==="approved"&&isSelf?"disabled":""}><option value="student" ${role==="student"?"selected":""}>Student</option><option value="teacher" ${role==="teacher"?"selected":""}>Teacher</option><option value="admin" ${role==="admin"?"selected":""}>Admin</option></select></div></td><td>${user.mac_talk_id?`<strong>${esc(user.mac_talk_id)}</strong>`:'<span class="session-sub">Not assigned</span>'}</td><td><span class="pill ${statusClass}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td><td><span class="pill ${blocked?"pill-cancelled":"pill-approved"}">${blocked?"Blocked":"Active"}</span></td><td>${user.created_at?esc(new Date(user.created_at).toLocaleDateString()):"—"}</td><td><div class="actions">${actionButtons}</div></td></tr>`;
+  return `<tr><td><div class="session-title">${esc(user.display_name||"Unnamed user")}</div></td><td>${esc(user.email||"No email")}</td><td><div class="actions"><select class="field-control" data-user-role="${esc(user.id)}" aria-label="Role for ${esc(user.email||user.id)}" ${isSelf||status==="approved"&&isSelf?"disabled":""}><option value="student" ${role==="student"?"selected":""}>Student</option><option value="teacher" ${role==="teacher"?"selected":""}>Teacher</option><option value="admin" ${role==="admin"?"selected":""}>Admin</option></select></div></td><td>${user.mac_talk_id?`<strong>${esc(user.mac_talk_id)}</strong>`:'<span class="session-sub">Not assigned</span>'}</td><td><span class="pill ${statusClass}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td><td><span class="pill ${blocked?"pill-cancelled":"pill-approved"}">${blocked?"Blocked":"Active"}</span></td><td>${user.created_at?esc(new Date(user.created_at).toLocaleDateString()):"—"}</td><td><div class="actions">${actionButtons}</div></td></tr>`;
  }).join(""):'<tr><td colspan="8" class="empty">No users match these filters.</td></tr>';
  $("managedUsersCount").textContent=`${filtered.length} of ${managedUsers.length} registered accounts`;
 }
@@ -170,7 +170,10 @@ async function approveManagedUser(id){
  try{
   const {data,error}=await supabase.rpc("admin_approve_profile",{p_user_id:id,p_role:role});if(error)throw error;
   if(!data?.mac_talk_id)throw new Error("The database approved the account but did not return a Mac&Talk ID.");
-  showNotice(`Account approved. Assigned ID: ${data.mac_talk_id}`);await loadManagedUsers();await loadLiveUsers();
+  managedUsers=managedUsers.map(u=>u.id===id?{...u,status:"approved",mac_talk_id:data.mac_talk_id,role:data.role||role}:u);
+   renderManagedUsers();
+   showNotice(`Account approved. Assigned ID: ${data.mac_talk_id}`);
+   await Promise.all([loadManagedUsers(),loadLiveUsers()]);
  }catch(error){console.error("Account approval failed:",error);showNotice("Could not approve account: "+error.message,"error");if(button){button.disabled=false;button.textContent="Approve & assign ID";}}
 }
 async function rejectManagedUser(id){
@@ -181,7 +184,27 @@ async function rejectManagedUser(id){
  try{const {data,error}=await supabase.from("profiles").update({status:"rejected",mac_talk_id:null}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check the admin UPDATE policy.");showNotice("Registration rejected. No Mac&Talk ID was assigned.");await loadManagedUsers();}catch(error){console.error("Account rejection failed:",error);showNotice("Could not reject account: "+error.message,"error");}
 }
 async function toggleManagedUserBlock(id){if(id===currentAdminId)return showNotice("You cannot block your own account here.","error");const user=managedUsers.find(u=>u.id===id);if(!user)return;const nextBlocked=!user.is_blocked,label=user.email||user.display_name||id;if(!confirm(`${nextBlocked?"Block":"Unblock"} ${label} in the application?`))return;try{const {data,error}=await supabase.from("profiles").update({is_blocked:nextBlocked}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check that the profile exists and the admin UPDATE policy is installed.");showNotice(nextBlocked?"Profile marked as blocked.":"Profile unblocked.");await loadManagedUsers();}catch(error){console.error("Block update failed:",error);showNotice("Could not change block status: "+error.message,"error");}}
-async function deleteManagedUserProfile(id){if(id===currentAdminId)return showNotice("You cannot delete your own profile here.","error");const user=managedUsers.find(u=>u.id===id);if(!user)return;const label=user.email||user.display_name||id;if(!confirm(`Delete the application profile for ${label}?\n\nThis removes the profile record only. The Supabase Auth account and email login will still exist.`))return;try{const {data,error}=await supabase.from("profiles").delete().eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was deleted. Check that the profile exists and the admin DELETE policy is installed.");showNotice("Profile deleted. The Auth account still exists.");await loadManagedUsers();await loadLiveUsers();}catch(error){console.error("Profile deletion failed:",error);showNotice("Could not delete profile: "+error.message,"error");}}
+async function deleteManagedUserProfile(id){
+  if(id===currentAdminId)return showNotice("You cannot delete your own account here.","error");
+  const user=managedUsers.find(u=>u.id===id);if(!user)return;
+  const label=user.email||user.display_name||id;
+  if(!confirm(`Permanently delete ${label}?\n\nThis deletes the Supabase Auth account as well as its profile. Related records are removed only where your database foreign keys are configured to cascade.`))return;
+  const button=Array.from(document.querySelectorAll('button[data-user-action="delete"]')).find(el=>el.dataset.id===id);
+  if(button){button.disabled=true;button.textContent="Deleting…";}
+  try{
+    const {data,error}=await supabase.functions.invoke("admin-delete-user",{body:{user_id:id}});
+    if(error)throw new Error(error.message||"The admin-delete-user Edge Function failed.");
+    if(data?.error)throw new Error(data.error);
+    managedUsers=managedUsers.filter(u=>u.id!==id);
+    renderManagedUsers();
+    showNotice(`Deleted ${label} from Supabase Auth and refreshed the user list.`);
+    await Promise.all([loadManagedUsers(),loadLiveUsers()]);
+  }catch(error){
+    console.error("Full account deletion failed:",error);
+    showNotice("Could not fully delete account: "+error.message+". Deploy the admin-delete-user Edge Function and configure its secrets first.","error");
+    if(button){button.disabled=false;button.textContent="Delete profile";}
+  }
+}
 
 let accessStudentOptions = [];
 let selectedAccessStudentIds = new Set();
@@ -329,7 +352,13 @@ document.getElementById("managedUsersRows").addEventListener("click", event => {
   else if (action === "delete") void deleteManagedUserProfile(id);
 });
 $("signOutBtn").addEventListener("click",async()=>{const button=$("signOutBtn");button.disabled=true;try{const {error}=await supabase.auth.signOut();if(error)throw error;location.replace("login.html");}catch(error){showNotice("Could not sign out: "+error.message,"error");button.disabled=false;}});
-async function initialize(){showGate("Opening Admin Control Center","Checking your Mac&Talk account…",false,true);try{const {data,error}=await supabase.auth.getSession();if(error)throw error;const user=data.session?.user;if(!user){showGate("Sign in required","Please sign in, then open the admin page.",true,false);return;}const role=await getRole(user);if(role!=="admin"){showGate("Access denied",`Your account role is "${role}", not "admin".`,false,false);return;}currentAdminId=user.id;$("adminEmail").textContent=user.email||"Administrator";const displayName=user.user_metadata?.full_name||user.user_metadata?.display_name||user.email||"Admin";$("adminAvatar").textContent=displayName.trim().charAt(0).toUpperCase()||"A";$("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});$("gate").classList.add("hidden");$("adminApp").classList.remove("hidden");try{await loadLiveUsers();}catch(error){showNotice(error.message,"error");}await loadSessions();}catch(error){console.error("Admin initialization failed:",error);showGate("Could not open Admin Control Center",error.message||"Check Supabase setup and RLS policies.",false,false);}}
+async function initialize(){showGate("Opening Admin Control Center","Checking your Mac&Talk account…",false,true);try{const {data,error}=await supabase.auth.getSession();if(error)throw error;const user=data.session?.user;if(!user){showGate("Sign in required","Please sign in, then open the admin page.",true,false);return;}const role=await getRole(user);if(role!=="admin"){showGate("Access denied",`Your account role is "${role}", not "admin".`,false,false);return;}currentAdminId=user.id;
+  supabase.channel("admin-managed-users-live")
+    .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>{
+      if(!$("page-users").classList.contains("active"))return;
+      loadManagedUsers().catch(error=>console.error("Realtime user refresh failed:",error));
+    }).subscribe();
+  $("adminEmail").textContent=user.email||"Administrator";const displayName=user.user_metadata?.full_name||user.user_metadata?.display_name||user.email||"Admin";$("adminAvatar").textContent=displayName.trim().charAt(0).toUpperCase()||"A";$("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});$("gate").classList.add("hidden");$("adminApp").classList.remove("hidden");try{await loadLiveUsers();}catch(error){showNotice(error.message,"error");}await loadSessions();}catch(error){console.error("Admin initialization failed:",error);showGate("Could not open Admin Control Center",error.message||"Check Supabase setup and RLS policies.",false,false);}}
 supabase.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showGate("Sign in required","Please sign in, then open the admin page.",true,false);});
 initialize();
 </script>

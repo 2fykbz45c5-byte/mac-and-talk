@@ -11,6 +11,80 @@
 .login-panel{padding:55px clamp(25px,5vw,65px);display:flex;flex-direction:column;justify-content:center}.login-heading{text-align:center;margin-bottom:28px}.login-heading h1{font-size:36px;margin-bottom:10px}.login-heading p{color:var(--muted);line-height:1.6;font-size:16px}.form-group{margin-bottom:19px}.form-group label{display:block;font-weight:700;margin-bottom:9px}.input-wrap{position:relative}.input-wrap input{width:100%;padding:15px 16px;border:1px solid var(--border);border-radius:12px;font-size:15px;color:var(--text);outline:none;background:#fbfdff}.input-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2677e81f}.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:var(--muted);font-size:19px;cursor:pointer;padding:5px}.form-options{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:3px 0 23px;font-size:14px}.remember{display:flex;align-items:center;gap:9px}.remember input{width:17px;height:17px;accent-color:var(--blue)}.text-link{color:var(--blue);font-weight:700}.submit-btn,.google-btn,.choice-btn{width:100%;padding:16px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer}.submit-btn{border:0;background:var(--yellow);color:var(--navy)}.google-btn,.choice-btn{border:1px solid var(--border);background:white;color:var(--text)}.submit-btn:disabled,.google-btn:disabled{opacity:.65;cursor:wait}.divider{display:flex;align-items:center;gap:15px;margin:23px 0;color:#8397b4}.divider:before,.divider:after{content:"";height:1px;flex:1;background:var(--border)}.signup-text{text-align:center;margin-top:25px;color:var(--muted);line-height:1.8;font-size:14px}.message{display:none;margin-bottom:17px;padding:12px 14px;border-radius:9px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}.message.error{display:block;background:#fff0f0;color:#a52222}.message.success{display:block;background:#eafaf1;color:#167345}.message.info{display:block;background:#edf5ff;color:#174a87}.role-choice{display:none;margin-top:15px;padding:17px;border:1px solid var(--border);border-radius:14px;background:#fbfdff}.role-choice.show{display:block}.role-choice h2{font-size:18px;margin-bottom:7px}.role-choice p{font-size:13px;color:var(--muted);margin-bottom:13px;line-height:1.5}.role-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.role-actions .choice-btn{padding:13px 8px}.small-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:15px;text-align:center}footer{text-align:center;color:var(--muted);font-size:13px;padding:22px 15px 28px}
 @media(max-width:850px){.main{grid-template-columns:1fr;max-width:560px}.brand-panel{padding:35px 25px}.big-mic{font-size:55px}.brand-title{font-size:42px}.brand-description{margin-top:10px}.illustration{font-size:55px;margin:12px 0}.features{max-width:400px}.login-panel{padding:40px 30px}}
 @media(max-width:480px){.topbar{padding:17px 5%}.logo{font-size:23px}.back-link{font-size:13px}.main{width:94%;margin:16px auto}.brand-panel{padding:28px 18px}.brand-title{font-size:36px}.brand-description{font-size:15px}.login-panel{padding:34px 22px}.login-heading h1{font-size:30px}.form-options{align-items:flex-start;flex-wrap:wrap}.role-actions{grid-template-columns:1fr}}
+
+/* ===== CONTACT ADMINISTRATOR BOX ===== */
+.contact-admin-wrap{width:min(1200px,92%);margin:0 auto 34px;display:flex;justify-content:flex-end}
+.contact-admin{width:100%;max-width:420px;padding:24px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 35px #10243e12}
+.contact-admin *{box-sizing:border-box}
+.contact-admin-header{display:flex;align-items:center;gap:13px;margin-bottom:21px}
+.contact-admin-icon{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;border-radius:13px;background:var(--navy);color:var(--yellow);font-size:23px}
+.contact-admin-header h2{margin:0 0 6px;color:var(--navy);font-size:18px;line-height:1.3}
+.contact-admin-header p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.contact-admin-field{margin-bottom:16px}
+.contact-admin-field label{display:block;margin-bottom:8px;color:var(--text);font-size:13px;font-weight:700}
+.contact-admin-field input,.contact-admin-field textarea{display:block;width:100%;padding:12px 13px;border:1px solid var(--border);border-radius:10px;outline:none;background:#fbfdff;color:var(--text);font:inherit;font-size:14px;transition:border-color .2s,box-shadow .2s}
+.contact-admin-field input{min-height:44px}
+.contact-admin-field textarea{min-height:105px;resize:vertical}
+.contact-admin-field input:focus,.contact-admin-field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2677e81f;background:#fff}
+.contact-admin-submit{display:flex;justify-content:center;align-items:center;gap:10px;width:100%;min-height:45px;padding:12px 16px;border:0;border-radius:10px;background:var(--navy);color:#fff;font-size:14px;font-weight:800;cursor:pointer;transition:background .2s,transform .2s}
+.contact-admin-submit:hover{background:var(--blue);transform:translateY(-1px)}
+.contact-admin-submit:disabled{opacity:.65;cursor:wait;transform:none}
+.contact-admin-status{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+.contact-admin-status:empty{display:none}
+@media(max-width:850px){.contact-admin-wrap{justify-content:center;margin-bottom:25px}}
+@media(max-width:480px){.contact-admin-wrap{width:94%}.contact-admin{padding:19px;border-radius:14px}.contact-admin-header h2{font-size:17px}}
+
+
+/* ===== COLLAPSIBLE CONTACT ADMINISTRATOR WIDGET ===== */
+.contact-admin-wrap{
+  position:fixed;right:24px;bottom:24px;z-index:1000;
+  width:auto;margin:0;display:block;
+}
+.contact-admin-launcher{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-height:52px;padding:0 20px;border:0;border-radius:999px;
+  background:var(--navy);color:#fff;font-size:14px;font-weight:800;
+  box-shadow:0 10px 28px #10243e35;cursor:pointer;
+  transition:transform .2s,background .2s;
+}
+.contact-admin-launcher:hover{background:var(--blue);transform:translateY(-2px)}
+.contact-admin-launcher-icon{
+  display:grid;place-items:center;width:29px;height:29px;border-radius:50%;
+  background:var(--yellow);color:var(--navy);font-size:17px;
+}
+.contact-admin{
+  display:none;position:absolute;right:0;bottom:64px;width:min(390px,calc(100vw - 32px));
+  max-width:none;padding:22px;background:#fff;border:1px solid var(--border);
+  border-radius:18px;box-shadow:0 18px 55px #10243e30;
+  animation:contactPop .18s ease-out;
+}
+.contact-admin.is-open{display:block}
+@keyframes contactPop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.contact-admin-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.contact-admin-header{display:flex;align-items:center;gap:12px;margin:0}
+.contact-admin-icon{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;border-radius:12px;background:var(--navy);color:var(--yellow);font-size:22px}
+.contact-admin-header h2{margin:0 0 5px;color:var(--navy);font-size:17px;line-height:1.3}
+.contact-admin-header p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.contact-admin-close{width:34px;height:34px;border:0;border-radius:9px;background:#f0f4f9;color:var(--navy);font-size:22px;cursor:pointer}
+.contact-admin-field{margin-bottom:14px}
+.contact-admin-field label{display:block;margin-bottom:7px;color:var(--text);font-size:13px;font-weight:700}
+.contact-admin-field input,.contact-admin-field textarea{display:block;width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;outline:none;background:#fbfdff;color:var(--text);font:inherit;font-size:14px;transition:border-color .2s,box-shadow .2s}
+.contact-admin-field input{min-height:43px}
+.contact-admin-field textarea{min-height:100px;resize:vertical}
+.contact-admin-field input:focus,.contact-admin-field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2677e81f;background:#fff}
+.contact-admin-submit{display:flex;justify-content:center;align-items:center;gap:10px;width:100%;min-height:45px;padding:12px 16px;border:0;border-radius:10px;background:var(--yellow);color:var(--navy);font-size:14px;font-weight:800;cursor:pointer;transition:background .2s,transform .2s}
+.contact-admin-submit:hover{background:#ffd34e;transform:translateY(-1px)}
+.contact-admin-submit:disabled{opacity:.65;cursor:wait;transform:none}
+.contact-admin-status{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+.contact-admin-status:empty{display:none}
+.contact-admin-status.success{color:#167345}
+.contact-admin-status.error{color:#a52222}
+@media(max-width:480px){
+ .contact-admin-wrap{right:14px;bottom:14px}
+ .contact-admin-launcher{min-height:48px;padding:0 16px}
+ .contact-admin{right:0;bottom:58px;width:calc(100vw - 28px);padding:18px}
+}
+
 </style></head><body>
 <header class="topbar"><a href="index.html" class="logo">🎙 Mac&<span>Talk</span></a><a href="index.html" class="back-link">← Back to Home</a></header>
 <main class="main"><section class="brand-panel"><div class="big-mic">🎙️</div><div class="brand-title">Mac&<span>Talk</span></div><p class="brand-description">Real voices. Real conversations.<br>A stronger community.</p><div class="illustration">🎧</div><div class="features"><div class="feature"><span class="feature-icon">🎧</span><strong>Live Sessions</strong><p>Join the conversation</p></div><div class="feature"><span class="feature-icon">🎙️</span><strong>Podcasts</strong><p>Listen anytime</p></div><div class="feature"><span class="feature-icon">👥</span><strong>Community</strong><p>Be part of it</p></div></div></section>
@@ -19,6 +93,87 @@
 <div class="divider">OR</div><button type="button" class="google-btn" id="googleSignIn">🌐 &nbsp; Continue with Google</button>
 <div class="role-choice" id="roleChoice"><h2>Where would you like to go?</h2><p>Your account has administrator access. You can use the student area too.</p><div class="role-actions"><button type="button" class="choice-btn" id="studentDashboard">🎓 Student area</button><button type="button" class="choice-btn" id="adminDashboard">🛡️ Admin dashboard</button></div></div>
 <p class="signup-text">New to Mac&Talk? <a href="register.html" class="text-link">Create an account</a></p><p class="small-note">One sign-in page for students, teachers, and administrators.</p></section></main>
+
+
+<div class="contact-admin-wrap">
+  <button type="button" class="contact-admin-launcher" id="contactAdminToggle"
+    aria-expanded="false" aria-controls="contactAdminPanel">
+    <span class="contact-admin-launcher-icon" aria-hidden="true">✉</span>
+    <span>Contact Administrator</span>
+  </button>
+
+  <section class="contact-admin" id="contactAdminPanel"
+    aria-label="Contact Administrator" aria-hidden="true">
+
+    <div class="contact-admin-top">
+      <div class="contact-admin-header">
+        <div class="contact-admin-icon" aria-hidden="true">✉</div>
+        <div>
+          <h2>Contact Administrator</h2>
+          <p>Send us a question or message.</p>
+        </div>
+      </div>
+
+      <button type="button" class="contact-admin-close" id="contactAdminClose"
+        aria-label="Close contact form">×</button>
+    </div>
+
+    <form id="contactAdminForm">
+      <!-- Name -->
+      <div class="contact-admin-field">
+        <label for="contactName">Your name</label>
+        <input
+          type="text"
+          id="contactName"
+          name="name"
+          placeholder="Enter your name"
+          autocomplete="name"
+          maxlength="100"
+          required
+        >
+      </div>
+
+      <!-- Email -->
+      <div class="contact-admin-field">
+        <label for="contactEmail">Your email</label>
+        <input
+          type="email"
+          id="contactEmail"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          maxlength="254"
+          required
+        >
+      </div>
+
+      <!-- Message -->
+      <div class="contact-admin-field">
+        <label for="contactMessage">Message</label>
+        <textarea
+          id="contactMessage"
+          name="message"
+          rows="4"
+          maxlength="3000"
+          placeholder="Write your message to the administrator..."
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit" class="contact-admin-submit" id="contactAdminSubmit">
+        <span>Send Message</span>
+        <span aria-hidden="true">➤</span>
+      </button>
+
+      <p id="contactAdminStatus"
+        class="contact-admin-status"
+        role="status"
+        aria-live="polite"></p>
+    </form>
+  </section>
+</div>
+
+
 <footer>© <span id="currentYear"></span> Mac&Talk. All rights reserved.</footer>
 
 
@@ -405,6 +560,120 @@ supabase.auth.onAuthStateChange((event, session) => {
     showRoleChoice(false);
   }
 });
+
+/*
+ * Contact Administrator widget.
+ * Sends name, email and message to Formspree.
+ */
+const contactAdminForm = $("contactAdminForm");
+const contactAdminStatus = $("contactAdminStatus");
+const contactAdminPanel = $("contactAdminPanel");
+const contactAdminToggle = $("contactAdminToggle");
+const contactAdminClose = $("contactAdminClose");
+const contactAdminSubmit = $("contactAdminSubmit");
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzedlgrg";
+
+function setContactPanel(open) {
+  if (!contactAdminPanel || !contactAdminToggle) return;
+  contactAdminPanel.classList.toggle("is-open", open);
+  contactAdminPanel.setAttribute("aria-hidden", String(!open));
+  contactAdminToggle.setAttribute("aria-expanded", String(open));
+  if (open) $("contactName")?.focus();
+}
+
+contactAdminToggle?.addEventListener("click", () => {
+  const isOpen = contactAdminPanel?.classList.contains("is-open");
+  setContactPanel(!isOpen);
+});
+
+contactAdminClose?.addEventListener("click", () => setContactPanel(false));
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") setContactPanel(false);
+});
+
+document.addEventListener("click", event => {
+  if (event.target instanceof Element &&
+      !event.target.closest(".contact-admin-wrap")) {
+    setContactPanel(false);
+  }
+});
+
+if (contactAdminForm && contactAdminStatus) {
+  contactAdminForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const nameInput = $("contactName");
+    const emailInput = $("contactEmail");
+    const messageInput = $("contactMessage");
+    const senderName = nameInput?.value.trim() || "";
+    const senderEmail = emailInput?.value.trim() || "";
+    const adminMessage = messageInput?.value.trim() || "";
+
+    contactAdminStatus.className = "contact-admin-status";
+    contactAdminStatus.textContent = "";
+
+    if (!senderName || !senderEmail || !adminMessage) {
+      contactAdminStatus.classList.add("error");
+      contactAdminStatus.textContent = "Please enter your name, email and message.";
+      return;
+    }
+
+    if (senderName.length > 100 || senderEmail.length > 254 ||
+        adminMessage.length > 3000) {
+      contactAdminStatus.classList.add("error");
+      contactAdminStatus.textContent = "Please check the length of your name, email and message.";
+      return;
+    }
+
+    if (contactAdminSubmit) {
+      contactAdminSubmit.disabled = true;
+      const label = contactAdminSubmit.querySelector("span");
+      if (label) label.textContent = "Sending...";
+    }
+
+    try {
+      const formData = new FormData(contactAdminForm);
+      formData.set("_subject", "Mac&Talk — Contact Administrator");
+      formData.set("name", senderName);
+      formData.set("email", senderEmail);
+      formData.set("message", adminMessage);
+
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" }
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const details = Array.isArray(result.errors)
+          ? result.errors.map(item => item.message).filter(Boolean).join(" ")
+          : "";
+        throw new Error(details || "Formspree could not accept your message.");
+      }
+
+      contactAdminStatus.classList.add("success");
+      contactAdminStatus.textContent = "Your message was submitted successfully!";
+      contactAdminForm.reset();
+    } catch (error) {
+      console.error("Contact message submission failed:", error);
+      contactAdminStatus.classList.add("error");
+      contactAdminStatus.textContent =
+        "Could not send your message. Please try again. " +
+        (error.message && !/failed to fetch/i.test(error.message)
+          ? error.message
+          : "Check your internet connection and Formspree form settings.");
+    } finally {
+      if (contactAdminSubmit) {
+        contactAdminSubmit.disabled = false;
+        const label = contactAdminSubmit.querySelector("span");
+        if (label) label.textContent = "Send Message";
+      }
+    }
+  });
+}
 </script>
 </body>
 </html>

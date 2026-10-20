@@ -1,213 +1,603 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10243e">
 <title>Create Account | Mac&Talk</title>
 
 <style>
 :root {
-  --navy:#10243e;
-  --yellow:#ffc629;
-  --bg:#f3f6fb;
-  --muted:#718096;
-  --line:#e5eaf1;
-  --red:#b42318;
-  --green:#18794e;
+  --navy: #10243e;
+  --navy-light: #1c3657;
+  --yellow: #ffc629;
+  --blue: #2677e8;
+  --bg: #f3f6fb;
+  --muted: #718096;
+  --line: #e5eaf1;
+  --red: #b42318;
+  --green: #18794e;
 }
-* { box-sizing:border-box; }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  margin:0;
-  min-height:100vh;
-  display:grid;
-  place-items:center;
-  padding:20px;
-  font-family:Arial,sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
   background:
-    radial-gradient(circle at top left,#fff0b8,transparent 35%),
-    linear-gradient(135deg,#f5f7fb,#e8edf5);
-  color:var(--navy);
+    radial-gradient(circle at 10% 5%, #fff0b8 0, transparent 32%),
+    radial-gradient(circle at 95% 90%, #dceaff 0, transparent 30%),
+    linear-gradient(135deg, #f7f9fc, #eaf0f8);
+  color: var(--navy);
 }
+
 .card {
-  width:100%;
-  max-width:470px;
-  padding:32px;
-  border-radius:20px;
-  background:#fff;
-  box-shadow:0 12px 40px #10243e15;
-  border:1px solid var(--line);
+  width: 100%;
+  max-width: 470px;
+  padding: 32px;
+  background: #fff;
+  border: 1px solid rgba(229, 234, 241, 0.95);
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(16, 36, 62, 0.10);
 }
+
 .brand {
-  text-align:center;
-  background:var(--navy);
-  color:#fff;
-  border-radius:14px;
-  padding:20px;
-  margin-bottom:25px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 24px 18px;
+  margin-bottom: 27px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  border-radius: 17px;
 }
+
+.brand::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  right: -45px;
+  top: -65px;
+  border: 18px solid rgba(255, 198, 41, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
 .brand h1 {
-  margin:0;
-  color:var(--yellow);
-  font-size:29px;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--yellow);
+  font-size: 31px;
+  font-weight: 850;
+  letter-spacing: -1px;
 }
+
 .brand p {
-  margin:7px 0 0;
-  font-size:10px;
-  letter-spacing:1.5px;
+  position: relative;
+  z-index: 1;
+  margin: 8px 0 0;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  color: #d9e4f3;
 }
-h2 { margin:0 0 9px; font-size:24px; }
-p { line-height:1.6; }
-.muted { color:var(--muted); font-size:13px; }
+
+h2 {
+  margin: 0 0 9px;
+  font-size: 25px;
+  letter-spacing: -0.6px;
+}
+
+.intro {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
 label {
-  display:block;
-  margin:16px 0 7px;
-  font-size:13px;
-  font-weight:700;
+  display: block;
+  margin: 17px 0 7px;
+  font-size: 13px;
+  font-weight: 700;
 }
+
 input {
-  width:100%;
-  padding:13px;
-  border:1px solid var(--line);
-  border-radius:9px;
-  font-size:15px;
-  color:var(--navy);
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid #dfe6ef;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+
+input::placeholder {
+  color: #a1adbd;
+}
+
 input:focus {
-  outline:3px solid #ffc62955;
-  border-color:#d6a800;
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(38, 119, 232, 0.10);
 }
-button,.link {
-  display:block;
-  width:100%;
-  margin-top:18px;
-  padding:14px;
-  border:0;
-  border-radius:9px;
-  background:var(--yellow);
-  color:var(--navy);
-  font-size:15px;
-  font-weight:800;
-  cursor:pointer;
-  text-align:center;
-  text-decoration:none;
+
+button,
+.link-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 47px;
+  margin-top: 20px;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
-button:disabled { opacity:.6; cursor:wait; }
-.link { background:#eef2f8; margin-top:10px; }
+
+button {
+  background: var(--yellow);
+  color: var(--navy);
+  box-shadow: 0 5px 14px rgba(255, 198, 41, 0.20);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(255, 198, 41, 0.30);
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.link-button {
+  margin-top: 11px;
+  color: var(--navy);
+  background: #f0f4f9;
+  border: 1px solid #e7edf5;
+}
+
+.link-button:hover {
+  background: #e7eef8;
+}
+
 #message {
-  overflow-wrap:anywhere;
-  padding:0;
+  display: none;
+  overflow-wrap: anywhere;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.7;
 }
+
 #message:not(:empty) {
-  padding:11px 12px;
-  border-radius:9px;
-  background:#eef4ff;
-  color:#174a87;
+  display: block;
 }
-#message.error { background:#fff0f0; color:var(--red); }
-#message.success { background:#eafaf1; color:var(--green); }
-.fine { font-size:12px; color:var(--muted); margin-top:14px; }
-a.inline { color:var(--navy); font-weight:700; }
+
+#message.error {
+  color: var(--red);
+  background: #fff0f0;
+  border: 1px solid #ffd9d9;
+}
+
+#message.success {
+  color: var(--green);
+  background: #eafaf1;
+  border: 1px solid #c7efd8;
+}
+
+/* Account approval notice */
+
+.account-notice {
+  display: none;
+  margin: 24px 0 0;
+  padding: 23px 19px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  box-shadow: 0 8px 25px rgba(16, 36, 62, 0.05);
+  animation: noticeIn 0.35s ease both;
+}
+
+.account-notice.visible {
+  display: block;
+}
+
+@keyframes noticeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 15px;
+  background: #eef5ff;
+  border-radius: 18px;
+  font-size: 27px;
+}
+
+.account-notice h3 {
+  margin: 0 0 10px;
+  font-size: 21px;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+}
+
+.notice-message {
+  margin: 0;
+  color: #66758a;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.approval-box {
+  margin: 19px 0;
+  padding: 17px 14px;
+  background: #fff9e8;
+  border: 1px solid #ffe7a3;
+  border-radius: 13px;
+}
+
+.approval-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  color: #805c00;
+  background: #ffedb5;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.approval-box p {
+  margin: 12px 0 0;
+  color: #606779;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.approval-time strong {
+  color: var(--navy);
+}
+
+.security-message {
+  margin: 0;
+  color: #66758a;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* Small contact box */
+
+.contact-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 17px;
+  padding: 13px;
+  text-align: left;
+  background: #f6f8fc;
+  border: 1px solid #e6ecf4;
+  border-radius: 12px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.contact-box:hover {
+  background: #eef5ff;
+  border-color: #c9ddfb;
+}
+
+.contact-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 39px;
+  height: 39px;
+  color: var(--blue);
+  background: #e5efff;
+  border-radius: 11px;
+  font-size: 19px;
+}
+
+.contact-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.contact-label {
+  color: #8492a6;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.contact-content a {
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.contact-content a:hover {
+  color: var(--blue);
+}
+
+.contact-message {
+  color: #718096;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.fine {
+  margin: 19px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.inline {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.inline:hover {
+  text-decoration: underline;
+}
+
+.footer-link {
+  margin-top: 15px;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px 11px;
+  }
+
+  .card {
+    padding: 23px 18px;
+    border-radius: 18px;
+  }
+
+  .brand {
+    padding: 21px 15px;
+  }
+
+  .brand h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 23px;
+  }
+
+  .account-notice {
+    padding: 20px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 </style>
 </head>
 
 <body>
 <main class="card">
 
-  <div class="brand">
+  <header class="brand">
     <h1>Mac&Talk</h1>
     <p>LEARN TOGETHER. GROW TOGETHER.</p>
-  </div>
+  </header>
 
-  <h2>Create your account</h2>
-  <p class="muted">
-    Join Mac&Talk to discover live sessions and podcasts.
-    Every new account must be approved by an administrator.
-  </p>
+  <section id="registrationSection">
+    <h2>Create your account</h2>
 
-  <p id="message" role="status" aria-live="polite"></p>
+    <p class="intro">
+      Join Mac&Talk to discover podcasts and live sessions.
+      Every new account must be approved by an administrator
+      before dashboard access is granted.
+    </p>
 
-  <form id="registerForm">
-    <label for="fullName">Full name</label>
-    <input
-      id="fullName"
-      name="fullName"
-      autocomplete="name"
-      maxlength="100"
-      required
-      placeholder="Your full name"
-    >
+    <p id="message" role="status" aria-live="polite"></p>
 
-    <label for="username">Username</label>
-    <input
-      id="username"
-      name="username"
-      autocomplete="username"
-      minlength="3"
-      maxlength="30"
-      pattern="[A-Za-z0-9_.-]{3,30}"
-      required
-      placeholder="3–30 letters, numbers, dots, _ or -"
-    >
+    <form id="registerForm">
+      <label for="fullName">Full name</label>
+      <input
+        id="fullName"
+        name="fullName"
+        autocomplete="name"
+        maxlength="100"
+        required
+        placeholder="Enter your full name"
+      >
 
-    <label for="email">Email address</label>
-    <input
-      id="email"
-      name="email"
-      type="email"
-      autocomplete="email"
-      maxlength="254"
-      required
-      placeholder="you@example.com"
-    >
+      <label for="username">Username</label>
+      <input
+        id="username"
+        name="username"
+        autocomplete="username"
+        minlength="3"
+        maxlength="30"
+        pattern="[A-Za-z0-9_.-]{3,30}"
+        title="Use 3–30 letters, numbers, dots, underscores or hyphens."
+        required
+        placeholder="Choose a username"
+      >
 
-    <label for="password">Password</label>
-    <input
-      id="password"
-      name="password"
-      type="password"
-      autocomplete="new-password"
-      minlength="8"
-      maxlength="128"
-      required
-      placeholder="At least 8 characters"
-    >
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        maxlength="254"
+        required
+        placeholder="you@example.com"
+      >
 
-    <label for="confirmPassword">Confirm password</label>
-    <input
-      id="confirmPassword"
-      name="confirmPassword"
-      type="password"
-      autocomplete="new-password"
-      minlength="8"
-      maxlength="128"
-      required
-      placeholder="Repeat your password"
-    >
+      <label for="password">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        maxlength="128"
+        required
+        placeholder="At least 8 characters"
+      >
 
-    <button id="submitBtn" type="submit">
-      Create account
-    </button>
-  </form>
+      <label for="confirmPassword">Confirm password</label>
+      <input
+        id="confirmPassword"
+        name="confirmPassword"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        maxlength="128"
+        required
+        placeholder="Enter your password again"
+      >
 
-  <a class="link" href="login.html">
-    Already have an account? Sign in
-  </a>
+      <button id="submitBtn" type="submit">
+        <span>Create account</span>
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+
+    <a class="link-button" href="login.html">
+      Already have an account? Sign in
+    </a>
+  </section>
+
+  <!-- This notice is displayed after registration. -->
+  <section
+    class="account-notice"
+    id="accountNotice"
+    aria-live="polite"
+    aria-labelledby="noticeTitle"
+    tabindex="-1"
+  >
+    <div class="notice-icon" id="noticeIcon" aria-hidden="true">✓</div>
+
+    <h3 id="noticeTitle">Account Created Successfully!</h3>
+
+    <p class="notice-message" id="noticeMessage">
+      Your registration has been received.
+    </p>
+
+    <div class="approval-box">
+      <span class="approval-status">
+        <span aria-hidden="true">⏳</span>
+        Pending Approval
+      </span>
+
+      <p>
+        Your account is awaiting administrator approval.
+        Please check your account status once a day.
+      </p>
+
+      <p class="approval-time">
+        Approval usually takes between
+        <strong>24–48 hours</strong>.
+      </p>
+    </div>
+
+    <p class="security-message" id="securityMessage">
+      Please wait until your account is approved before accessing
+      your dashboard. Email confirmation, if required, does not
+      replace administrator approval.
+    </p>
+
+    <div class="contact-box">
+      <span class="contact-icon" aria-hidden="true">✉</span>
+
+      <div class="contact-content">
+        <span class="contact-label">Need help?</span>
+
+        <a
+          id="contactLink"
+          href="mailto:jemaay55@gmail.com?subject=Mac%26Talk%20Account%20Approval&body=Hello%20Administrator%2C%0A%0AI%20need%20help%20with%20my%20Mac%26Talk%20account%20approval.%0A%0AThank%20you."
+        >
+          Contact the Administrator →
+        </a>
+
+        <span class="contact-message">
+          Send us a message if you need help with your account.
+        </span>
+      </div>
+    </div>
+
+    <p class="fine">
+      Please do not create another account while your registration
+      is being reviewed.
+    </p>
+
+    <a class="link-button" href="login.html">
+      Go to sign in
+    </a>
+  </section>
 
   <p class="fine">
-    New accounts remain pending until an administrator
-    approves them and assigns a role. Your Mac&Talk ID
-    will be assigned after approval.
+    New accounts remain pending until an administrator approves
+    them and assigns a role. Your Mac&Talk ID will be assigned
+    after approval.
   </p>
 
   <p class="fine">
     By creating an account, you agree to our
-    <a class="inline" href="terms.html">Terms</a> and
+    <a class="inline" href="terms.html">Terms of Service</a>
+    and
     <a class="inline" href="privacy.html">Privacy Policy</a>.
   </p>
 
-  <p class="fine">
+  <p class="fine footer-link">
     <a class="inline" href="index.html">← Back to home</a>
   </p>
 
@@ -232,10 +622,38 @@ const supabase = createClient(
 const form = document.getElementById("registerForm");
 const message = document.getElementById("message");
 const button = document.getElementById("submitBtn");
+const registrationSection =
+  document.getElementById("registrationSection");
+const accountNotice = document.getElementById("accountNotice");
+const noticeIcon = document.getElementById("noticeIcon");
+const noticeTitle = document.getElementById("noticeTitle");
+const noticeMessage = document.getElementById("noticeMessage");
+const securityMessage = document.getElementById("securityMessage");
 
 function say(text, kind = "") {
   message.textContent = text;
   message.className = kind;
+}
+
+function showAccountNotice({
+  title,
+  text,
+  icon = "✓",
+  securityText
+}) {
+  // Use textContent so messages are displayed safely as text,
+  // rather than interpreted as HTML.
+  noticeTitle.textContent = title;
+  noticeMessage.textContent = text;
+  noticeIcon.textContent = icon;
+
+  if (securityText) {
+    securityMessage.textContent = securityText;
+  }
+
+  registrationSection.hidden = true;
+  accountNotice.classList.add("visible");
+  accountNotice.focus();
 }
 
 form.addEventListener("submit", async (event) => {
@@ -257,25 +675,28 @@ form.addEventListener("submit", async (event) => {
     document.getElementById("confirmPassword").value;
 
   if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username)) {
-    return say(
+    say(
       "Use 3–30 letters, numbers, dots, underscores or hyphens for your username.",
       "error"
     );
+    return;
   }
 
   if (password.length < 8) {
-    return say(
+    say(
       "Your password must contain at least 8 characters.",
       "error"
     );
+    return;
   }
 
   if (password !== confirmPassword) {
-    return say("The passwords do not match.", "error");
+    say("The passwords do not match.", "error");
+    return;
   }
 
   button.disabled = true;
-  button.textContent = "Creating account...";
+  button.textContent = "Creating your account...";
   say("");
 
   try {
@@ -288,17 +709,20 @@ form.addEventListener("submit", async (event) => {
           display_name: fullName,
           username: username
         },
-        emailRedirectTo:
-          new URL("login.html", window.location.href).toString()
+        emailRedirectTo: new URL(
+          "login.html",
+          window.location.href
+        ).toString()
       }
     });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     /*
-      Do not send a new account directly to a dashboard.
-      If Supabase immediately creates a session, sign out
-      so this registration flow does not leave the user logged in.
+      If signup immediately creates a session, attempt to sign out.
+      Do not navigate to a dashboard during registration.
     */
     if (data.session) {
       const { error: signOutError } =
@@ -306,40 +730,48 @@ form.addEventListener("submit", async (event) => {
 
       if (signOutError) {
         console.error(
-          "Could not sign out after registration:",
+          "Sign-out after registration failed:",
           signOutError
         );
 
-        say(
-          "The account was created, but we could not finish the sign-out step. Do not use a dashboard yet. Please contact the administrator.",
-          "error"
-        );
+        showAccountNotice({
+          title: "Account Created — Action Needed",
+          icon: "!",
+          text:
+            "Your account was created, but we couldn't complete the sign-out process.",
+          securityText:
+            "For your security, do not access your dashboard yet. Contact the administrator for assistance. Your account still requires administrator approval."
+        });
+
         return;
       }
     }
 
     form.reset();
 
-    say(
-      "Registration received! Your account must be approved by the Mac&Talk administrator before you can access the website. No Mac&Talk ID has been assigned yet. " +
-      (data.session
-        ? "You can now wait for the administrator's decision."
-        : "If Supabase asks you to confirm your email, please check your inbox. Email confirmation does not replace administrator approval."),
-      "success"
-    );
+    showAccountNotice({
+      title: "Account Created Successfully!",
+      icon: "✓",
+      text: data.session
+        ? "Your registration has been received. Please wait while the administrator reviews your account."
+        : "Your registration has been received. If email confirmation is required, check your inbox and confirm your email address.",
+      securityText:
+        "Your account must be approved by the administrator before you can access your dashboard. Email confirmation, if required, does not replace administrator approval."
+    });
 
   } catch (error) {
     console.error("Registration failed:", error);
 
     say(
       error.message ||
-      "Could not create your account. Please try again.",
+      "We couldn't create your account. Please try again.",
       "error"
     );
 
   } finally {
     button.disabled = false;
-    button.textContent = "Create account";
+    button.innerHTML =
+      '<span>Create account</span><span aria-hidden="true">→</span>';
   }
 });
 </script>
