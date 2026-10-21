@@ -1,0 +1,104 @@
+const http = require(http);
+const fs = require(fs);
+const path = require(path);
+
+const root = __dirname;
+const port = 6000;
+
+const mimeTypes = {
+  .html texthtml; charset=utf-8,
+  .css textcss; charset=utf-8,
+  .js textjavascript; charset=utf-8,
+  .json applicationjson,
+  .png imagepng,
+  .jpg imagejpeg,
+  .jpeg imagejpeg,
+  .svg imagesvg+xml,
+  .webp imagewebp,
+  .ico imagex-icon,
+  .mp3 audiompeg,
+  .wav audiowav,
+  .ogg audioogg,
+  .webm audiowebm,
+  .m4a audiomp4
+};
+
+const server = http.createServer((req, res) = {
+  let requestedPath;
+
+  try {
+    requestedPath = decodeURIComponent(
+      new URL(req.url, httplocalhost).pathname
+    );
+  } catch {
+    res.writeHead(400);
+    return res.end(Bad request);
+  }
+
+  if (requestedPath === ) requestedPath = index.html;
+
+  const filePath = path.resolve(root, . + requestedPath);
+
+  if (filePath !== root && !filePath.startsWith(root + path.sep)) {
+    res.writeHead(403);
+    return res.end(Forbidden);
+  }
+
+  fs.stat(filePath, (statError, stats) = {
+    if (statError  !stats.isFile()) {
+      res.writeHead(404, { Content-Type textplain; charset=utf-8 });
+      return res.end(File not found  + requestedPath);
+    }
+
+    const contentType =
+      mimeTypes[path.extname(filePath).toLowerCase()] 
+      applicationoctet-stream;
+
+    const range = req.headers.range;
+
+    if (range && contentType.startsWith(audio)) {
+      const match = range.match(bytes=(d)-(d));
+
+      if (match) {
+        const start = match[1]  Number(match[1])  0;
+        const end = match[2]
+           Math.min(Number(match[2]), stats.size - 1)
+           stats.size - 1;
+
+        if (start = end && start  stats.size) {
+          res.writeHead(206, {
+            Content-Type contentType,
+            Content-Length end - start + 1,
+            Content-Range `bytes ${start}-${end}${stats.size}`,
+            Accept-Ranges bytes
+          });
+
+          return fs.createReadStream(filePath, { start, end }).pipe(res);
+        }
+
+        res.writeHead(416, {
+          Content-Range `bytes ${stats.size}`
+        });
+        return res.end();
+      }
+    }
+
+    res.writeHead(200, {
+      Content-Type contentType,
+      Content-Length stats.size,
+      Accept-Ranges bytes
+    });
+
+    fs.createReadStream(filePath).pipe(res);
+  });
+});
+
+server.listen(port, 127.0.0.1, () = {
+  console.log(Mac&Talk is running!);
+  console.log(`Open httplocalhost${port}`);
+  console.log(Keep this window open while using the website.);
+});
+
+server.on(error, (error) = {
+  console.error(Server error, error.message);
+});
