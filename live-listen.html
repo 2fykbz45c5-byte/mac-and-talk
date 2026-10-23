@@ -243,6 +243,50 @@
       font-size: 14px;
       font-weight: 700;
     }
+    .people-section {
+      width: 100%;
+      margin: 0 0 23px;
+      padding: 17px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfcfe;
+    }
+    .people-heading {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .people-list { display: flex; flex-wrap: wrap; gap: 9px; }
+    .person-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      padding: 7px 10px 7px 7px;
+      border: 1px solid #e5eaf1;
+      border-radius: 999px;
+      background: white;
+      color: #33445d;
+      font-size: 11px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    .person-avatar {
+      width: 27px;
+      height: 27px;
+      flex: 0 0 27px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 50%;
+      background: #fff0bf;
+      color: var(--navy);
+      font-size: 11px;
+    }
+    .person-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .person-role { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; font-weight: 600; }
     .description {
       margin: 0 0 22px;
       color: var(--muted);
@@ -400,6 +444,10 @@
         </div>
         <h2 class="session-title" id="sessionTitle">Loading live session…</h2>
         <p class="host" id="hostName">Mac &amp; Talk host</p>
+        <section class="people-section" id="peopleSection" aria-label="Host and invited guests" hidden>
+          <h3 class="people-heading">People in this live</h3>
+          <div class="people-list" id="peopleList"></div>
+        </section>
         <p class="description" id="description"></p>
         <div class="meta">
           <span id="scheduledAt"></span>
@@ -476,10 +524,83 @@
       return "Scheduled: " + date.toLocaleString(undefined, {dateStyle:"medium", timeStyle:"short"});
     }
 
+    function personDisplayName(profile) {
+      return (profile?.display_name || "").trim() || (profile?.username ? "@" + profile.username : "Mac & Talk member");
+    }
+
+    function addPersonChip(profile, role) {
+      const chip = document.createElement("div");
+      chip.className = "person-chip";
+      const avatar = document.createElement("span");
+      avatar.className = "person-avatar";
+      const displayName = personDisplayName(profile);
+      if (profile?.photo_url) {
+        const img = document.createElement("img");
+        img.src = profile.photo_url;
+        img.alt = "";
+        img.referrerPolicy = "no-referrer";
+        img.onerror = () => { img.remove(); avatar.textContent = displayName.slice(0, 1).toUpperCase(); };
+        avatar.append(img);
+      } else {
+        avatar.textContent = displayName.slice(0, 1).toUpperCase();
+      }
+      const details = document.createElement("span");
+      details.append(document.createTextNode(displayName));
+      const roleLabel = document.createElement("span");
+      roleLabel.className = "person-role";
+      roleLabel.textContent = role;
+      details.append(roleLabel);
+      chip.append(avatar, details);
+      $("peopleList").append(chip);
+    }
+
+    async function loadPeople(row) {
+      const section = $("peopleSection");
+      const list = $("peopleList");
+      list.replaceChildren();
+      section.hidden = true;
+      try {
+        const [hostResult, inviteeResult] = await Promise.all([
+          supabase.from("live_session_hosts").select("user_id").eq("session_id", row.id),
+          supabase.from("live_session_invitees").select("user_id").eq("session_id", row.id)
+        ]);
+        if (hostResult.error) console.warn("Could not load live hosts:", hostResult.error.message);
+        if (inviteeResult.error) console.warn("Could not load live invitees:", inviteeResult.error.message);
+
+        const hostIds = (hostResult.data || []).map(item => item.user_id).filter(Boolean);
+        if (row.host_user_id) hostIds.unshift(row.host_user_id);
+        const uniqueHostIds = [...new Set(hostIds)];
+        const inviteeIds = [...new Set((inviteeResult.data || []).map(item => item.user_id).filter(Boolean))]
+          .filter(id => !uniqueHostIds.includes(id));
+        const allIds = [...new Set([...uniqueHostIds, ...inviteeIds])];
+        let profiles = [];
+        if (allIds.length) {
+          const profileResult = await supabase.from("profiles")
+            .select("id,display_name,username,photo_url")
+            .in("id", allIds);
+          if (profileResult.error) console.warn("Could not load profile names:", profileResult.error.message);
+          profiles = profileResult.data || [];
+        }
+        const byId = new Map(profiles.map(profile => [profile.id, profile]));
+        uniqueHostIds.forEach(id => {
+          const profile = byId.get(id);
+          if (profile) addPersonChip(profile, "Host");
+        });
+        inviteeIds.forEach(id => {
+          const profile = byId.get(id);
+          if (profile) addPersonChip(profile, "Invited");
+        });
+        if (list.children.length) section.hidden = false;
+      } catch (error) {
+        console.warn("Could not load people for this live:", error);
+      }
+    }
+
     function renderSession(row) {
       session = row;
       $("sessionTitle").textContent = row.title || "Live session";
       $("hostName").textContent = "Hosted by " + (row.host_name || row.host || "Mac & Talk host");
+      loadPeople(row);
       $("description").textContent = row.description || "";
       $("description").hidden = !row.description;
       $("scheduledAt").textContent = formatDate(row.scheduled_at);
@@ -535,7 +656,7 @@
       }
       const { data, error } = await supabase
         .from("live_sessions")
-        .select("id,title,description,scheduled_at,cover_image_url,status,approved,host,host_name,emoji")
+        .select("id,title,description,scheduled_at,cover_image_url,status,approved,host,host_name,host_user_id,emoji")
         .eq("id", sessionId)
         .maybeSingle();
 
