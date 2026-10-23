@@ -369,7 +369,11 @@
       animation: move 1.6s ease-in-out infinite alternate;
     }
     @keyframes move { to { transform: translateX(240%); } }
-    #remoteAudio { width: 100%; margin-top: 14px; }
+    .volume-control { display:flex; align-items:center; gap:12px; margin-top:16px; color:var(--navy); font-size:12px; font-weight:700; }
+    .volume-control label { display:flex; align-items:center; gap:8px; white-space:nowrap; }
+    #volumeSlider { width:100%; accent-color:var(--navy); cursor:pointer; }
+    #volumeValue { min-width:38px; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; }
+    #remoteAudio { width: 100%; margin-top: 10px; }
     .footer {
       padding: 24px;
       border-top: 1px solid var(--line);
@@ -418,6 +422,123 @@
       }
     }
 
+
+    /* Compact desktop and iPad layouts: fit the main live card in the viewport. */
+    @media (min-width: 801px) {
+      body { min-height: 100vh; }
+      main { width: min(100% - 56px, 1500px); display: flex; flex-direction: column; justify-content: center; }
+      .card { flex: 1; min-height: min(68vh, 650px); }
+      .cover { min-height: 100%; }
+      .topbar-inner { min-height: 62px; }
+      .brand { font-size: 23px; }
+      main { padding: clamp(14px, 2.2vh, 24px) 0 clamp(12px, 2vh, 20px); }
+      .eyebrow { margin-bottom: 8px; }
+      h1 { max-width: 100%; margin-bottom: 9px; font-size: clamp(2rem, 4.1vw, 3.6rem); line-height: 1; }
+      .intro { margin-bottom: clamp(12px, 2vh, 20px); font-size: 14px; line-height: 1.5; }
+      .card { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); }
+      .cover { min-height: min(54vh, 450px); }
+      .cover .cover-emoji { width: 145px; height: 145px; font-size: 4.8rem; }
+      .cover::before { width: 300px; height: 300px; }
+      .cover::after { width: 370px; height: 370px; }
+      .card-content { padding: clamp(18px, 2.1vw, 30px); }
+      .status-row { margin-bottom: 12px; }
+      .status-pill { padding: 7px 10px; }
+      .session-title { margin-bottom: 7px; font-size: clamp(1.5rem, 2.2vw, 2.2rem); }
+      .host { margin-bottom: 10px; font-size: 12px; }
+      .people-section { margin-bottom: 12px; padding: 10px 12px; }
+      .people-heading { margin-bottom: 7px; }
+      .people-list { gap: 6px; }
+      .person-chip { padding: 5px 8px 5px 5px; font-size: 10px; }
+      .person-avatar { width: 23px; height: 23px; flex-basis: 23px; }
+      .description { margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+      .meta { margin-bottom: 12px; gap: 6px 12px; }
+      button, .secondary-link { min-height: 40px; padding: 9px 13px; }
+      .helper { margin-top: 9px; font-size: 10px; line-height: 1.45; }
+      .notice { margin-top: 10px; padding: 9px 12px; font-size: 11px; }
+      .player { margin-top: 12px; padding: 12px 14px; }
+      .meter { margin-top: 9px; }
+      .volume-control { margin-top: 9px; }
+      #remoteAudio { margin-top: 5px; max-height: 38px; }
+      .footer { padding: 10px 16px; font-size: 10px; }
+    }
+
+    /* iPad/tablet: keep the cover beside the details rather than stacking. */
+    @media (min-width: 521px) and (max-width: 800px) {
+      body { min-height: 100vh; }
+      main { display: flex; flex-direction: column; justify-content: center; }
+      .card { flex: 1; min-height: min(58vh, 520px); }
+      .cover { min-height: 100%; }
+      .topbar-inner { min-height: 60px; width: calc(100% - 32px); }
+      .brand { font-size: 22px; }
+      .top-note { font-size: 10px; }
+      main { width: calc(100% - 32px); padding: 16px 0 18px; }
+      .eyebrow { margin-bottom: 7px; }
+      h1 { max-width: 100%; margin-bottom: 8px; font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1; }
+      .intro { max-width: 100%; margin-bottom: 14px; font-size: 13px; line-height: 1.5; }
+      .card { grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); border-radius: 20px; }
+      .cover { min-height: clamp(250px, 42vh, 390px); }
+      .cover .cover-emoji { width: 100px; height: 100px; font-size: 3.5rem; }
+      .cover::before { width: 220px; height: 220px; }
+      .cover::after { width: 280px; height: 280px; }
+      .card-content { padding: 15px; }
+      .status-row { gap: 6px; margin-bottom: 9px; }
+      .status-pill { padding: 6px 8px; font-size: 8px; }
+      .session-title { margin-bottom: 6px; font-size: clamp(1.35rem, 3vw, 1.8rem); }
+      .host { margin-bottom: 8px; font-size: 11px; }
+      .people-section { margin-bottom: 9px; padding: 8px; }
+      .people-heading { margin-bottom: 6px; font-size: 11px; }
+      .people-list { gap: 5px; }
+      .person-chip { gap: 5px; padding: 4px 6px 4px 4px; font-size: 9px; }
+      .person-avatar { width: 20px; height: 20px; flex-basis: 20px; font-size: 9px; }
+      .person-role { font-size: 8px; }
+      .description { margin-bottom: 8px; font-size: 11px; line-height: 1.45; }
+      .meta { margin-bottom: 9px; gap: 5px 9px; font-size: 10px; }
+      .actions { gap: 6px; }
+      button, .secondary-link { min-height: 36px; padding: 7px 9px; font-size: 10px; }
+      .primary { min-width: 0; }
+      .helper { margin-top: 7px; font-size: 9px; line-height: 1.4; }
+      .notice { margin-top: 8px; padding: 8px 10px; font-size: 10px; line-height: 1.45; }
+      .player { margin-top: 9px; padding: 9px; }
+      .player-title { font-size: 11px; }
+      .player-state { font-size: 9px; }
+      .meter { margin-top: 7px; }
+      .volume-control { gap: 7px; margin-top: 7px; font-size: 10px; }
+      #remoteAudio { margin-top: 4px; max-height: 34px; }
+      .footer { padding: 8px 12px; font-size: 9px; }
+    }
+
+    /* Short laptop/tablet landscape screens need an even tighter vertical rhythm. */
+    @media (min-width: 521px) and (max-height: 760px) {
+      .topbar-inner { min-height: 52px; }
+      main { padding-top: 10px; padding-bottom: 10px; }
+      .cover { min-height: min(43vh, 330px); }
+      .footer { padding-top: 6px; padding-bottom: 6px; }
+    }
+
+  
+    /* Slightly smaller card on desktop and iPad: 4px less in each dimension. */
+    @media (min-width: 521px) {
+      .card {
+        width: calc(100% - 8px);
+        min-height: calc(min(68vh, 650px) - 4px);
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+  
+    /* More compact card on desktop and iPad; phone layout stays unchanged. */
+    @media (min-width: 521px) {
+      .card {
+        width: calc(100% - 32px);
+        min-height: calc(min(68vh, 650px) - 24px);
+      }
+      main {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -430,7 +551,7 @@
 
   <main>
     <p class="eyebrow">Mac &amp; Talk · Live room</p>
-    <h1>Good conversations.<br><em>Live and unfiltered.</em></h1>
+    <h1 id="sessionTitle">Loading live session…</h1>
     <p class="intro">Tune in to real voices and open conversations, happening live. Listen as a visitor — no account, microphone, or camera needed.</p>
 
     <section class="card" aria-live="polite">
@@ -442,7 +563,6 @@
           <span class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">Loading session…</span></span>
           <span class="status-pill">🎧 Visitor listening</span>
         </div>
-        <h2 class="session-title" id="sessionTitle">Loading live session…</h2>
         <p class="host" id="hostName">Mac &amp; Talk host</p>
         <section class="people-section" id="peopleSection" aria-label="Host and invited guests" hidden>
           <h3 class="people-heading">People in this live</h3>
@@ -469,7 +589,12 @@
             <span aria-hidden="true">🔊</span>
           </div>
           <div class="meter" id="meter"><span></span></div>
-          <audio id="remoteAudio" autoplay playsinline controls style="width:100%;margin-top:14px"></audio>
+          <div class="volume-control">
+            <label for="volumeSlider"><span aria-hidden="true">🔊</span> Volume</label>
+            <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Live audio volume">
+            <output id="volumeValue" for="volumeSlider">80%</output>
+          </div>
+          <audio id="remoteAudio" autoplay playsinline controls></audio>
         </div>
       </div>
     </section>
@@ -488,6 +613,13 @@
     $("year").textContent = new Date().getFullYear();
 
     const sessionId = new URLSearchParams(location.search).get("session");
+    const remoteAudio = $("remoteAudio");
+    remoteAudio.volume = 0.8;
+    $("volumeSlider").addEventListener("input", (event) => {
+      const value = Number(event.target.value);
+      remoteAudio.volume = Math.max(0, Math.min(1, value / 100));
+      $("volumeValue").textContent = value + "%";
+    });
     const guestId = (crypto.randomUUID ? crypto.randomUUID() : "guest-" + Date.now() + "-" + Math.random().toString(36).slice(2));
     let session = null;
     let channel = null;
@@ -584,11 +716,11 @@
         const byId = new Map(profiles.map(profile => [profile.id, profile]));
         uniqueHostIds.forEach(id => {
           const profile = byId.get(id);
-          if (profile) addPersonChip(profile, "Host");
+          addPersonChip(profile || {}, "Host");
         });
         inviteeIds.forEach(id => {
           const profile = byId.get(id);
-          if (profile) addPersonChip(profile, "Invited");
+          addPersonChip(profile || {}, "Invited");
         });
         if (list.children.length) section.hidden = false;
       } catch (error) {
@@ -599,6 +731,7 @@
     function renderSession(row) {
       session = row;
       $("sessionTitle").textContent = row.title || "Live session";
+      document.title = (row.title || "Live session") + " | Mac & Talk";
       $("hostName").textContent = "Hosted by " + (row.host_name || row.host || "Mac & Talk host");
       loadPeople(row);
       $("description").textContent = row.description || "";
