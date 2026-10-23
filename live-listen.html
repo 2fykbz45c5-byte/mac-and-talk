@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Listen Live — Mac &amp; Talk</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--panel:#121d30;--panel2:#17243a;--text:#f4f7fb;--muted:#a9b6ca;--accent:#ff6b5f;--line:rgba(255,255,255,.1);--green:#5ee0a0}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 0%,#1b2a46 0,transparent 45%),var(--bg);color:var(--text);font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;flex-direction:column}
+    a{color:inherit}
+    .topbar{width:100%;border-bottom:1px solid var(--line);background:rgba(8,14,25,.65);backdrop-filter:blur(12px)}
+    .topbar-inner{max-width:1040px;margin:auto;padding:17px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{font-weight:850;letter-spacing:-.04em;font-size:1.25rem;text-decoration:none}.brand span{color:var(--accent)}
+    .top-note{font-size:.85rem;color:var(--muted)}
+    main{width:min(100% - 32px,850px);margin:48px auto 64px;flex:1}
+    .eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:.74rem;font-weight:800;color:#ff9389;margin:0 0 12px}
+    h1{font-size:clamp(2rem,6vw,3.35rem);letter-spacing:-.055em;line-height:1.08;margin:0 0 14px}
+    .intro{color:var(--muted);max-width:600px;margin:0 0 28px}
+    .card{background:linear-gradient(145deg,rgba(22,35,56,.96),rgba(15,25,42,.96));border:1px solid var(--line);border-radius:25px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.24)}
+    .cover{height:clamp(180px,35vw,300px);background:linear-gradient(135deg,#253957,#111a2b);position:relative;display:grid;place-items:center;overflow:hidden}
+    .cover img{width:100%;height:100%;object-fit:cover;display:block}
+    .cover .cover-emoji{font-size:5rem;filter:drop-shadow(0 10px 25px #0005)}
+    .cover::after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(7,13,24,.65));pointer-events:none}
+    .card-content{padding:clamp(20px,4vw,34px)}
+    .status-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:15px}
+    .status-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#ffffff09;border-radius:999px;padding:6px 11px;font-size:.78rem;font-weight:750}
+    .dot{width:8px;height:8px;border-radius:50%;background:#98a6ba;display:inline-block}
+    .dot.live{background:#ff5e5e;box-shadow:0 0 0 4px #ff5e5e22;animation:pulse 1.8s infinite}
+    .dot.good{background:var(--green)}
+    @keyframes pulse{50%{box-shadow:0 0 0 7px #ff5e5e08}}
+    .session-title{font-size:clamp(1.55rem,4vw,2.3rem);line-height:1.16;letter-spacing:-.04em;margin:0 0 8px;overflow-wrap:anywhere}
+    .host{color:#d5deeb;font-weight:650;margin:0 0 13px}
+    .description{color:var(--muted);white-space:pre-wrap;margin:0 0 20px;overflow-wrap:anywhere}
+    .meta{display:flex;gap:10px 20px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;margin:0 0 25px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    button,.secondary-link{border:0;border-radius:13px;padding:13px 20px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,opacity .15s}
+    button:hover,.secondary-link:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:wait;transform:none}
+    .primary{background:var(--accent);color:#1c1011;min-width:175px}
+    .secondary-link{border:1px solid var(--line);color:var(--text);background:#ffffff08}
+    .helper{font-size:.85rem;color:var(--muted);margin:15px 0 0}
+    .notice{border:1px solid var(--line);border-radius:15px;background:#ffffff06;padding:14px 16px;color:#d9e2ef;margin-top:20px}
+    .notice.error{border-color:#ff6b5f77;color:#ffc1ba;background:#ff6b5f0d}
+    .notice.success{border-color:#5ee0a055;color:#baf8d8;background:#5ee0a00b}
+    .notice[hidden]{display:none}
+    .player{margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:17px;background:#080f1c66}
+    .player-top{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+    .player-title{font-weight:800}
+    .player-state{color:var(--muted);font-size:.85rem}
+    .meter{height:4px;background:#ffffff13;border-radius:20px;overflow:hidden;margin-top:15px}
+    .meter span{height:100%;width:25%;display:block;background:var(--accent);border-radius:20px;animation:move 1.6s ease-in-out infinite alternate}
+    @keyframes move{to{transform:translateX(240%)}}
+    .footer{padding:24px;text-align:center;color:#8090a8;font-size:.8rem;border-top:1px solid var(--line)}
+    .skeleton{height:16px;background:#ffffff0d;border-radius:8px;animation:shimmer 1.2s infinite alternate}
+    @keyframes shimmer{to{opacity:.45}}
+    @media(max-width:520px){main{margin-top:30px}.top-note{display:none}.card{border-radius:19px}.actions button,.actions a{width:100%}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="Mac and Talk home">Mac<span>&amp;</span>Talk</a>
+      <div class="top-note">Live audio · Listen anywhere</div>
+    </div>
+  </header>
+
+  <main>
+    <p class="eyebrow">Mac &amp; Talk · Live room</p>
+    <h1>Be part of the conversation.</h1>
+    <p class="intro">Tune in to the host live. You can listen as a visitor — no account, microphone, or camera needed.</p>
+
+    <section class="card" aria-live="polite">
+      <div class="cover" id="cover">
+        <span class="cover-emoji" id="coverEmoji" aria-hidden="true">🎙️</span>
+      </div>
+      <div class="card-content">
+        <div class="status-row">
+          <span class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">Loading session…</span></span>
+          <span class="status-pill">🎧 Visitor listening</span>
+        </div>
+        <h2 class="session-title" id="sessionTitle">Loading live session…</h2>
+        <p class="host" id="hostName">Mac &amp; Talk host</p>
+        <p class="description" id="description"></p>
+        <div class="meta">
+          <span id="scheduledAt"></span>
+          <span id="sessionIdLabel"></span>
+        </div>
+        <div class="actions">
+          <button class="primary" id="joinBtn" type="button" disabled>▶ <span>Join &amp; listen</span></button>
+          <button class="secondary-link" id="leaveBtn" type="button" hidden>Disconnect</button>
+          <a class="secondary-link" href="index.html">Back to Mac &amp; Talk</a>
+        </div>
+        <p class="helper">Your browser may require one click before audio can play. This page never requests microphone access.</p>
+        <div class="notice" id="notice" role="status" hidden></div>
+        <div class="player" id="player" hidden>
+          <div class="player-top">
+            <div>
+              <div class="player-title" id="playerTitle">Connecting to the host</div>
+              <div class="player-state" id="playerState">Waiting for audio…</div>
+            </div>
+            <span aria-hidden="true">🔊</span>
+          </div>
+          <div class="meter" id="meter"><span></span></div>
+          <audio id="remoteAudio" autoplay playsinline controls style="width:100%;margin-top:14px"></audio>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">© <span id="year"></span> Mac &amp; Talk · Made for conversations.</footer>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    // Public browser configuration. Never put a service_role/secret key here.
+    const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const $ = (id) => document.getElementById(id);
+    $("year").textContent = new Date().getFullYear();
+
+    const sessionId = new URLSearchParams(location.search).get("session");
+    const guestId = (crypto.randomUUID ? crypto.randomUUID() : "guest-" + Date.now() + "-" + Math.random().toString(36).slice(2));
+    let session = null;
+    let channel = null;
+    let peer = null;
+    let connected = false;
+    let joining = false;
+    let ended = false;
+    let pollHandle = null;
+    let queuedCandidates = [];
+    let remoteDescriptionSet = false;
+
+    function setNotice(message, type = "") {
+      const box = $("notice");
+      box.textContent = message;
+      box.className = "notice" + (type ? " " + type : "");
+      box.hidden = !message;
+    }
+
+    function setStatus(text, kind = "") {
+      $("statusText").textContent = text;
+      $("statusDot").className = "dot" + (kind ? " " + kind : "");
+    }
+
+    function setPlayer(title, state, visible = true) {
+      $("playerTitle").textContent = title;
+      $("playerState").textContent = state;
+      $("player").hidden = !visible;
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return "Scheduled: " + date.toLocaleString(undefined, {dateStyle:"medium", timeStyle:"short"});
+    }
+
+    function renderSession(row) {
+      session = row;
+      $("sessionTitle").textContent = row.title || "Live session";
+      $("hostName").textContent = "Hosted by " + (row.host_name || row.host || "Mac & Talk host");
+      $("description").textContent = row.description || "";
+      $("description").hidden = !row.description;
+      $("scheduledAt").textContent = formatDate(row.scheduled_at);
+      $("sessionIdLabel").textContent = "";
+      const cover = $("cover");
+      cover.querySelector("img")?.remove();
+      $("coverEmoji").hidden = false;
+      $("coverEmoji").textContent = row.emoji || "🎙️";
+      if (row.cover_image_url) {
+        const img = document.createElement("img");
+        img.src = row.cover_image_url;
+        img.alt = "";
+        img.referrerPolicy = "no-referrer";
+        img.onerror = () => { img.remove(); $("coverEmoji").hidden = false; };
+        cover.prepend(img);
+        $("coverEmoji").hidden = true;
+      }
+
+      if (row.status === "live") {
+        setStatus(connected ? "LISTENING LIVE" : "LIVE NOW", connected ? "good" : "live");
+        $("joinBtn").disabled = joining || connected;
+        $("joinBtn").querySelector("span").textContent = connected ? "Listening live" : "Join & listen";
+        $("joinBtn").hidden = connected;
+        if (!connected) setNotice("This session is live. Join to hear the host.", "");
+      } else if (row.status === "scheduled") {
+        setStatus("SCHEDULED");
+        $("joinBtn").disabled = true;
+        $("joinBtn").hidden = false;
+        $("joinBtn").querySelector("span").textContent = "Not live yet";
+        setNotice("This session has not started yet. This page will check again automatically.");
+      } else if (row.status === "ended") {
+        setStatus("SESSION ENDED");
+        $("joinBtn").disabled = true;
+        $("joinBtn").hidden = true;
+        setNotice("This live session has ended. Thanks for visiting Mac & Talk.");
+        endConnection("This session has ended.", true);
+      } else if (row.status === "cancelled") {
+        setStatus("CANCELLED");
+        $("joinBtn").disabled = true;
+        $("joinBtn").hidden = true;
+        setNotice("This live session was cancelled.");
+        endConnection("This session was cancelled.", true);
+      }
+    }
+
+    async function loadSession() {
+      if (!sessionId) {
+        setStatus("MISSING SESSION");
+        $("sessionTitle").textContent = "No live session selected";
+        $("joinBtn").hidden = true;
+        setNotice("Open this page using a live session link that includes ?session=SESSION_ID.", "error");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("live_sessions")
+        .select("id,title,description,scheduled_at,cover_image_url,status,approved,host,host_name,emoji")
+        .eq("id", sessionId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Could not load live session:", error);
+        setStatus("UNAVAILABLE");
+        setNotice("We couldn't load this session. Please refresh the page or try again later. If this continues, check the public read policy for approved live_sessions.", "error");
+        $("joinBtn").disabled = true;
+        return;
+      }
+      if (!data || data.approved !== true || !["scheduled", "live", "ended", "cancelled"].includes(data.status)) {
+        setStatus("NOT FOUND");
+        $("sessionTitle").textContent = "This live session is unavailable";
+        $("joinBtn").hidden = true;
+        setNotice("The session may not exist or may not be publicly available.", "error");
+        return;
+      }
+      renderSession(data);
+    }
+
+    async function sendSignal(payload) {
+      if (!channel) throw new Error("The live room is not connected.");
+      const result = await channel.send({type:"broadcast", event:"signal", payload});
+      if (result === "error") throw new Error("Could not send a signal to the live host.");
+    }
+
+    async function handleSignal(payload) {
+      if (!payload || payload.session_id !== sessionId || payload.to !== guestId || payload.from === guestId) return;
+
+      if (payload.kind === "offer") {
+        if (!peer) {
+          peer = new RTCPeerConnection({
+            iceServers: [{urls:"stun:stun.l.google.com:19302"}]
+          });
+          peer.ontrack = async (event) => {
+            const stream = event.streams?.[0];
+            if (!stream) return;
+            $("remoteAudio").srcObject = stream;
+            try {
+              await $("remoteAudio").play();
+              connected = true;
+              joining = false;
+              setStatus("LISTENING LIVE", "good");
+              setPlayer("You're listening live", "Connected to the host's audio.", true);
+              $("meter").hidden = true;
+              $("joinBtn").hidden = true;
+              $("leaveBtn").hidden = false;
+              setNotice("You're connected. Enjoy the live session.", "success");
+            } catch {
+              setPlayer("Connected — audio is ready", "Press play on the audio player if you can't hear the host.", true);
+              $("remoteAudio").controls = true;
+            }
+          };
+          peer.onconnectionstatechange = () => {
+            const state = peer?.connectionState;
+            if (state === "failed" || state === "disconnected") {
+              connected = false;
+              setStatus("CONNECTION INTERRUPTED");
+              setPlayer("Connection interrupted", "Try reconnecting to the live host.", true);
+              $("joinBtn").hidden = false;
+              $("joinBtn").disabled = false;
+              $("joinBtn").querySelector("span").textContent = "Reconnect";
+              setNotice("Your connection was interrupted. Try reconnecting.", "error");
+            }
+          };
+          peer.onicecandidate = (event) => {
+            if (event.candidate) {
+              sendSignal({kind:"candidate", from:guestId, to:payload.from, candidate:event.candidate, session_id:sessionId})
+                .catch(error => console.warn("Could not send ICE candidate:", error));
+            }
+          };
+        }
+        await peer.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+        remoteDescriptionSet = true;
+        for (const candidate of queuedCandidates) {
+          try { await peer.addIceCandidate(new RTCIceCandidate(candidate)); } catch (error) { console.warn("Queued ICE candidate:", error); }
+        }
+        queuedCandidates = [];
+        const answer = await peer.createAnswer();
+        await peer.setLocalDescription(answer);
+        await sendSignal({kind:"answer", from:guestId, to:payload.from, sdp:peer.localDescription, session_id:sessionId});
+        setPlayer("Connecting to the host…", "Setting up live audio.", true);
+        $("meter").hidden = false;
+        return;
+      }
+
+      if (payload.kind === "candidate" && payload.candidate) {
+        if (!peer || !remoteDescriptionSet) queuedCandidates.push(payload.candidate);
+        else {
+          try { await peer.addIceCandidate(new RTCIceCandidate(payload.candidate)); }
+          catch (error) { console.warn("ICE candidate:", error); }
+        }
+      }
+    }
+
+    async function joinLive() {
+      if (joining || connected || ended) return;
+      if (!session || session.status !== "live") {
+        setNotice("This session is not live yet.");
+        return;
+      }
+      joining = true;
+      $("joinBtn").disabled = true;
+      $("joinBtn").querySelector("span").textContent = "Connecting…";
+      setStatus("CONNECTING");
+      setPlayer("Connecting to the host…", "Joining the live audio room.", true);
+      $("meter").hidden = false;
+      setNotice("Connecting to the live host…");
+      try {
+        // No getUserMedia call: this visitor page never requests microphone or camera access.
+        channel = supabase.channel(`live-room-${sessionId}`, {config:{broadcast:{self:false}}});
+        channel.on("broadcast", {event:"signal"}, ({payload}) => {
+          handleSignal(payload).catch(error => {
+            console.error("Live signal error:", error);
+            setNotice("We received a live signal but could not complete the connection. Please reconnect.", "error");
+          });
+        });
+        const status = await new Promise((resolve) => {
+          let settled = false;
+          channel.subscribe((value) => {
+            if (!settled && ["SUBSCRIBED","CHANNEL_ERROR","TIMED_OUT","CLOSED"].includes(value)) {
+              settled = true; resolve(value);
+            }
+          });
+          setTimeout(() => { if (!settled) { settled = true; resolve("TIMED_OUT"); } }, 10000);
+        });
+        if (status !== "SUBSCRIBED") throw new Error("Could not connect to live signaling (" + status + ").");
+        // Host's existing handler accepts room-wide join signals and replies directly to this guest ID.
+        await sendSignal({kind:"join", from:guestId, to:"*", session_id:sessionId});
+        setPlayer("Waiting for the host…", "Request sent. Waiting for the audio connection.", true);
+        $("meter").hidden = false;
+        // If the host did not respond, allow retry and clean up resources.
+        window.setTimeout(() => {
+          if (joining && !connected) {
+            setNotice("Still waiting for the host. Make sure the host is live, then try reconnecting.", "error");
+            $("joinBtn").disabled = false;
+            $("joinBtn").hidden = false;
+            $("joinBtn").querySelector("span").textContent = "Try again";
+            joining = false;
+            setPlayer("Waiting for the host", "No audio connection yet.", true);
+            $("meter").hidden = true;
+          }
+        }, 12000);
+      } catch (error) {
+        console.error(error);
+        joining = false;
+        $("joinBtn").disabled = false;
+        $("joinBtn").hidden = false;
+        $("joinBtn").querySelector("span").textContent = "Try again";
+        setStatus("NOT CONNECTED");
+        setPlayer("Unable to connect", "Please try again.", true);
+        $("meter").hidden = true;
+        setNotice(error.message || "Could not join this live session.", "error");
+        if (channel) { try { await supabase.removeChannel(channel); } catch {} channel = null; }
+        if (peer) { peer.close(); peer = null; }
+      }
+    }
+
+    async function endConnection(message = "Disconnected.", final = false) {
+      connected = false;
+      joining = false;
+      if (peer) { peer.ontrack = null; peer.close(); peer = null; }
+      remoteDescriptionSet = false;
+      queuedCandidates = [];
+      $("remoteAudio").pause();
+      $("remoteAudio").srcObject = null;
+      if (channel) {
+        try { await supabase.removeChannel(channel); } catch (error) { console.warn(error); }
+        channel = null;
+      }
+      $("leaveBtn").hidden = true;
+      if (!final && session?.status === "live") {
+        $("joinBtn").hidden = false;
+        $("joinBtn").disabled = false;
+        $("joinBtn").querySelector("span").textContent = "Join & listen";
+        setPlayer("Disconnected", message, true);
+        setStatus("READY");
+      }
+    }
+
+    $("joinBtn").addEventListener("click", joinLive);
+    $("leaveBtn").addEventListener("click", async () => {
+      await endConnection("You have left the live session.");
+      setNotice("You've disconnected from the live session.");
+    });
+
+    if (sessionId) {
+      await loadSession();
+      pollHandle = window.setInterval(async () => {
+        if (document.visibilityState !== "visible") return;
+        await loadSession();
+      }, 12000);
+    } else {
+      await loadSession();
+    }
+    window.addEventListener("pagehide", () => {
+      if (pollHandle) clearInterval(pollHandle);
+      if (peer) peer.close();
+      if (channel) supabase.removeChannel(channel);
+    });
+  </script>
+</body>
+</html>

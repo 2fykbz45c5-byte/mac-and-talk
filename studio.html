@@ -1284,7 +1284,7 @@ a:focus-visible {
 .mode-picker-heading{margin-bottom:22px}.mode-step{display:inline-block;color:#66758a;font-size:10px;font-weight:900;letter-spacing:1.5px;margin-bottom:9px}.mode-picker-heading h2{font-size:clamp(21px,2.5vw,28px);letter-spacing:-.5px}.mode-picker-heading p,.active-mode-bar p{color:var(--muted);font-size:13px;margin-top:7px;line-height:1.6}
 .mode-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .mode-option{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:172px;padding:18px;border:1.5px solid #e2e7ef;border-radius:15px;background:#fff;color:var(--navy);cursor:pointer;transition:.18s}
-.mode-option:hover{border-color:#9aaac0;transform:translateY(-2px);box-shadow:0 8px 20px #10243e0b}
+.mode-option{box-shadow:0 5px 18px rgba(16,36,62,.035);min-height:190px;padding:21px;border-radius:18px}.mode-option:focus-visible{outline:3px solid #2677e8;outline-offset:3px}.mode-option:hover{border-color:#9aaac0;transform:translateY(-2px);box-shadow:0 8px 20px #10243e0b}
 .mode-option.selected{border-color:var(--yellow);background:#fffbeb;box-shadow:0 0 0 2px #ffc62935}
 .mode-emoji{display:grid;place-items:center;width:43px;height:43px;border-radius:12px;background:#f1f4f8;font-size:22px;margin-bottom:14px}
 .mode-option-title{font-size:13px;font-weight:850;line-height:1.4;padding-right:15px}
@@ -1297,6 +1297,30 @@ a:focus-visible {
 .active-mode-bar h3{font-size:19px}
 @media(max-width:1000px){.mode-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.mode-options{grid-template-columns:1fr}.mode-option{min-height:0}.mode-picker-footer .studio-btn{width:100%}}
+
+
+/* Final Creator Studio polish — keep the original Mac&Talk navy and yellow */
+.mode-picker{padding:clamp(22px,3.2vw,36px);border-radius:22px;box-shadow:0 14px 38px rgba(16,36,62,.07)}
+.mode-picker-heading{max-width:760px;margin-bottom:26px}
+.mode-step{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:#fff4ce;color:#6f5600;font-size:10px;letter-spacing:1.25px}
+.mode-picker-heading h2{margin-top:7px;font-size:clamp(25px,3vw,34px);line-height:1.2}
+.mode-picker-heading p{margin-top:10px;font-size:13px;line-height:1.75}
+.mode-options{gap:15px}
+.mode-option{min-height:184px;padding:21px;gap:0;border:1px solid #e2e7ef;border-radius:17px;background:#fff;box-shadow:0 5px 16px rgba(16,36,62,.035);text-align:left}
+.mode-option:hover{border-color:#b9c4d3;background:#fcfdff;transform:translateY(-3px);box-shadow:0 12px 26px rgba(16,36,62,.08)}
+.mode-option.selected{border:1.5px solid var(--yellow);background:linear-gradient(145deg,#fffcf0,#fff);box-shadow:0 0 0 3px rgba(255,198,41,.18),0 10px 24px rgba(16,36,62,.05)}
+.mode-option-title{font-size:14px;line-height:1.45;margin-top:1px}
+.mode-option-desc{font-size:12px;line-height:1.65;margin-top:8px}
+.mode-select-mark{width:24px;height:24px;right:14px;top:14px;transition:transform .18s ease,background .18s ease}
+.mode-option.selected .mode-select-mark{transform:scale(1.05)}
+.mode-picker-footer{margin-top:25px;padding-top:21px}
+#modeSelectedSummary{display:flex;align-items:center;gap:8px}
+#continueModeBtn{min-height:46px;padding:13px 19px;border-radius:11px;box-shadow:0 7px 17px rgba(16,36,62,.12);font-size:13px}
+#continueModeBtn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(16,36,62,.16)}
+#modeWorkflow[hidden],#modePicker[hidden]{display:none!important}
+@media(max-width:760px){.mode-options{grid-template-columns:repeat(2,minmax(0,1fr))}.mode-option{min-height:170px;padding:17px}.mode-picker-footer{align-items:stretch}.mode-picker-footer p{width:100%}}
+@media(max-width:520px){.mode-options{grid-template-columns:1fr}.mode-option{min-height:0}.mode-option-desc{max-width:95%}.mode-picker-footer #continueModeBtn{width:100%}}
+
 </style></head>
 
 <body>
@@ -1468,7 +1492,7 @@ a:focus-visible {
 <div id="modeWorkflow" hidden>
   <div class="active-mode-bar"><div><span class="mode-step">STEP 2 · YOUR WORKSPACE</span><h3 id="activeModeTitle">Solo Recording</h3><p id="activeModeDescription">Record and review your audio before publishing.</p></div><button type="button" class="join-btn" id="changeModeBtn">← Change mode</button></div>
 
-                    <section class="friend-invite-panel" id="friendInvitePanel" aria-labelledby="friendInviteHeading">
+                    <section class="friend-invite-panel" id="friendInvitePanel" data-mode-section="friend" aria-labelledby="friendInviteHeading">
                       <h3 id="friendInviteHeading">👥 Invite a friend & plan a live</h3>
                       <p>Search by Mac&Talk member ID or username. Choose the right account, set a future date and time, and send an invitation that appears in your friend's Notifications box.</p>
                       <div class="friend-invite-grid">
@@ -1491,12 +1515,12 @@ a:focus-visible {
                       <p id="friendInviteStatus" class="friend-invite-status" role="status">Search for a member to select who you want to invite.</p>
                       <div class="upcoming-lives"><h3>📅 Coming Up — Your future lives</h3><div id="upcomingLivesList" class="upcoming-live-list"><div class="empty-state">Loading your scheduled lives…</div></div></div>
                     </section>
-                    <article class="studio-card friend-live-card" style="margin-bottom:18px">
+                    <article class="studio-card friend-live-card" id="friendLiveGuide" data-mode-section="friend" style="margin-bottom:18px">
                       <div class="friend-live-head"><div class="friend-live-icon">🎙️</div><div><h3>Live Studio with Friends</h3><p>The administrator assigns you and your friend to the same session. The assigned host starts it, then both presenters join the room and speak together in real time.</p></div></div>
                       <div class="friend-live-steps"><span>1. Admin assigns both presenters</span><span>2. Host starts the session</span><span>3. Friend joins as presenter</span><span>4. End and choose how to publish</span></div>
                       <p class="friend-live-note">Use headphones and allow microphone access. The host's recording includes connected presenter audio when the browser supports audio mixing.</p>
                     </article>
-                    <article class="studio-card" style="margin-bottom:18px">
+                    <article class="studio-card" id="assignedSessionsPanel" data-mode-section="join friend" style="margin-bottom:18px">
                       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3>📅 Sessions assigned by the admin</h3><p>Sessions where you are the host or an invited presenter appear here. Choose a scheduled session to start it, or join one that is already live.</p></div><button class="studio-btn" id="refreshAssignedSessionsBtn" type="button">↻ Refresh sessions</button></div>
                       <div class="session-grid" id="assignedSessions" style="margin-top:14px"><div class="empty-state">Loading your assigned sessions…</div></div>
                     </article>
@@ -3001,6 +3025,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (max-width:440px) { .content { padding:15px 12px 26px !important; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
 
+
+/* Creator Studio: distinct mode workspaces */
+#modeWorkflow{animation:studioPageIn .28s ease both}
+@keyframes studioPageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.mode-picker{background:linear-gradient(145deg,#fff 0%,#fbfcff 100%);border-color:#e0e6ef}
+.mode-picker-heading h2{font-size:clamp(24px,3vw,32px);font-weight:850;letter-spacing:-.8px}
+.mode-picker-heading p{max-width:650px}
+.mode-option-title{font-size:14px}
+.mode-option-desc{font-size:12px}
+.mode-emoji{width:48px;height:48px;font-size:24px;background:#f3f6fb}
+.mode-option[data-mode="live"] .mode-emoji{background:#fff0f0}
+.mode-option[data-mode="friend"] .mode-emoji{background:#eef4ff}
+.mode-option[data-mode="replay"] .mode-emoji{background:#f2edff}
+.active-mode-bar{border-radius:18px;background:linear-gradient(120deg,#fff,#f8faff);box-shadow:0 7px 24px rgba(16,36,62,.045)}
+.active-mode-bar h3{font-size:22px;font-weight:850;letter-spacing:-.5px}
+#modeWorkflow .studio-card{box-shadow:0 8px 26px rgba(16,36,62,.055);border-color:#e1e7f0}
+#modeWorkflow .studio-card h3{font-weight:850}
+#modeWorkflow .studio-form input:focus,#modeWorkflow .studio-form textarea:focus,#modeWorkflow .studio-form select:focus{outline:none;border-color:#2677e8;box-shadow:0 0 0 3px rgba(38,119,232,.12)}
+@media(max-width:760px){.mode-options{grid-template-columns:1fr}.mode-option{min-height:155px}.mode-option::after{padding-top:12px}}
 </style>
 
 
@@ -3009,25 +3052,32 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
  const picker=document.getElementById('modePicker'), workflow=document.getElementById('modeWorkflow');
  if(!picker||!workflow)return;
  const modes={
-  solo:{title:'Solo Recording',description:'Record, preview, and publish your own podcast.',show:['podcast'],summary:'Record your own voice and publish it as a podcast.'},
-  friend:{title:'Recording with a Friend',description:'Use the administrator-assigned session tools to record with your co-host.',show:['friend','assigned','live'],summary:'Open the assigned session and coordinate with your co-host.'},
-  live:{title:'Live Audio Session',description:'Configure your title and start a real-time audio broadcast.',show:['live'],summary:'Broadcast in real time to listeners.'},
-  join:{title:'Join an Admin-Created Live',description:'Find your assigned session below. Join when the host has started it.',show:['assigned'],summary:'View sessions assigned to your account.'},
-  replay:{title:'Prerecorded Live',description:'Record audio first, then publish it as a prerecorded live replay.',show:['podcast'],summary:'Record first, then choose “Publish as Prerecorded Live”.'}
+  solo:{title:'Solo Recording',description:'A focused recording workspace for your next podcast.',show:['podcast'],summary:'Record your voice and publish a podcast.'},
+  friend:{title:'Recording with a Friend',description:'Plan a session with a co-host and open your assigned recording workspace.',show:['friend','assigned','live'],summary:'Coordinate with your co-host.'},
+  live:{title:'Live Audio Session',description:'Prepare your title, check your microphone, and broadcast in real time.',show:['live'],summary:'Broadcast live to listeners.'},
+  join:{title:'Join an Admin-Created Live',description:'Review sessions assigned to you and join when the host is ready.',show:['assigned'],summary:'Find and join an assigned session.'},
+  replay:{title:'Prerecorded Live',description:'Record first, preview your audio, then publish it to the public Lives area.',show:['podcast'],summary:'Publish a prerecorded live replay.'}
  };
  let selected='solo';
  const options=[...picker.querySelectorAll('[data-mode]')];
+ const cards=[...document.querySelectorAll('#studioPage article.studio-card')];
+ const invite=document.getElementById('friendInvitePanel');
+ const guide=document.getElementById('friendLiveGuide');
+ const assignedPanel=document.getElementById('assignedSessionsPanel');
  function selectMode(mode){
+  if(!modes[mode])return;
   selected=mode;
   options.forEach(b=>{const on=b.dataset.mode===mode;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on));});
-  document.getElementById('modeSelectedSummary').textContent='Selected: '+modes[mode].title;
+  const summary=document.getElementById('modeSelectedSummary');
+  if(summary)summary.textContent='Selected: '+modes[mode].title;
  }
- options.forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));
- document.getElementById('continueModeBtn').addEventListener('click',()=>{
-  const mode=modes[selected]; picker.hidden=true;workflow.hidden=false;
-  document.getElementById('activeModeTitle').textContent=mode.title;
-  document.getElementById('activeModeDescription').textContent=mode.description;
-  const cards=[...document.querySelectorAll('#studioPage article.studio-card')];
+ function openMode(mode, updateUrl=true){
+  if(!modes[mode])return;
+  selectMode(mode);
+  const config=modes[mode];
+  picker.hidden=true;workflow.hidden=false;
+  document.getElementById('activeModeTitle').textContent=config.title;
+  document.getElementById('activeModeDescription').textContent=config.description;
   cards.forEach(card=>{
    const text=(card.innerText||'').toLowerCase();
    let key='other';
@@ -3035,13 +3085,50 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
    else if(text.includes('start an audio live'))key='live';
    else if(text.includes('sessions assigned by the admin'))key='assigned';
    else if(text.includes('live studio with friends'))key='friend';
-   card.hidden=!mode.show.includes(key);
+   card.hidden=!config.show.includes(key);
   });
+  if(invite)invite.hidden=mode!=='friend';
+  if(guide)guide.hidden=mode!=='friend';
+  if(assignedPanel)assignedPanel.hidden=!(mode==='join'||mode==='friend');
+  const liveList=document.getElementById('myLiveSessions');
+  if(liveList){
+   const heading=liveList.previousElementSibling;
+   if(heading)heading.hidden=mode!=='live';
+   liveList.hidden=mode!=='live';
+  }
+  workflow.dataset.activeMode=mode;
+  document.getElementById('pageTitle').textContent=config.title;
+  if(updateUrl){
+   const url=new URL(window.location.href);
+   url.searchParams.set('mode',mode);
+   window.history.pushState({studioMode:mode},'',url);
+  }
   workflow.scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ const modePages={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};
+ // Choosing a card only selects it. Navigation happens exclusively on Continue.
+ options.forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));
+ document.getElementById('continueModeBtn').addEventListener('click',()=>{
+  const destination=modePages[selected];
+  if(destination) window.location.href=destination;
  });
  document.getElementById('changeModeBtn').addEventListener('click',()=>{
-  workflow.hidden=true;picker.hidden=false;picker.scrollIntoView({behavior:'smooth',block:'start'});
+  workflow.hidden=true;picker.hidden=false;
+  document.getElementById('pageTitle').textContent='Creator Studio';
+  const url=new URL(window.location.href);url.searchParams.delete('mode');
+  window.history.pushState({},'',url);
+  picker.scrollIntoView({behavior:'smooth',block:'start'});
  });
+ window.addEventListener('popstate',()=>{
+  const mode=new URLSearchParams(window.location.search).get('mode');
+  if(mode&&modes[mode])openMode(mode,false);
+  else{
+   workflow.hidden=true;picker.hidden=false;
+   document.getElementById('pageTitle').textContent='Creator Studio';
+  }
+ });
+ const initialMode=new URLSearchParams(window.location.search).get('mode');
+ if(initialMode&&modes[initialMode])openMode(initialMode,false);
 })();
 </script>
 </body>
