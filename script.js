@@ -630,6 +630,9 @@ function liveCard(session) {
   const joinUrl = validHttpUrl(session.join_url || "")
     ? session.join_url
     : "";
+  const startedAt = session.started_at || "";
+  const elapsed = startedAt ? Math.max(0, Date.now() - new Date(startedAt).getTime()) : 0;
+  const hasStart = Boolean(startedAt && Number.isFinite(new Date(startedAt).getTime()));
 
   return `
     <article class="live-card">
@@ -640,31 +643,75 @@ function liveCard(session) {
 
       <div class="session-content">
         <h3>${safe(session.title || "Live broadcast")}</h3>
-
-        <p>
-          ${safe(session.description || "Join the conversation on Mac&Talk.")}
-        </p>
-
-        <p class="session-date">Live now</p>
-
+        <p>${safe(session.description || "Join the conversation on Mac&Talk.")}</p>
+        ${session.host_name || session.host ? `<p class="session-note">Hosted by ${safe(session.host_name || session.host)}</p>` : ""}
+        <div class="session-timer" aria-label="Live session elapsed time">
+          <span>⏱ Live duration</span>
+          <strong class="live-timer" data-started-at="${safe(startedAt)}">${hasStart ? formatElapsed(elapsed) : "Timer unavailable"}</strong>
+        </div>
         ${
           joinUrl
-            ? `
-              <a
-                class="session-button"
-                href="${safe(joinUrl)}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Join Live
-              </a>
-            `
-            : `
-              <p class="session-note">
-                The listening link is not available yet.
-              </p>
-            `
+            ? `<a class="session-button" href="${safe(joinUrl)}" target="_blank" rel="noopener noreferrer">Join Live</a>`
+            : `<p class="session-note">The listening link is not available yet.</p>`
         }
+      </div>
+    </article>
+  `;
+}
+
+function formatElapsed(milliseconds) {
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return [hours, minutes, seconds].map(value => String(value).padStart(2, "0")).join(":");
+}
+
+function updateLiveTimers() {
+  document.querySelectorAll(".live-timer[data-started-at]").forEach((timer) => {
+    const start = new Date(timer.dataset.startedAt).getTime();
+    if (!Number.isFinite(start)) {
+      timer.textContent = "Timer unavailable";
+      return;
+    }
+    timer.textContent = formatElapsed(Date.now() - start);
+  });
+}
+
+function endedCard(session) {
+  const recordingUrl = validHttpUrl(session.recording_url || "")
+    ? session.recording_url
+    : "";
+  const host = session.host_name || session.host || "";
+  const started = session.started_at ? new Date(session.started_at).getTime() : NaN;
+  const ended = session.ended_at ? new Date(session.ended_at).getTime() : NaN;
+  const durationMs = Number.isFinite(started) && Number.isFinite(ended) && ended >= started
+    ? ended - started
+    : (Number.isFinite(Number(session.duration_seconds)) && Number(session.duration_seconds) >= 0
+        ? Number(session.duration_seconds) * 1000
+        : 0);
+  const durationText = durationMs > 0 ? formatElapsed(durationMs) : "Duration unavailable";
+  const endedDate = session.ended_at || session.updated_at || session.created_at;
+
+  return `
+    <article class="ended-card">
+      <div class="session-cover">
+        ${cover(session)}
+        <span class="ended-badge">SESSION ENDED</span>
+      </div>
+      <div class="session-content">
+        ${host ? `<p class="ended-host">Hosted by ${safe(host)}</p>` : ""}
+        <h3>${safe(session.title || "Mac&Talk conversation")}</h3>
+        <p>${safe(session.description || "A past conversation from Mac&Talk.")}</p>
+        <p class="ended-duration">◷ ${safe(durationText)}</p>
+        <p class="session-date">${safe(niceDate(endedDate))}</p>
+        <div class="ended-actions">
+          ${
+            recordingUrl
+              ? `<a class="card-link" href="${safe(recordingUrl)}" target="_blank" rel="noopener noreferrer">▶ Replay session</a>`
+              : `<span class="card-link secondary disabled" aria-disabled="true">Replay unavailable</span>`
+          }
+        </div>
       </div>
     </article>
   `;
@@ -720,9 +767,10 @@ function upcomingCard(session) {
    LIVE EMPTY STATES
 ========================================= */
 
-function showEmptyStates(liveCount, upcomingCount) {
+function showEmptyStates(liveCount, upcomingCount, endedCount = 0) {
   showElement("noLive", liveCount === 0);
   showElement("noUpcoming", upcomingCount === 0);
+  showElement("noEnded", endedCount === 0);
 
   if (liveCount === 0) {
     setMessage(
@@ -737,6 +785,10 @@ function showEmptyStates(liveCount, upcomingCount) {
       "There are no upcoming broadcasts yet."
     );
   }
+
+  if (endedCount === 0) {
+    setMessage("noEnded", "No completed live sessions are available yet.");
+  }
 }
 
 /* =========================================
@@ -748,11 +800,10 @@ function showEmptyStates(liveCount, upcomingCount) {
 async function loadLiveSessions() {
   const liveGrid = byId("liveGrid");
   const upcomingGrid = byId("upcomingGrid");
+  const endedGrid = byId("endedGrid");
 
   if (!liveGrid || !upcomingGrid) {
-    console.warn(
-      "Mac&Talk: #liveGrid or #upcomingGrid was not found."
-    );
+    console.warn("Mac&Talk: #liveGrid or #upcomingGrid was not found.");
     return;
   }
 
@@ -769,7 +820,14 @@ async function loadLiveSessions() {
         emoji,
         status,
         approved,
-        created_at
+        created_at,
+        updated_at,
+        host,
+        host_name,
+        started_at,
+        ended_at,
+        duration_seconds,
+        recording_url
       `)
       .eq("approved", true)
       .order("created_at", { ascending: false });
@@ -779,64 +837,46 @@ async function loadLiveSessions() {
     const sessions = data || [];
     const now = Date.now();
 
-    const liveSessions = sessions.filter((session) => {
-      return String(session.status || "").toLowerCase() === "live";
-    });
+    const liveSessions = sessions.filter(session =>
+      String(session.status || "").toLowerCase() === "live"
+    );
 
-    const upcomingSessions = sessions.filter((session) => {
-      if (
-        String(session.status || "").toLowerCase() !== "scheduled"
-      ) {
-        return false;
-      }
-
-      // Scheduled sessions without a date remain visible.
+    const upcomingSessions = sessions.filter(session => {
+      if (String(session.status || "").toLowerCase() !== "scheduled") return false;
       if (!session.scheduled_at) return true;
-
-      const scheduledTime = new Date(
-        session.scheduled_at
-      ).getTime();
-
-      return (
-        Number.isFinite(scheduledTime) &&
-        scheduledTime >= now
-      );
+      const scheduledTime = new Date(session.scheduled_at).getTime();
+      return Number.isFinite(scheduledTime) && scheduledTime >= now;
     });
+
+    const endedSessions = sessions.filter(session =>
+      ["ended", "completed", "finished"].includes(String(session.status || "").toLowerCase())
+    );
 
     liveGrid.innerHTML = liveSessions.map(liveCard).join("");
+    upcomingGrid.innerHTML = upcomingSessions.map(upcomingCard).join("");
+    if (endedGrid) endedGrid.innerHTML = endedSessions.map(endedCard).join("");
 
-    upcomingGrid.innerHTML = upcomingSessions
-      .map(upcomingCard)
-      .join("");
-
-    showEmptyStates(
-      liveSessions.length,
-      upcomingSessions.length
-    );
+    updateLiveTimers();
+    showEmptyStates(liveSessions.length, upcomingSessions.length, endedSessions.length);
 
     setMessage("liveMessage", "");
 
     console.info("Mac&Talk sessions loaded:", {
       totalRows: sessions.length,
       live: liveSessions.length,
-      upcoming: upcomingSessions.length
+      upcoming: upcomingSessions.length,
+      ended: endedSessions.length
     });
-
   } catch (error) {
-    logSupabaseError(
-      "Could not load Mac&Talk live sessions",
-      error
-    );
-
+    logSupabaseError("Could not load Mac&Talk live sessions", error);
     setMessage(
       "liveMessage",
       "Live broadcasts could not be loaded. Check the live_sessions columns and Supabase permissions."
     );
-
     liveGrid.innerHTML = "";
     upcomingGrid.innerHTML = "";
-
-    showEmptyStates(0, 0);
+    if (endedGrid) endedGrid.innerHTML = "";
+    showEmptyStates(0, 0, 0);
   }
 }
 
@@ -924,3 +964,7 @@ setInterval(async () => {
     refreshInProgress = false;
   }
 }, LIVE_REFRESH_MS);
+
+
+// Keep elapsed live-session timers accurate between database refreshes.
+setInterval(updateLiveTimers, 1000);
