@@ -22,6 +22,7 @@ const byId = (id) => document.getElementById(id);
 
 let allEpisodes = [];
 let refreshInProgress = false;
+let feedbackSummary = new Map();
 
 /* =========================================
    GENERAL HELPERS
@@ -241,6 +242,117 @@ async function resolveAudioUrl(episode) {
 }
 
 /* =========================================
+   FEEDBACK / RATINGS
+========================================= */
+
+function feedbackKey(type, id) {
+  return `${type}:${id}`;
+}
+
+function feedbackSummaryMarkup(type, id) {
+  const summary = feedbackSummary.get(feedbackKey(type, id));
+  if (!summary || !summary.count) {
+    return `<p class="feedback-summary">☆ No ratings yet</p>`;
+  }
+  return `<p class="feedback-summary"><span aria-label="Average rating">★ ${summary.average.toFixed(1)}/5</span> <span>(${summary.count} ${summary.count === 1 ? "rating" : "ratings"})</span></p>`;
+}
+
+function feedbackForm(type, id, title) {
+  if (!id) return "";
+  return `
+    <details class="feedback-panel">
+      <summary>Share feedback <span aria-hidden="true">＋</span></summary>
+      <form class="feedback-form" data-feedback-type="${safe(type)}" data-content-id="${safe(id)}" data-content-title="${safe(title || "Mac&Talk content")}">
+        <label>How would you rate it?
+          <select name="rating" required>
+            <option value="">Choose a rating</option>
+            <option value="5">★★★★★ — Excellent</option>
+            <option value="4">★★★★☆ — Very good</option>
+            <option value="3">★★★☆☆ — Good</option>
+            <option value="2">★★☆☆☆ — Needs improvement</option>
+            <option value="1">★☆☆☆☆ — Poor</option>
+          </select>
+        </label>
+        <label>Comment <span class="feedback-optional">(optional)</span>
+          <textarea name="comment" rows="3" maxlength="1000" placeholder="What did you think? Please be respectful."></textarea>
+        </label>
+        <button class="feedback-submit" type="submit">Send feedback</button>
+        <p class="feedback-status" role="status" aria-live="polite"></p>
+      </form>
+    </details>
+  `;
+}
+
+async function loadFeedbackSummaries() {
+  try {
+    const { data, error } = await supabase
+      .from("content_feedback")
+      .select("content_type, content_id, rating")
+      .eq("approved", true);
+    if (error) throw error;
+
+    const totals = new Map();
+    for (const item of data || []) {
+      const key = feedbackKey(item.content_type, item.content_id);
+      const current = totals.get(key) || { count: 0, total: 0 };
+      current.count += 1;
+      current.total += Number(item.rating) || 0;
+      totals.set(key, current);
+    }
+    feedbackSummary = new Map([...totals.entries()].map(([key, value]) => [key, {
+      count: value.count,
+      average: value.total / value.count
+    }]));
+  } catch (error) {
+    // Feedback is an optional enhancement; do not block the main page.
+    logSupabaseError("Could not load feedback ratings", error);
+  }
+}
+
+function setupFeedbackForms() {
+  document.addEventListener("submit", async (event) => {
+    const form = event.target.closest(".feedback-form");
+    if (!form) return;
+    event.preventDefault();
+
+    const submitButton = form.querySelector(".feedback-submit");
+    const status = form.querySelector(".feedback-status");
+    const rating = Number(form.elements.rating.value);
+    const comment = String(form.elements.comment.value || "").trim();
+    const contentType = form.dataset.feedbackType;
+    const contentId = form.dataset.contentId;
+
+    if (!contentId || !["live", "podcast"].includes(contentType) || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+      status.textContent = "Please choose a rating before submitting.";
+      return;
+    }
+    if (comment.length > 1000) {
+      status.textContent = "Please keep your comment under 1,000 characters.";
+      return;
+    }
+
+    submitButton.disabled = true;
+    status.textContent = "Sending feedback…";
+    try {
+      const { error } = await supabase.from("content_feedback").insert({
+        content_type: contentType,
+        content_id: contentId,
+        rating,
+        comment: comment || null
+      });
+      if (error) throw error;
+      form.reset();
+      status.textContent = "Thank you! Your feedback was sent for review.";
+    } catch (error) {
+      logSupabaseError("Could not submit feedback", error);
+      status.textContent = "Feedback could not be sent. Please try again later.";
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+}
+
+/* =========================================
    PODCAST CARDS
 ========================================= */
 
@@ -319,6 +431,8 @@ function podcastCard(episode) {
         <p class="podcast-date">
           ${safe(niceDate(episode.created_at))}
         </p>
+        ${feedbackSummaryMarkup("podcast", episode.id)}
+        ${feedbackForm("podcast", episode.id, episode.title)}
       </div>
     </article>
   `;
@@ -654,6 +768,8 @@ function liveCard(session) {
             ? `<a class="session-button" href="${safe(joinUrl)}" target="_blank" rel="noopener noreferrer">Join Live</a>`
             : `<p class="session-note">The listening link is not available yet.</p>`
         }
+        ${feedbackSummaryMarkup("live", session.id)}
+        ${feedbackForm("live", session.id, session.title)}
       </div>
     </article>
   `;
@@ -712,6 +828,8 @@ function endedCard(session) {
               : `<span class="card-link secondary disabled" aria-disabled="true">Replay unavailable</span>`
           }
         </div>
+        ${feedbackSummaryMarkup("live", session.id)}
+        ${feedbackForm("live", session.id, session.title)}
       </div>
     </article>
   `;
@@ -968,6 +1086,8 @@ async function initialize() {
 
   setupNavigation();
   setupPodcastSearch();
+  setupFeedbackForms();
+  await loadFeedbackSummaries();
 
   await Promise.allSettled([
     loadPodcasts(),
