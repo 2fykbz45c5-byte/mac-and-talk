@@ -62,6 +62,83 @@ function niceDate(value) {
   });
 }
 
+function canonicalItemUrl(type, id) {
+  const url = new URL(window.location.href);
+  url.hash = "";
+  url.search = "";
+  url.searchParams.set(type === "live" ? "live" : "podcast", String(id));
+  return url.toString();
+}
+
+function shareButton(type, id, title) {
+  return `<button type="button" class="card-link share-item-button" data-share-type="${type}" data-share-id="${safe(id)}" data-share-title="${safe(title || "Mac&Talk")}">↗ Share</button>`;
+}
+
+function calendarButton(session) {
+  if (!session.scheduled_at || !Number.isFinite(new Date(session.scheduled_at).getTime())) return "";
+  return `<button type="button" class="card-link calendar-item-button" data-calendar-id="${safe(session.id)}" data-calendar-title="${safe(session.title || "Mac&Talk session")}" data-calendar-start="${safe(session.scheduled_at)}" data-calendar-description="${safe(session.description || "Mac&Talk live session")}">＋ Add to Calendar</button>`;
+}
+
+function escapeIcs(value) {
+  return String(value || "").replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+}
+
+function downloadCalendarEvent(button) {
+  const start = new Date(button.dataset.calendarStart);
+  if (!Number.isFinite(start.getTime())) return;
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const stamp = date => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const eventUrl = canonicalItemUrl("live", button.dataset.calendarId);
+  const ics = [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mac&Talk//Live Sessions//EN", "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT", `UID:${escapeIcs(button.dataset.calendarId)}@mactalk`, `DTSTAMP:${stamp(new Date())}`,
+    `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`, `SUMMARY:${escapeIcs(button.dataset.calendarTitle)}`,
+    `DESCRIPTION:${escapeIcs(button.dataset.calendarDescription)}\\n${escapeIcs(eventUrl)}`,
+    `URL:${eventUrl}`, "END:VEVENT", "END:VCALENDAR"
+  ].join("\r\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const href = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = `mactalk-session-${String(button.dataset.calendarId).slice(0, 8)}.ics`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(href);
+}
+
+function focusSharedItem() {
+  const params = new URLSearchParams(window.location.search);
+  const target = params.has("live") ? { type: "live", id: params.get("live") }
+    : params.has("podcast") ? { type: "podcast", id: params.get("podcast") } : null;
+  if (!target) return;
+  const selector = target.type === "live" ? `[data-live-id="${CSS.escape(target.id)}"]` : `[data-podcast-id="${CSS.escape(target.id)}"]`;
+  const card = document.querySelector(selector);
+  if (!card || card.dataset.sharedFocusDone === "true") return;
+  card.dataset.sharedFocusDone = "true";
+  card.classList.add("shared-item-highlight");
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function setupShareAndCalendarActions() {
+  document.addEventListener("click", async event => {
+    const share = event.target.closest(".share-item-button");
+    if (share) {
+      const url = canonicalItemUrl(share.dataset.shareType, share.dataset.shareId);
+      try {
+        if (navigator.share) await navigator.share({ title: share.dataset.shareTitle, url });
+        else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(url);
+          const old = share.textContent; share.textContent = "✓ Link copied";
+          setTimeout(() => { share.textContent = old; }, 1800);
+        } else window.prompt("Copy this link to share:", url);
+      } catch (error) {
+        if (error?.name !== "AbortError") window.prompt("Copy this link to share:", url);
+      }
+      return;
+    }
+    const calendar = event.target.closest(".calendar-item-button");
+    if (calendar) downloadCalendarEvent(calendar);
+  });
+}
+
 function setMessage(id, message) {
   const element = byId(id);
   if (element) element.textContent = message;
@@ -408,6 +485,7 @@ function podcastCard(episode) {
   return `
     <article
       class="podcast-card"
+      data-podcast-id="${safe(episode.id)}"
       data-category="${safe(category)}"
       data-search="${safe([
         episode.title,
@@ -445,6 +523,7 @@ function podcastCard(episode) {
         <p class="podcast-date">
           ${safe(niceDate(episode.created_at))}
         </p>
+        <div class="item-action-row">${shareButton("podcast", episode.id, episode.title)}</div>
         ${feedbackSummaryMarkup("podcast", episode.id)}
         ${feedbackForm("podcast", episode.id, episode.title)}
       </div>
@@ -701,6 +780,7 @@ async function loadPodcasts() {
     grid.innerHTML = allEpisodes.map(podcastCard).join("");
 
     setupAudioPlayers();
+    focusSharedItem();
     filterPodcasts();
 
     console.info("Mac&Talk podcasts loaded:", {
@@ -763,7 +843,7 @@ function liveCard(session) {
   const hasStart = Boolean(startedAt && Number.isFinite(new Date(startedAt).getTime()));
 
   return `
-    <article class="live-card">
+    <article class="live-card" data-live-id="${safe(session.id)}">
       <div class="session-cover">
         ${cover(session)}
         <span class="live-badge">LIVE</span>
@@ -772,7 +852,9 @@ function liveCard(session) {
       <div class="session-content">
         <h3>${safe(session.title || "Live broadcast")}</h3>
         <p>${safe(session.description || "Join the conversation on Mac&Talk.")}</p>
-        ${session.host_name || session.host ? `<p class="session-note">Hosted by ${safe(session.host_name || session.host)}</p>` : ""}
+        ${session.host_name || session.host ? `<p class="session-note session-host">Hosted by ${safe(session.host_name || session.host)}</p>` : ""}
+        ${session.invitedNames?.length ? `<p class="session-note session-invitees"><strong>Invited:</strong> ${safe(session.invitedNames.join(", "))}</p>` : ""}
+        <div class="item-action-row">${shareButton("live", session.id, session.title)}</div>
         <div class="session-timer" aria-label="Live session elapsed time">
           <span>⏱ Live duration</span>
           <strong class="live-timer" data-started-at="${safe(startedAt)}">${hasStart ? formatElapsed(elapsed) : "Timer unavailable"}</strong>
@@ -824,7 +906,7 @@ function endedCard(session) {
   const endedDate = session.ended_at || session.updated_at || session.created_at;
 
   return `
-    <article class="ended-card">
+    <article class="ended-card" data-live-id="${safe(session.id)}">
       <div class="session-cover">
         ${cover(session)}
         <span class="ended-badge">SESSION ENDED</span>
@@ -833,6 +915,7 @@ function endedCard(session) {
         ${host ? `<p class="ended-host">Hosted by ${safe(host)}</p>` : ""}
         <h3>${safe(session.title || "Mac&Talk conversation")}</h3>
         <p>${safe(session.description || "A past conversation from Mac&Talk.")}</p>
+        ${session.invitedNames?.length ? `<p class="session-note session-invitees"><strong>Invited:</strong> ${safe(session.invitedNames.join(", "))}</p>` : ""}
         <p class="ended-duration">◷ ${safe(durationText)}</p>
         <p class="session-date">${safe(niceDate(endedDate))}</p>
         <div class="ended-actions">
@@ -842,6 +925,7 @@ function endedCard(session) {
               : `<span class="card-link secondary disabled" aria-disabled="true">Replay unavailable</span>`
           }
         </div>
+        <div class="item-action-row">${shareButton("live", session.id, session.title)}</div>
         ${feedbackSummaryMarkup("live", session.id)}
         ${feedbackForm("live", session.id, session.title)}
       </div>
@@ -855,7 +939,7 @@ function upcomingCard(session) {
     : "";
 
   return `
-    <article class="upcoming-card">
+    <article class="upcoming-card" data-live-id="${safe(session.id)}">
       <div class="session-cover">
         ${cover(session)}
         <span class="upcoming-badge">UPCOMING</span>
@@ -868,6 +952,8 @@ function upcomingCard(session) {
           ${safe(session.description || "A new Mac&Talk broadcast is coming soon.")}
         </p>
 
+        ${session.host_name || session.host ? `<p class="session-note session-host">Hosted by ${safe(session.host_name || session.host)}</p>` : ""}
+        ${session.invitedNames?.length ? `<p class="session-note session-invitees"><strong>Invited:</strong> ${safe(session.invitedNames.join(", "))}</p>` : ""}
         <p class="session-date">
           ${safe(niceDate(session.scheduled_at))}
         </p>
@@ -883,6 +969,7 @@ function upcomingCard(session) {
           </div>
         `}
 
+        <div class="item-action-row">${shareButton("live", session.id, session.title)}${calendarButton(session)}</div>
         ${
           joinUrl
             ? `
@@ -965,6 +1052,42 @@ function showEmptyStates(liveCount, upcomingCount, endedCount = 0) {
    Reads the columns from your live_sessions table.
 ========================================= */
 
+async function attachInviteeNames(sessions) {
+  if (!sessions.length) return;
+  try {
+    const { data: inviteRows, error: inviteError } = await supabase
+      .from("live_session_invitees")
+      .select("session_id,user_id")
+      .in("session_id", sessions.map(session => session.id));
+    if (inviteError) {
+      console.warn("Invitee names are unavailable (check public SELECT policies):", inviteError.message);
+      return;
+    }
+    const rows = inviteRows || [];
+    const userIds = [...new Set(rows.map(row => row.user_id).filter(Boolean))];
+    if (!userIds.length) return;
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("id,display_name,username")
+      .in("id", userIds);
+    if (profilesError) {
+      console.warn("Invitee profile names are unavailable (check public SELECT policies):", profilesError.message);
+      return;
+    }
+    const names = new Map((profiles || []).map(profile => [profile.id, profile.display_name || profile.username || "Invited guest"]));
+    const bySession = new Map();
+    rows.forEach(row => {
+      const name = names.get(row.user_id);
+      if (!name) return;
+      if (!bySession.has(row.session_id)) bySession.set(row.session_id, []);
+      if (!bySession.get(row.session_id).includes(name)) bySession.get(row.session_id).push(name);
+    });
+    sessions.forEach(session => { session.invitedNames = bySession.get(session.id) || []; });
+  } catch (error) {
+    console.warn("Could not load invitee names:", error);
+  }
+}
+
 async function loadLiveSessions() {
   const liveGrid = byId("liveGrid");
   const upcomingGrid = byId("upcomingGrid");
@@ -1003,6 +1126,7 @@ async function loadLiveSessions() {
     if (error) throw error;
 
     const sessions = data || [];
+    await attachInviteeNames(sessions);
     const now = Date.now();
 
     const liveSessions = sessions.filter(session =>
@@ -1024,6 +1148,7 @@ async function loadLiveSessions() {
     upcomingGrid.innerHTML = upcomingSessions.map(upcomingCard).join("");
     if (endedGrid) endedGrid.innerHTML = endedSessions.map(endedCard).join("");
 
+    focusSharedItem();
     updateLiveTimers();
     showEmptyStates(liveSessions.length, upcomingSessions.length, endedSessions.length);
 
@@ -1115,6 +1240,7 @@ async function initialize() {
   setupCarouselButtons();
   setupPodcastSearch();
   setupFeedbackForms();
+  setupShareAndCalendarActions();
   await loadFeedbackSummaries();
 
   await Promise.allSettled([

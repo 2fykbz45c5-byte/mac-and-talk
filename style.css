@@ -1431,3 +1431,58 @@ audio:focus-visible {
   .carousel-track .podcast-cover { min-height: 150px; }
   .carousel-arrow { width: 30px; height: 30px; font-size: 22px; }
 }
+
+/* Shareable item links and calendar actions */
+.item-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.share-item-button,
+.calendar-item-button {
+  appearance: none;
+  border: 1px solid rgba(16, 36, 62, .18);
+  border-radius: 9px;
+  background: #fff;
+  color: #10243e;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.share-item-button:hover,
+.calendar-item-button:hover {
+  background: #fff7df;
+  border-color: #d9aa2e;
+  transform: translateY(-1px);
+}
+.share-item-button:focus-visible,
+.calendar-item-button:focus-visible {
+  outline: 3px solid rgba(255, 198, 41, .65);
+  outline-offset: 2px;
+}
+.session-host { font-weight: 700; }
+.session-invitees { overflow-wrap: anywhere; }
+.shared-item-highlight {
+  outline: 3px solid #ffc629;
+  outline-offset: 4px;
+  border-radius: 14px;
+  animation: sharedItemGlow 1.4s ease-in-out 2;
+}
+@keyframes sharedItemGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 198, 41, 0); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 198, 41, .22); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shared-item-highlight { animation: none; }
+  .share-item-button, .calendar-item-button { transition: none; }
+}
