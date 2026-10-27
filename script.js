@@ -343,7 +343,19 @@ function setupFeedbackForms() {
       stars.setAttribute("aria-label", `You rated ${rating} out of 5 stars`);
     } catch (error) {
       logSupabaseError("Could not submit rating", error);
+      // Keep the visitor-facing message simple while exposing the exact
+      // Supabase reason in the browser console for troubleshooting.
+      const reason = error?.message || error?.details || error?.hint || "Unknown Supabase error";
       status.textContent = "Could not save your rating. Please try again.";
+      status.title = reason;
+      console.error("Rating save failed — Supabase details:", {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        contentType,
+        contentId
+      });
       stars.querySelectorAll("button").forEach(button => {
         button.disabled = false;
         button.classList.remove("selected");
