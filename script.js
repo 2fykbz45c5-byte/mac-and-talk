@@ -252,34 +252,21 @@ function feedbackKey(type, id) {
 function feedbackSummaryMarkup(type, id) {
   const summary = feedbackSummary.get(feedbackKey(type, id));
   if (!summary || !summary.count) {
-    return `<p class="feedback-summary">☆ No ratings yet</p>`;
+    return `<p class="feedback-summary" data-rating-summary="${safe(type)}:${safe(id)}">☆ No ratings yet</p>`;
   }
-  return `<p class="feedback-summary"><span aria-label="Average rating">★ ${summary.average.toFixed(1)}/5</span> <span>(${summary.count} ${summary.count === 1 ? "rating" : "ratings"})</span></p>`;
+  return `<p class="feedback-summary" data-rating-summary="${safe(type)}:${safe(id)}"><span aria-label="Average rating">★ ${summary.average.toFixed(1)}/5</span> <span>(${summary.count} ${summary.count === 1 ? "rating" : "ratings"})</span></p>`;
 }
 
 function feedbackForm(type, id, title) {
   if (!id) return "";
   return `
-    <details class="feedback-panel">
-      <summary>Share feedback <span aria-hidden="true">＋</span></summary>
-      <form class="feedback-form" data-feedback-type="${safe(type)}" data-content-id="${safe(id)}" data-content-title="${safe(title || "Mac&Talk content")}">
-        <label>How would you rate it?
-          <select name="rating" required>
-            <option value="">Choose a rating</option>
-            <option value="5">★★★★★ — Excellent</option>
-            <option value="4">★★★★☆ — Very good</option>
-            <option value="3">★★★☆☆ — Good</option>
-            <option value="2">★★☆☆☆ — Needs improvement</option>
-            <option value="1">★☆☆☆☆ — Poor</option>
-          </select>
-        </label>
-        <label>Comment <span class="feedback-optional">(optional)</span>
-          <textarea name="comment" rows="3" maxlength="1000" placeholder="What did you think? Please be respectful."></textarea>
-        </label>
-        <button class="feedback-submit" type="submit">Send feedback</button>
-        <p class="feedback-status" role="status" aria-live="polite"></p>
-      </form>
-    </details>
+    <div class="feedback-panel" data-rating-widget="${safe(type)}:${safe(id)}">
+      <p class="rating-prompt">Rate this ${type === "live" ? "live session" : "podcast"}</p>
+      <div class="rating-stars" role="group" aria-label="Rate from one to five stars" data-feedback-type="${safe(type)}" data-content-id="${safe(id)}" data-content-title="${safe(title || "Mac&Talk content")}">
+        ${[1,2,3,4,5].map(n => `<button type="button" class="rating-star" data-rating="${n}" aria-label="${n} ${n === 1 ? "star" : "stars"}" title="${n} ${n === 1 ? "star" : "stars"}">★</button>`).join("")}
+      </div>
+      <p class="feedback-status" role="status" aria-live="polite"></p>
+    </div>
   `;
 }
 
@@ -303,51 +290,66 @@ async function loadFeedbackSummaries() {
       count: value.count,
       average: value.total / value.count
     }]));
+    document.querySelectorAll("[data-rating-summary]").forEach((element) => {
+      const [type, id] = element.dataset.ratingSummary.split(":");
+      element.outerHTML = feedbackSummaryMarkup(type, id);
+    });
   } catch (error) {
-    // Feedback is an optional enhancement; do not block the main page.
     logSupabaseError("Could not load feedback ratings", error);
   }
 }
 
 function setupFeedbackForms() {
-  document.addEventListener("submit", async (event) => {
-    const form = event.target.closest(".feedback-form");
-    if (!form) return;
-    event.preventDefault();
+  document.addEventListener("click", async (event) => {
+    const star = event.target.closest(".rating-star");
+    if (!star) return;
 
-    const submitButton = form.querySelector(".feedback-submit");
-    const status = form.querySelector(".feedback-status");
-    const rating = Number(form.elements.rating.value);
-    const comment = String(form.elements.comment.value || "").trim();
-    const contentType = form.dataset.feedbackType;
-    const contentId = form.dataset.contentId;
+    const stars = star.closest(".rating-stars");
+    const widget = star.closest(".feedback-panel");
+    const status = widget?.querySelector(".feedback-status");
+    if (!stars || !status || stars.dataset.submitting === "true") return;
 
-    if (!contentId || !["live", "podcast"].includes(contentType) || !Number.isInteger(rating) || rating < 1 || rating > 5) {
-      status.textContent = "Please choose a rating before submitting.";
-      return;
-    }
-    if (comment.length > 1000) {
-      status.textContent = "Please keep your comment under 1,000 characters.";
-      return;
-    }
+    const rating = Number(star.dataset.rating);
+    const contentType = stars.dataset.feedbackType;
+    const contentId = stars.dataset.contentId;
+    if (!contentId || !["live", "podcast"].includes(contentType) || !Number.isInteger(rating) || rating < 1 || rating > 5) return;
 
-    submitButton.disabled = true;
-    status.textContent = "Sending feedback…";
+    stars.dataset.submitting = "true";
+    stars.querySelectorAll("button").forEach(button => {
+      button.disabled = true;
+      button.classList.toggle("selected", Number(button.dataset.rating) <= rating);
+    });
+    status.textContent = "Saving your rating…";
+
     try {
       const { error } = await supabase.from("content_feedback").insert({
         content_type: contentType,
         content_id: contentId,
         rating,
-        comment: comment || null
+        approved: true
       });
       if (error) throw error;
-      form.reset();
-      status.textContent = "Thank you! Your feedback was sent for review.";
+
+      const key = feedbackKey(contentType, contentId);
+      const current = feedbackSummary.get(key) || { count: 0, average: 0 };
+      const count = current.count + 1;
+      const average = ((current.average * current.count) + rating) / count;
+      feedbackSummary.set(key, { count, average });
+
+      const card = widget.closest("article");
+      const summary = card?.querySelector(`[data-rating-summary="${CSS.escape(key)}"]`);
+      if (summary) summary.outerHTML = feedbackSummaryMarkup(contentType, contentId);
+      status.textContent = "Thanks for rating!";
+      stars.setAttribute("aria-label", `You rated ${rating} out of 5 stars`);
     } catch (error) {
-      logSupabaseError("Could not submit feedback", error);
-      status.textContent = "Feedback could not be sent. Please try again later.";
+      logSupabaseError("Could not submit rating", error);
+      status.textContent = "Could not save your rating. Please try again.";
+      stars.querySelectorAll("button").forEach(button => {
+        button.disabled = false;
+        button.classList.remove("selected");
+      });
     } finally {
-      submitButton.disabled = false;
+      stars.dataset.submitting = "false";
     }
   });
 }

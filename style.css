@@ -1294,7 +1294,7 @@ audio:focus-visible {
 }
 
 
-/* Feedback controls — keeps the existing navy, gold and cream palette. */
+/* Simple five-star ratings — uses the existing Mac&Talk palette. */
 .feedback-summary {
   display: flex;
   flex-wrap: wrap;
@@ -1304,73 +1304,32 @@ audio:focus-visible {
   color: var(--muted);
   font-size: 12px;
 }
-.feedback-summary span:first-child {
-  color: #98711b;
-  font-weight: 850;
-}
+.feedback-summary span:first-child { color: #98711b; font-weight: 850; }
 .feedback-panel {
   margin-top: 8px;
+  padding: 11px 12px;
   border: 1px solid rgba(201, 160, 75, .38);
   border-radius: 11px;
   background: rgba(201, 160, 75, .07);
-  overflow: hidden;
 }
-.feedback-panel > summary {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 11px 12px;
-  color: var(--navy);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 850;
-  list-style-position: inside;
-}
-.feedback-panel[open] > summary { border-bottom: 1px solid rgba(201, 160, 75, .28); }
-.feedback-form {
-  display: grid;
-  gap: 10px;
-  padding: 12px;
-}
-.feedback-form label {
-  display: grid;
-  gap: 6px;
+.rating-prompt {
+  margin: 0 0 5px;
   color: var(--navy);
   font-size: 12px;
-  font-weight: 750;
+  font-weight: 800;
 }
-.feedback-form select,
-.feedback-form textarea {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  border: 1px solid rgba(16, 36, 62, .18);
-  border-radius: 8px;
-  padding: 10px;
-  background: #fff;
-  color: var(--navy);
-  font: inherit;
-  font-weight: 500;
-}
-.feedback-form textarea { resize: vertical; }
-.feedback-optional { color: var(--muted); font-weight: 500; }
-.feedback-submit {
+.rating-stars { display: flex; align-items: center; gap: 5px; }
+.rating-star {
   border: 0;
-  border-radius: 8px;
-  padding: 10px 13px;
-  background: var(--navy);
-  color: #fff;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 850;
+  padding: 0 2px;
+  background: transparent;
+  color: #c9c2b4;
+  font-size: 27px;
+  line-height: 1.2;
   cursor: pointer;
+  transition: color .15s ease, transform .15s ease;
 }
-.feedback-submit:hover { filter: brightness(1.12); }
-.feedback-submit:disabled { opacity: .6; cursor: wait; }
-.feedback-status {
-  min-height: 0;
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.5;
-}
+.rating-star:hover, .rating-star:focus-visible, .rating-star.selected { color: #c99b35; }
+.rating-star:hover { transform: scale(1.08); }
+.rating-star:disabled { cursor: default; }
+.feedback-status { min-height: 0; margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
