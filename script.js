@@ -79,29 +79,27 @@ function calendarButton(session) {
   return `<button type="button" class="card-link calendar-item-button" data-calendar-id="${safe(session.id)}" data-calendar-title="${safe(session.title || "Mac&Talk session")}" data-calendar-start="${safe(session.scheduled_at)}" data-calendar-description="${safe(session.description || "Mac&Talk live session")}">＋ Add to Calendar</button>`;
 }
 
-function escapeIcs(value) {
-  return String(value || "").replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+function googleCalendarDate(value) {
+  return new Date(value).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 }
 
-function downloadCalendarEvent(button) {
+function openGoogleCalendar(button) {
   const start = new Date(button.dataset.calendarStart);
   if (!Number.isFinite(start.getTime())) return;
+
+  // Google opens a prefilled event; the visitor confirms it by pressing Save.
   const end = new Date(start.getTime() + 60 * 60 * 1000);
-  const stamp = date => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
   const eventUrl = canonicalItemUrl("live", button.dataset.calendarId);
-  const ics = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mac&Talk//Live Sessions//EN", "CALSCALE:GREGORIAN",
-    "BEGIN:VEVENT", `UID:${escapeIcs(button.dataset.calendarId)}@mactalk`, `DTSTAMP:${stamp(new Date())}`,
-    `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`, `SUMMARY:${escapeIcs(button.dataset.calendarTitle)}`,
-    `DESCRIPTION:${escapeIcs(button.dataset.calendarDescription)}\\n${escapeIcs(eventUrl)}`,
-    `URL:${eventUrl}`, "END:VEVENT", "END:VCALENDAR"
-  ].join("\r\n");
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-  const href = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = href;
-  a.download = `mactalk-session-${String(button.dataset.calendarId).slice(0, 8)}.ics`;
-  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(href);
+  const details = `${button.dataset.calendarDescription || "Mac&Talk live session"}\n\nJoin or view the session: ${eventUrl}`;
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: button.dataset.calendarTitle || "Mac&Talk session",
+    dates: `${googleCalendarDate(start)}/${googleCalendarDate(end)}`,
+    details,
+    location: eventUrl
+  });
+  const googleUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
+  window.open(googleUrl, "_blank", "noopener,noreferrer");
 }
 
 function focusSharedItem() {
@@ -135,7 +133,7 @@ function setupShareAndCalendarActions() {
       return;
     }
     const calendar = event.target.closest(".calendar-item-button");
-    if (calendar) downloadCalendarEvent(calendar);
+    if (calendar) openGoogleCalendar(calendar);
   });
 }
 
