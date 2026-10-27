@@ -1250,3 +1250,45 @@ audio:focus-visible {
 @media (max-width: 680px) {
   .ended-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
+
+
+/* Scheduled session start countdown — uses the existing Mac&Talk palette. */
+.session-countdown {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 160, 75, .42);
+  border-radius: 10px;
+  background: rgba(201, 160, 75, .10);
+}
+
+.countdown-label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.1px;
+}
+
+.countdown-timer {
+  color: var(--navy);
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .2px;
+}
+
+.session-countdown-due {
+  border-color: rgba(217, 52, 69, .35);
+  background: rgba(217, 52, 69, .07);
+}
+
+.session-countdown-due .countdown-timer {
+  color: #d93445;
+}
+
+.session-countdown-unscheduled {
+  border-color: rgba(0, 0, 0, .08);
+  background: rgba(0, 0, 0, .025);
+}

@@ -739,6 +739,17 @@ function upcomingCard(session) {
         <p class="session-date">
           ${safe(niceDate(session.scheduled_at))}
         </p>
+        ${session.scheduled_at ? `
+          <div class="session-countdown" aria-live="off">
+            <span class="countdown-label">STARTS IN</span>
+            <strong class="countdown-timer" data-scheduled-at="${safe(session.scheduled_at)}">${safe(formatCountdown(new Date(session.scheduled_at).getTime() - Date.now()))}</strong>
+          </div>
+        ` : `
+          <div class="session-countdown session-countdown-unscheduled">
+            <span class="countdown-label">START TIME</span>
+            <strong class="countdown-timer">To be announced</strong>
+          </div>
+        `}
 
         ${
           joinUrl
@@ -761,6 +772,31 @@ function upcomingCard(session) {
       </div>
     </article>
   `;
+}
+
+function formatCountdown(milliseconds) {
+  if (!Number.isFinite(milliseconds)) return "Time not set";
+  if (milliseconds <= 0) return "Starting now";
+
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = value => String(value).padStart(2, "0");
+
+  return days > 0
+    ? `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`
+    : `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+}
+
+function updateCountdownTimers() {
+  document.querySelectorAll(".countdown-timer[data-scheduled-at]").forEach(timer => {
+    const scheduledAt = new Date(timer.dataset.scheduledAt).getTime();
+    timer.textContent = formatCountdown(scheduledAt - Date.now());
+    const container = timer.closest(".session-countdown");
+    if (container) container.classList.toggle("session-countdown-due", scheduledAt <= Date.now());
+  });
 }
 
 /* =========================================
@@ -968,3 +1004,6 @@ setInterval(async () => {
 
 // Keep elapsed live-session timers accurate between database refreshes.
 setInterval(updateLiveTimers, 1000);
+
+// Keep scheduled-start countdowns updating every second.
+setInterval(updateCountdownTimers, 1000);
