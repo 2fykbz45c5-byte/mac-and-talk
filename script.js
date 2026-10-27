@@ -1040,6 +1040,19 @@ async function loadLiveSessions() {
    MOBILE NAVIGATION
 ========================================= */
 
+function setupCarouselButtons() {
+  document.querySelectorAll("[data-carousel-target][data-direction]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const track = byId(button.dataset.carouselTarget);
+      if (!track) return;
+      const firstCard = track.querySelector(".live-card, .upcoming-card, .ended-card, .podcast-card");
+      const gap = 14;
+      const step = firstCard ? firstCard.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
+      track.scrollBy({ left: Number(button.dataset.direction) * step, behavior: "smooth" });
+    });
+  });
+}
+
 function setupNavigation() {
   const menuToggle = byId("menuToggle");
   const navLinks = byId("navLinks");
@@ -1087,6 +1100,7 @@ async function initialize() {
   }
 
   setupNavigation();
+  setupCarouselButtons();
   setupPodcastSearch();
   setupFeedbackForms();
   await loadFeedbackSummaries();

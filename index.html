@@ -129,7 +129,11 @@
         Loading live broadcasts…
       </div>
 
-      <div class="live-grid" id="liveGrid"></div>
+      <div class="carousel-shell">
+        <button class="carousel-arrow carousel-arrow-left" type="button" data-carousel-target="liveGrid" data-direction="-1" aria-label="Scroll live sessions left">‹</button>
+        <div class="live-grid carousel-track" id="liveGrid"></div>
+        <button class="carousel-arrow carousel-arrow-right" type="button" data-carousel-target="liveGrid" data-direction="1" aria-label="Scroll live sessions right">›</button>
+      </div>
 
       <p class="empty-message hidden" id="noLive">
         No live broadcasts right now. Check out our upcoming sessions!
@@ -146,7 +150,11 @@
         </div>
       </div>
 
-      <div class="upcoming-grid" id="upcomingGrid"></div>
+      <div class="carousel-shell">
+        <button class="carousel-arrow carousel-arrow-left" type="button" data-carousel-target="upcomingGrid" data-direction="-1" aria-label="Scroll upcoming sessions left">‹</button>
+        <div class="upcoming-grid carousel-track" id="upcomingGrid"></div>
+        <button class="carousel-arrow carousel-arrow-right" type="button" data-carousel-target="upcomingGrid" data-direction="1" aria-label="Scroll upcoming sessions right">›</button>
+      </div>
 
       <p class="empty-message hidden" id="noUpcoming">
         No upcoming broadcasts have been announced yet.
@@ -163,7 +171,11 @@
         </div>
       </div>
 
-      <div class="ended-grid" id="endedGrid"></div>
+      <div class="carousel-shell">
+        <button class="carousel-arrow carousel-arrow-left" type="button" data-carousel-target="endedGrid" data-direction="-1" aria-label="Scroll ended sessions left">‹</button>
+        <div class="ended-grid carousel-track" id="endedGrid"></div>
+        <button class="carousel-arrow carousel-arrow-right" type="button" data-carousel-target="endedGrid" data-direction="1" aria-label="Scroll ended sessions right">›</button>
+      </div>
 
       <p class="empty-message hidden" id="noEnded">
         No completed live sessions are available yet.
@@ -200,7 +212,11 @@
         </select>
       </div>
 
-      <div class="podcast-grid" id="podcastGrid"></div>
+      <div class="carousel-shell">
+        <button class="carousel-arrow carousel-arrow-left" type="button" data-carousel-target="podcastGrid" data-direction="-1" aria-label="Scroll podcasts left">‹</button>
+        <div class="podcast-grid carousel-track" id="podcastGrid"></div>
+        <button class="carousel-arrow carousel-arrow-right" type="button" data-carousel-target="podcastGrid" data-direction="1" aria-label="Scroll podcasts right">›</button>
+      </div>
 
       <p class="empty-message" id="noPodcasts">
         Podcast episodes will appear here when a podcast library is connected.

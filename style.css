@@ -1333,3 +1333,87 @@ audio:focus-visible {
 .rating-star:hover { transform: scale(1.08); }
 .rating-star:disabled { cursor: default; }
 .feedback-status { min-height: 0; margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+
+
+/* Compact horizontal carousels with arrows centered vertically beside the cards. */
+.carousel-shell {
+  position: relative;
+  min-width: 0;
+  padding: 0 27px;
+}
+
+.carousel-track.live-grid,
+.carousel-track.upcoming-grid,
+.carousel-track.ended-grid,
+.carousel-track.podcast-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 5px 2px 14px;
+  align-items: stretch;
+}
+
+.carousel-track::-webkit-scrollbar { display: none; }
+
+.carousel-track .live-card,
+.carousel-track .upcoming-card,
+.carousel-track .ended-card,
+.carousel-track .podcast-card {
+  flex: 0 0 238px;
+  width: 238px;
+  max-width: 238px;
+  scroll-snap-align: start;
+}
+
+.carousel-track .card-cover { height: 138px; }
+.carousel-track .session-cover,
+.carousel-track .podcast-cover { min-height: 138px; }
+
+.carousel-arrow {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(201, 160, 75, .45);
+  border-radius: 50%;
+  background: var(--navy, #10243e);
+  color: #fffaf0;
+  font: inherit;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px #10243e20;
+  transition: background .2s ease, transform .2s ease, opacity .2s ease;
+}
+
+.carousel-arrow:hover {
+  background: #c9a04b;
+  color: #10243e;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-arrow-left { left: -1px; }
+.carousel-arrow-right { right: -1px; }
+.carousel-arrow:focus-visible { outline: 3px solid #c9a04b; outline-offset: 3px; }
+
+@media (max-width: 680px) {
+  .carousel-shell { padding: 0 22px; }
+  .carousel-track .live-card,
+  .carousel-track .upcoming-card,
+  .carousel-track .ended-card,
+  .carousel-track .podcast-card {
+    flex-basis: 210px;
+    width: 210px;
+    max-width: 210px;
+  }
+  .carousel-arrow { width: 30px; height: 30px; font-size: 22px; }
+}
