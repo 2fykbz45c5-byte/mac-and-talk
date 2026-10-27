@@ -1486,3 +1486,37 @@ audio:focus-visible {
   .shared-item-highlight { animation: none; }
   .share-item-button, .calendar-item-button { transition: none; }
 }
+
+
+/* Mobile visibility fix: keep the live and ended-live sections visible on phones. */
+@media (max-width: 680px) {
+  #live.live-section,
+  #ended.ended-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: relative;
+  }
+  #live .section-heading,
+  #ended .section-heading {
+    display: flex !important;
+    visibility: visible !important;
+    min-height: 1px;
+  }
+  #live .carousel-shell,
+  #ended .carousel-shell {
+    display: block !important;
+    visibility: visible !important;
+    width: 100%;
+    min-height: 40px;
+  }
+  #live .carousel-track,
+  #ended .carousel-track {
+    display: flex !important;
+    visibility: visible !important;
+    min-height: 1px;
+  }
+}
