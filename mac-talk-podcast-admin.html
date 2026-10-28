@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mac&Talk · Podcast Review</title>
+<style>
+:root{--navy:#10243e;--navy2:#183754;--gold:#ffc629;--bg:#f4f6fa;--muted:#718096;--line:#e4e9f1;--white:#fff;--green:#16835d;--red:#c43b4b;--blue:#315be8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:750}
+button:disabled{opacity:.55;cursor:not-allowed}
+.shell{min-height:100vh;display:grid;grid-template-columns:245px 1fr}
+.side{background:var(--navy);color:white;padding:26px 18px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:20px}
+.logo{background:var(--gold);color:var(--navy);padding:9px 8px;border-radius:10px;font-size:13px}
+.side small{color:#afbed0}
+.navtitle{font-size:10px;letter-spacing:1.5px;color:#91a4ba;font-weight:900;margin-bottom:-15px}
+.navbtn{display:flex;width:100%;text-align:left;background:transparent;color:#e7edf5;margin:4px 0;gap:10px;align-items:center}
+.navbtn.active,.navbtn:hover{background:#ffffff17;color:var(--gold)}
+.sidefoot{margin-top:auto;color:#aebdd0;font-size:12px}
+.main{min-width:0;padding:30px clamp(16px,3vw,42px) 50px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:25px}
+.eyebrow{color:#667b96;text-transform:uppercase;letter-spacing:1.8px;font-size:10px;font-weight:900}
+.top h1{font-size:clamp(25px,3vw,34px);letter-spacing:-1px;margin:4px 0}
+.top p{margin:0;color:var(--muted)}
+.top-actions{display:flex;gap:9px;align-items:center}
+.btn-dark{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-soft{background:#edf1f7;color:var(--navy)}
+.btn-green{background:#e2f5ec;color:#146747}
+.btn-red{background:#ffeaec;color:#a52334}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.stat,.panel,.item{background:white;border:1px solid var(--line);border-radius:17px;box-shadow:0 4px 18px #142b4506}
+.stat{padding:18px}
+.stat span{color:var(--muted);font-size:12px;font-weight:700}
+.stat strong{display:block;font-size:28px;letter-spacing:-.8px;margin-top:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{background:#e9edf4;color:#53647b}
+.tab.active{background:var(--navy);color:white}
+.toolbar{display:flex;gap:10px;margin-bottom:14px}
+.toolbar input,.toolbar select{min-width:0;background:white;border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--navy)}
+.toolbar input{flex:1}
+.queue{display:grid;gap:13px}
+.item{padding:19px}
+.itemhead{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.item h3{margin:0;font-size:18px;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:12px;margin-top:5px}
+.pill{display:inline-flex;align-items:center;border-radius:99px;padding:5px 9px;background:#f0f3f8;color:#56657a;font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:900;white-space:nowrap}
+.pill.pending,.pill.submitted{background:#fff3cf;color:#876100}
+.pill.approved,.pill.resolved,.pill.responded{background:#e2f5ec;color:#146747}
+.pill.rejected{background:#ffeaec;color:#a52334}
+.pill.under_review{background:#e7edff;color:#3151b8}
+.desc{color:#53647b;white-space:pre-wrap;overflow-wrap:anywhere;margin:13px 0}
+.media{display:flex;gap:15px;align-items:flex-start;flex-wrap:wrap;margin:12px 0}
+.cover{width:115px;height:115px;object-fit:cover;border-radius:12px;background:#edf1f7}
+.media audio{width:min(100%,520px);display:block;margin:4px 0}
+.field{display:grid;gap:6px;margin-top:13px}
+.field label{font-size:11px;font-weight:850;color:#617189}
+.field textarea,.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--navy)}
+.field textarea{min-height:75px;resize:vertical}
+.itemactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.empty,.notice{padding:24px;text-align:center;border:1px dashed #ccd5e2;border-radius:14px;background:white;color:var(--muted)}
+.notice{border-style:solid;text-align:left;margin-bottom:15px;padding:12px 14px}
+.notice.error{background:#fff0f1;color:#a52334;border-color:#ffd1d7}
+.notice.ok{background:#e9f8f0;color:#146747;border-color:#c7ead7}
+.login{max-width:420px;margin:8vh auto;background:white;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 15px 50px #10243e12}
+.login h1{margin:0 0 6px}
+.login p{color:var(--muted);margin:0 0 20px}
+.login label{display:block;font-weight:800;font-size:12px;margin:12px 0 6px}
+.login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px}
+.login button{width:100%;margin-top:15px}
+.hidden{display:none!important}
+.footnote{font-size:11px;color:var(--muted);margin-top:18px}
+@media(max-width:800px){
+ .shell{grid-template-columns:1fr}
+ .side{padding:14px 16px;gap:12px}
+ .side .navtitle,.sidefoot{display:none}
+ .side nav{display:flex;gap:6px;overflow:auto}
+ .navbtn{width:auto;white-space:nowrap;margin:0}
+ .main{padding:20px 14px 36px}
+ .top{align-items:flex-start;flex-direction:column}
+ .stats{gap:8px}
+ .stat{padding:13px}
+ .stat strong{font-size:23px}
+ .toolbar{flex-wrap:wrap}
+ .toolbar input{flex-basis:100%}
+ .itemhead{flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<section id="loginScreen" class="login">
+  <div class="brand"><span class="logo">M&T</span><span>Mac&Talk Admin</span></div>
+  <h1 style="margin-top:24px">Podcast review desk</h1>
+  <p>Enter the page password to continue.</p>
+  <form id="loginForm">
+    <label for="password">Page password</label>
+    <input id="password" type="password" autocomplete="current-password" required autofocus>
+    <button class="btn-gold" type="submit">Open podcast admin</button>
+  </form>
+  <div id="loginMessage" class="footnote" role="status"></div>
+  <div class="footnote">Open this page from your main admin dashboard after signing in there.</div>
+</section>
+
+<div id="adminApp" class="shell hidden">
+  <aside class="side">
+    <div class="brand"><span class="logo">M&T</span><span>Mac&Talk</span></div>
+    <div class="navtitle">ADMIN WORKSPACE</div>
+    <nav>
+      <button class="navbtn active" data-view="submissions">🎙️ Podcast submissions</button>
+      <button class="navbtn" data-view="support">💬 Support requests</button>
+    </nav>
+    <div class="sidefoot">Review creator submissions, manage approval status, and reply to support requests.</div>
+    <button id="signOutBtn" class="navbtn">🔒 Lock page</button>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div>
+        <div class="eyebrow">Mac&Talk · Creator support</div>
+        <h1 id="pageHeading">Podcast submissions</h1>
+        <p id="pageSub">Review audio before it becomes public.</p>
+      </div>
+      <div class="top-actions">
+        <span id="adminLabel" class="pill">Admin</span>
+        <button id="refreshBtn" class="btn-dark">↻ Refresh</button>
+      </div>
+    </header>
+
+    <div id="notice" class="notice hidden" role="status"></div>
+
+    <div class="stats">
+      <div class="stat"><span>Pending submissions</span><strong id="pendingCount">—</strong></div>
+      <div class="stat"><span>Support requests to review</span><strong id="supportCount">—</strong></div>
+      <div class="stat"><span>Reviewed / answered</span><strong id="doneCount">—</strong></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-filter="all">All</button>
+      <button class="tab" data-filter="pending">Pending</button>
+      <button class="tab" data-filter="approved">Approved</button>
+      <button class="tab" data-filter="rejected">Rejected</button>
+    </div>
+
+    <div class="toolbar">
+      <input id="searchBox" type="search" placeholder="Search title, host, subject, or message…">
+      <select id="typeFilter">
+        <option value="all">All types</option>
+        <option value="podcast">Podcasts</option>
+        <option value="live_replay">Prerecorded Lives</option>
+      </select>
+      <select id="supportFilter" class="hidden">
+        <option value="all">All requests</option>
+        <option value="submitted">Submitted</option>
+        <option value="under_review">Under review</option>
+        <option value="responded">Responded</option>
+        <option value="resolved">Resolved</option>
+      </select>
+    </div>
+
+    <section id="queue" class="queue">
+      <div class="empty">Loading admin queue…</div>
+    </section>
+    <p class="footnote">Approval publishes a submission only if your public Podcasts page uses the <code>published = true</code> field. Test the public page after approving the first item.</p>
+  </main>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const $ = id => document.getElementById(id);
+let user = null, view = "submissions", filter = "all", episodes = [], requests = [];
+
+const safe = v => String(v ?? "");
+
+function notice(msg, type="ok") {
+  const n = $("notice");
+  n.textContent = msg;
+  n.className = "notice " + type;
+}
+
+function hideNotice() {
+  $("notice").className = "notice hidden";
+}
+
+function date(v) {
+  if (!v) return "Date unavailable";
+  const d = new Date(v);
+  return Number.isNaN(d.getTime())
+    ? "Date unavailable"
+    : d.toLocaleString([], {dateStyle:"medium",timeStyle:"short"});
+}
+
+function pill(status) {
+  const s = safe(status || "pending").toLowerCase();
+  return `<span class="pill ${s.replace(/[^a-z_]/g,"")}">${s.replaceAll("_"," ")}</span>`;
+}
+
+function esc(s) {
+  return safe(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+async function checkAdmin(sessionUser) {
+  const metaRole = sessionUser?.app_metadata?.role;
+
+  if (metaRole === "admin" || sessionUser?.app_metadata?.roles?.includes?.("admin")) {
+    return true;
+  }
+
+  const {data, error} = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", sessionUser.id)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error("Could not verify admin role. Check profiles SELECT policy: " + error.message);
+  }
+
+  return data?.role === "admin";
+}
+
+async function startApp(sessionUser) {
+  user = sessionUser;
+
+  if (!user) {
+    $("loginScreen").classList.remove("hidden");
+    $("adminApp").classList.add("hidden");
+    return;
+  }
+
+  let allowed = false;
+
+  try {
+    allowed = await checkAdmin(user);
+  } catch (e) {
+    $("loginMessage").textContent = e.message;
+    await supabase.auth.signOut();
+    return;
+  }
+
+  if (!allowed) {
+    $("loginMessage").textContent = "This account is not marked as an admin. Ask an existing admin to set profiles.role = 'admin'.";
+    await supabase.auth.signOut();
+    return;
+  }
+
+  $("loginScreen").classList.add("hidden");
+  $("adminApp").classList.remove("hidden");
+  $("adminLabel").textContent = user.email || "Admin";
+
+  await loadData();
+}
+
+async function loadData() {
+  hideNotice();
+  $("queue").innerHTML = '<div class="empty">Loading requests…</div>';
+
+  const [ep, sp] = await Promise.all([
+    supabase
+      .from("podcast_episodes")
+      .select("id,host_user_id,host_name,title,description,audio_path,audio_url,cover_image_url,episode_type,published,approval_status,admin_note,submitted_at,created_at")
+      .order("submitted_at", {ascending:false})
+      .limit(200),
+
+    supabase
+      .from("podcast_support_requests")
+      .select("id,user_id,request_type,subject,message,status,admin_response,created_at,related_session_id,related_session_title")
+      .order("created_at", {ascending:false})
+      .limit(200)
+  ]);
+
+  if (ep.error) {
+    episodes = [];
+    notice("Could not load podcast submissions: " + ep.error.message + " — check the admin SELECT policy on podcast_episodes.", "error");
+  } else {
+    episodes = ep.data || [];
+  }
+
+  if (sp.error) {
+    requests = [];
+    notice("Could not load support requests: " + sp.error.message + " — check the admin SELECT policy on podcast_support_requests.", "error");
+  } else {
+    requests = sp.data || [];
+  }
+
+  $("pendingCount").textContent = episodes.filter(x =>
+    !x.published && !["approved","rejected"].includes(safe(x.approval_status).toLowerCase())
+  ).length;
+
+  $("supportCount").textContent = requests.filter(x =>
+    ["submitted","under_review"].includes(safe(x.status).toLowerCase())
+  ).length;
+
+  $("doneCount").textContent =
+    episodes.filter(x => ["approved","rejected"].includes(safe(x.approval_status).toLowerCase())).length +
+    requests.filter(x => ["responded","resolved"].includes(safe(x.status).toLowerCase())).length;
+
+  render();
+}
+
+function filtered(items) {
+  const q = $("searchBox").value.trim().toLowerCase();
+
+  if (view === "submissions") {
+    return items.filter(x => {
+      const s = safe(x.approval_status || "pending").toLowerCase();
+
+      const ok = filter === "all" ||
+        (filter === "pending" && !x.published && !["approved","rejected"].includes(s)) ||
+        (filter === "approved" && (s === "approved" || x.published)) ||
+        (filter === "rejected" && s === "rejected");
+
+      const type = $("typeFilter").value;
+
+      return ok &&
+        (type === "all" || safe(x.episode_type || "podcast") === type) &&
+        (!q || [x.title,x.host_name,x.description,x.episode_type]
+          .some(v => safe(v).toLowerCase().includes(q)));
+    });
+  }
+
+  return items.filter(x => {
+    const s = safe(x.status || "submitted").toLowerCase();
+    const sf = $("supportFilter").value;
+
+    return (sf === "all" || s === sf) &&
+      (!q || [x.subject,x.message,x.request_type,x.related_session_title]
+        .some(v => safe(v).toLowerCase().includes(q)));
+  });
+}
+
+function render() {
+  const queue = $("queue");
+  queue.replaceChildren();
+
+  const items = filtered(view === "submissions" ? episodes : requests);
+
+  if (!items.length) {
+    queue.innerHTML = '<div class="empty">Nothing to show for these filters.</div>';
+    return;
+  }
+
+  for (const row of items) {
+    queue.append(view === "submissions" ? episodeCard(row) : requestCard(row));
+  }
+}
+
+function episodeCard(row) {
+  const card = document.createElement("article");
+  card.className = "item";
+
+  const kind = row.episode_type === "live_replay" ? "Prerecorded Live" : "Podcast";
+  const state = row.published ? "approved" : (row.approval_status || "pending");
+
+  const heading = document.createElement("div");
+  heading.className = "itemhead";
+
+  const left = document.createElement("div");
+  left.innerHTML = `<div class="eyebrow">${esc(kind)} · Submitted ${esc(date(row.submitted_at || row.created_at))}</div>
+    <h3>${esc(row.title || "Untitled submission")}</h3>
+    <div class="meta">Host: ${esc(row.host_name || "Mac&Talk member")} · User ID: ${esc(row.host_user_id || "—")}</div>`;
+
+  const badge = document.createElement("div");
+  badge.innerHTML = pill(state);
+  heading.append(left, badge);
+  card.append(heading);
+
+  if (row.cover_image_url) {
+    const img = document.createElement("img");
+    img.className = "cover";
+    img.alt = "Podcast cover";
+    img.src = row.cover_image_url;
+
+    const media = document.createElement("div");
+    media.className = "media";
+    media.append(img);
+    card.append(media);
+  }
+
+  if (row.description) {
+    const desc = document.createElement("p");
+    desc.className = "desc";
+    desc.textContent = row.description;
+    card.append(desc);
+  }
+
+  const media = document.createElement("div");
+  media.className = "media";
+
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.preload = "none";
+
+  if (row.audio_url) {
+    audio.src = row.audio_url;
+  } else if (row.audio_path) {
+    supabase.storage.from("podcasts").createSignedUrl(row.audio_path, 3600)
+      .then(({data,error}) => {
+        if (!error && data?.signedUrl) {
+          audio.src = data.signedUrl;
+        } else {
+          audio.title = "Audio could not be loaded. Check Storage SELECT permissions.";
+        }
+      });
+  } else {
+    audio.disabled = true;
+  }
+
+  media.append(audio);
+  card.append(media);
+
+  const note = document.createElement("textarea");
+  note.placeholder = "Optional note to creator (e.g. changes needed before approval)…";
+  note.value = row.admin_note || "";
+  note.className = "field";
+  note.style.width = "100%";
+  note.style.marginTop = "14px";
+  note.style.padding = "10px";
+  note.style.border = "1px solid var(--line)";
+  note.style.borderRadius = "10px";
+  note.style.minHeight = "65px";
+  card.append(note);
+
+  const actions = document.createElement("div");
+  actions.className = "itemactions";
+
+  const approve = document.createElement("button");
+  approve.className = "btn-green";
+  approve.textContent = "✓ Approve & publish";
+  approve.onclick = () => updateEpisode(row, "approved", note.value);
+
+  const reject = document.createElement("button");
+  reject.className = "btn-red";
+  reject.textContent = "✕ Reject";
+  reject.onclick = () => updateEpisode(row, "rejected", note.value);
+
+  const pending = document.createElement("button");
+  pending.className = "btn-soft";
+  pending.textContent = "Mark pending";
+  pending.onclick = () => updateEpisode(row, "pending", note.value);
+
+  actions.append(approve, reject, pending);
+  card.append(actions);
+
+  return card;
+}
+
+async function updateEpisode(row, status, note) {
+  const buttons = [...document.querySelectorAll("button")];
+  buttons.forEach(b => b.disabled = true);
+
+  try {
+    const payload = {
+      approval_status: status,
+      admin_note: note || null,
+      published: status === "approved"
+    };
+
+    const {error} = await supabase
+      .from("podcast_episodes")
+      .update(payload)
+      .eq("id", row.id);
+
+    if (error) throw error;
+
+    notice(`"${row.title || "Submission"}" updated: ${status}.`);
+    await loadData();
+  } catch (e) {
+    notice("Could not update submission: " + e.message + " — check admin UPDATE policy and column names.", "error");
+  } finally {
+    buttons.forEach(b => b.disabled = false);
+  }
+}
+
+function requestCard(row) {
+  const card = document.createElement("article");
+  card.className = "item";
+
+  const heading = document.createElement("div");
+  heading.className = "itemhead";
+
+  const left = document.createElement("div");
+  left.innerHTML = `<div class="eyebrow">${esc(row.request_type === "priority_review" ? "Priority review request" : "Technical support")} · ${esc(date(row.created_at))}</div>
+    <h3>${esc(row.subject || "Podcast support request")}</h3>
+    <div class="meta">User ID: ${esc(row.user_id || "—")}${row.related_session_title ? " · Related: " + esc(row.related_session_title) : ""}</div>`;
+
+  const badge = document.createElement("div");
+  badge.innerHTML = pill(row.status || "submitted");
+  heading.append(left, badge);
+  card.append(heading);
+
+  const msg = document.createElement("p");
+  msg.className = "desc";
+  msg.textContent = row.message || "";
+  card.append(msg);
+
+  const label = document.createElement("label");
+  label.className = "field";
+  label.textContent = "Admin response";
+
+  const response = document.createElement("textarea");
+  response.placeholder = "Write a reply the creator can see in their submission support panel…";
+  response.value = row.admin_response || "";
+  label.append(response);
+  card.append(label);
+
+  const statusLabel = document.createElement("label");
+  statusLabel.className = "field";
+  statusLabel.textContent = "Request status";
+
+  const select = document.createElement("select");
+  select.innerHTML = '<option value="submitted">Submitted</option><option value="under_review">Under review</option><option value="responded">Responded</option><option value="resolved">Resolved</option>';
+  select.value = row.status || "submitted";
+  statusLabel.append(select);
+  card.append(statusLabel);
+
+  const actions = document.createElement("div");
+  actions.className = "itemactions";
+
+  const save = document.createElement("button");
+  save.className = "btn-gold";
+  save.textContent = "Save response & status";
+  save.onclick = () => updateRequest(row, response.value, select.value);
+
+  actions.append(save);
+  card.append(actions);
+
+  return card;
+}
+
+async function updateRequest(row, response, status) {
+  try {
+    const {error} = await supabase
+      .from("podcast_support_requests")
+      .update({admin_response:response || null, status})
+      .eq("id", row.id);
+
+    if (error) throw error;
+
+    notice("Support request updated. The creator can see the response in their Creator Studio.");
+    await loadData();
+  } catch (e) {
+    notice("Could not update support request: " + e.message + " — check the admin UPDATE policy and table columns.", "error");
+  }
+}
+
+function setView(next) {
+  view = next;
+  filter = "all";
+
+  document.querySelectorAll(".navbtn[data-view]").forEach(b =>
+    b.classList.toggle("active", b.dataset.view === view)
+  );
+
+  $("pageHeading").textContent = view === "submissions"
+    ? "Podcast submissions"
+    : "Podcast support requests";
+
+  $("pageSub").textContent = view === "submissions"
+    ? "Review audio before it becomes public."
+    : "Answer priority-review and technical-problem requests.";
+
+  document.querySelector(".tabs").classList.toggle("hidden", view !== "submissions");
+  $("typeFilter").classList.toggle("hidden", view !== "submissions");
+  $("supportFilter").classList.toggle("hidden", view !== "support");
+
+  document.querySelectorAll(".tab").forEach(b =>
+    b.classList.toggle("active", b.dataset.filter === filter)
+  );
+
+  render();
+}
+
+document.querySelectorAll(".navbtn[data-view]").forEach(b =>
+  b.addEventListener("click", () => setView(b.dataset.view))
+);
+
+document.querySelectorAll(".tab").forEach(b =>
+  b.addEventListener("click", () => {
+    filter = b.dataset.filter;
+    document.querySelectorAll(".tab").forEach(t =>
+      t.classList.toggle("active", t.dataset.filter === filter)
+    );
+    render();
+  })
+);
+
+$("searchBox").addEventListener("input", render);
+$("typeFilter").addEventListener("change", render);
+$("supportFilter").addEventListener("change", render);
+$("refreshBtn").addEventListener("click", loadData);
+
+const PAGE_PASSWORD = "123456789";
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("loginMessage").textContent = "";
+
+  if ($("password").value !== PAGE_PASSWORD) {
+    $("loginMessage").textContent = "Incorrect page password.";
+    $("password").value = "";
+    $("password").focus();
+    return;
+  }
+
+  $("loginMessage").textContent = "Checking your admin session…";
+
+  const {data:{session},error} = await supabase.auth.getSession();
+
+  if (error || !session?.user) {
+    $("loginMessage").textContent = "Please sign in to your main Mac&Talk admin page first, then open this page again. The page password does not replace your Supabase admin session.";
+    return;
+  }
+
+  try {
+    await startApp(session.user);
+    if (user) $("password").value = "";
+  } catch (err) {
+    $("loginMessage").textContent = err.message || "Could not open the admin page.";
+  }
+});
+
+$("signOutBtn").addEventListener("click", () => {
+  user = null;
+  $("adminApp").classList.add("hidden");
+  $("loginScreen").classList.remove("hidden");
+  $("password").value = "";
+  $("loginMessage").textContent = "Page locked.";
+});
+
+const {data:{session}} = await supabase.auth.getSession();
+
+if (session?.user) {
+  $("loginMessage").textContent = "Enter the page password to continue.";
+}
+
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (!session?.user) {
+    user = null;
+    $("loginScreen").classList.remove("hidden");
+    $("adminApp").classList.add("hidden");
+  }
+});
+</script>
+</body>
+</html>
