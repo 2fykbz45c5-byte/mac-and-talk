@@ -48,9 +48,10 @@
       <a href="#podcasts">Podcasts</a>
     </nav>
 
-    <a href="#podcasts" class="nav-button">
-      Explore Episodes ↗
-    </a>
+    <div class="nav-actions">
+      <button type="button" class="nav-button account-button" id="accountButton">Create account</button>
+      <a href="#podcasts" class="nav-button">Explore Episodes ↗</a>
+    </div>
   </header>
 
   <main>
@@ -259,5 +260,28 @@
       Created by <strong>Yassine</strong> ✨
     </small>
   </footer>
-</body>
+
+  <!-- Small account used only for ratings and comments -->
+  <div class="account-modal" id="accountModal" hidden>
+    <div class="account-backdrop" data-close-account></div>
+    <section class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+      <button type="button" class="account-close" data-close-account aria-label="Close">×</button>
+      <span class="eyebrow">MAC&TALK COMMUNITY</span>
+      <h2 id="accountTitle">Join the conversation</h2>
+      <p class="account-description">Create a free account just to rate live sessions and podcasts or leave comments.</p>
+      <div class="account-tabs">
+        <button type="button" class="account-tab active" id="signupTab">Create account</button>
+        <button type="button" class="account-tab" id="loginTab">Log in</button>
+      </div>
+      <form id="accountForm">
+        <label class="account-field" id="accountNameField">Display name <input id="accountName" name="displayName" maxlength="60" autocomplete="nickname" placeholder="Your name"></label>
+        <label class="account-field">Email <input id="accountEmail" name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+        <label class="account-field">Password <input id="accountPassword" name="password" type="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters"></label>
+        <button class="button button-dark account-submit" id="accountSubmit" type="submit">Create account</button>
+        <p class="account-status" id="accountStatus" role="status" aria-live="polite"></p>
+      </form>
+      <p class="account-footnote">This account is separate from host/admin access.</p>
+    </section>
+  </div>
+\n</body>
 </html>

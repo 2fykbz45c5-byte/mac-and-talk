@@ -1520,3 +1520,36 @@ audio:focus-visible {
     min-height: 1px;
   }
 }
+
+/* Small account modal for ratings and comments */
+.nav-actions { display:flex; align-items:center; gap:8px; }
+.nav-actions .account-button { background:#fff; border:1px solid var(--line); color:var(--navy); }
+.account-modal[hidden] { display:none !important; }
+.account-modal { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; padding:18px; }
+.account-backdrop { position:absolute; inset:0; background:rgba(10,24,43,.58); backdrop-filter:blur(4px); }
+.account-dialog { position:relative; z-index:1; width:min(100%,420px); max-height:90vh; overflow:auto; background:#fff; border:1px solid var(--line); border-radius:20px; padding:27px; box-shadow:0 25px 80px #081a3038; }
+.account-dialog h2 { font-family:Manrope,sans-serif; font-size:27px; letter-spacing:-.8px; margin:9px 0; }
+.account-description,.account-footnote { color:var(--muted); font-size:12px; line-height:1.65; }
+.account-close { position:absolute; right:13px; top:10px; border:0; background:#f2f5f9; color:var(--navy); border-radius:50%; width:32px; height:32px; font-size:23px; }
+.account-tabs { display:grid; grid-template-columns:1fr 1fr; gap:7px; background:#f2f5f9; border-radius:11px; padding:4px; margin:18px 0; }
+.account-tab { border:0; border-radius:8px; padding:10px; background:transparent; color:var(--muted); font-size:12px; font-weight:800; }
+.account-tab.active { background:white; color:var(--navy); box-shadow:0 2px 8px #10243e12; }
+.account-field { display:block; margin:12px 0; color:var(--navy); font-size:12px; font-weight:700; }
+.account-field input { display:block; width:100%; margin-top:7px; border:1px solid var(--line); border-radius:10px; padding:12px; outline:none; }
+.account-field input:focus { border-color:#dca900; box-shadow:0 0 0 3px #ffc62922; }
+.account-submit { width:100%; margin-top:8px; }
+.account-status { min-height:18px; color:var(--muted); font-size:12px; line-height:1.5; }
+.account-status.error,.feedback-status.error { color:var(--red); }
+.feedback-comment-form { margin-top:12px; display:grid; gap:8px; }
+.feedback-comment-form textarea { width:100%; min-height:72px; resize:vertical; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:12px; }
+.feedback-comment-form .card-link { justify-self:start; }
+.feedback-comments { margin-top:10px; display:grid; gap:8px; }
+.feedback-comment { padding:10px 11px; background:#f6f8fb; border-radius:10px; font-size:12px; line-height:1.55; overflow-wrap:anywhere; }
+.feedback-comment strong { display:block; color:var(--navy); margin-bottom:3px; }
+.feedback-comment time { display:block; color:var(--muted); font-size:10px; margin-top:4px; }
+@media(max-width:760px) {
+ .nav-actions { margin-left:auto; gap:6px; }
+ .nav-actions .nav-button { padding:9px 10px; font-size:10px; }
+ .nav-actions a.nav-button { display:none; }
+ .account-dialog { padding:23px; }
+}
