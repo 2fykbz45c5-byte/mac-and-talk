@@ -22,6 +22,7 @@ const byId = (id) => document.getElementById(id);
 
 let allEpisodes = [];
 let refreshInProgress = false;
+let feedbackSummary = new Map();
 
 /* =========================================
    GENERAL HELPERS
@@ -58,6 +59,81 @@ function niceDate(value) {
   return date.toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "short"
+  });
+}
+
+function canonicalItemUrl(type, id) {
+  const url = new URL(window.location.href);
+  url.hash = "";
+  url.search = "";
+  url.searchParams.set(type === "live" ? "live" : "podcast", String(id));
+  return url.toString();
+}
+
+function shareButton(type, id, title) {
+  return `<button type="button" class="card-link share-item-button" data-share-type="${type}" data-share-id="${safe(id)}" data-share-title="${safe(title || "Mac&Talk")}">↗ Share</button>`;
+}
+
+function calendarButton(session) {
+  if (!session.scheduled_at || !Number.isFinite(new Date(session.scheduled_at).getTime())) return "";
+  return `<button type="button" class="card-link calendar-item-button" data-calendar-id="${safe(session.id)}" data-calendar-title="${safe(session.title || "Mac&Talk session")}" data-calendar-start="${safe(session.scheduled_at)}" data-calendar-description="${safe(session.description || "Mac&Talk live session")}">＋ Add to Calendar</button>`;
+}
+
+function googleCalendarDate(value) {
+  return new Date(value).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+}
+
+function openGoogleCalendar(button) {
+  const start = new Date(button.dataset.calendarStart);
+  if (!Number.isFinite(start.getTime())) return;
+
+  // Google opens a prefilled event; the visitor confirms it by pressing Save.
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const eventUrl = canonicalItemUrl("live", button.dataset.calendarId);
+  const details = `${button.dataset.calendarDescription || "Mac&Talk live session"}\n\nJoin or view the session: ${eventUrl}`;
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: button.dataset.calendarTitle || "Mac&Talk session",
+    dates: `${googleCalendarDate(start)}/${googleCalendarDate(end)}`,
+    details,
+    location: eventUrl
+  });
+  const googleUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
+  window.open(googleUrl, "_blank", "noopener,noreferrer");
+}
+
+function focusSharedItem() {
+  const params = new URLSearchParams(window.location.search);
+  const target = params.has("live") ? { type: "live", id: params.get("live") }
+    : params.has("podcast") ? { type: "podcast", id: params.get("podcast") } : null;
+  if (!target) return;
+  const selector = target.type === "live" ? `[data-live-id="${CSS.escape(target.id)}"]` : `[data-podcast-id="${CSS.escape(target.id)}"]`;
+  const card = document.querySelector(selector);
+  if (!card || card.dataset.sharedFocusDone === "true") return;
+  card.dataset.sharedFocusDone = "true";
+  card.classList.add("shared-item-highlight");
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function setupShareAndCalendarActions() {
+  document.addEventListener("click", async event => {
+    const share = event.target.closest(".share-item-button");
+    if (share) {
+      const url = canonicalItemUrl(share.dataset.shareType, share.dataset.shareId);
+      try {
+        if (navigator.share) await navigator.share({ title: share.dataset.shareTitle, url });
+        else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(url);
+          const old = share.textContent; share.textContent = "✓ Link copied";
+          setTimeout(() => { share.textContent = old; }, 1800);
+        } else window.prompt("Copy this link to share:", url);
+      } catch (error) {
+        if (error?.name !== "AbortError") window.prompt("Copy this link to share:", url);
+      }
+      return;
+    }
+    const calendar = event.target.closest(".calendar-item-button");
+    if (calendar) openGoogleCalendar(calendar);
   });
 }
 
@@ -241,6 +317,131 @@ async function resolveAudioUrl(episode) {
 }
 
 /* =========================================
+   FEEDBACK / RATINGS
+========================================= */
+
+function feedbackKey(type, id) {
+  return `${type}:${id}`;
+}
+
+function feedbackSummaryMarkup(type, id) {
+  const summary = feedbackSummary.get(feedbackKey(type, id));
+  if (!summary || !summary.count) {
+    return `<p class="feedback-summary" data-rating-summary="${safe(type)}:${safe(id)}">☆ No ratings yet</p>`;
+  }
+  return `<p class="feedback-summary" data-rating-summary="${safe(type)}:${safe(id)}"><span aria-label="Average rating">★ ${summary.average.toFixed(1)}/5</span> <span>(${summary.count} ${summary.count === 1 ? "rating" : "ratings"})</span></p>`;
+}
+
+function feedbackForm(type, id, title) {
+  if (!id) return "";
+  return `
+    <div class="feedback-panel" data-rating-widget="${safe(type)}:${safe(id)}">
+      <p class="rating-prompt">Rate this ${type === "live" ? "live session" : "podcast"}</p>
+      <div class="rating-stars" role="group" aria-label="Rate from one to five stars" data-feedback-type="${safe(type)}" data-content-id="${safe(id)}" data-content-title="${safe(title || "Mac&Talk content")}">
+        ${[1,2,3,4,5].map(n => `<button type="button" class="rating-star" data-rating="${n}" aria-label="${n} ${n === 1 ? "star" : "stars"}" title="${n} ${n === 1 ? "star" : "stars"}">★</button>`).join("")}
+      </div>
+      <p class="feedback-status" role="status" aria-live="polite"></p>
+    </div>
+  `;
+}
+
+async function loadFeedbackSummaries() {
+  try {
+    const { data, error } = await supabase
+      .from("content_feedback")
+      .select("content_type, content_id, rating")
+      .eq("approved", true);
+    if (error) throw error;
+
+    const totals = new Map();
+    for (const item of data || []) {
+      const key = feedbackKey(item.content_type, item.content_id);
+      const current = totals.get(key) || { count: 0, total: 0 };
+      current.count += 1;
+      current.total += Number(item.rating) || 0;
+      totals.set(key, current);
+    }
+    feedbackSummary = new Map([...totals.entries()].map(([key, value]) => [key, {
+      count: value.count,
+      average: value.total / value.count
+    }]));
+    document.querySelectorAll("[data-rating-summary]").forEach((element) => {
+      const [type, id] = element.dataset.ratingSummary.split(":");
+      element.outerHTML = feedbackSummaryMarkup(type, id);
+    });
+  } catch (error) {
+    logSupabaseError("Could not load feedback ratings", error);
+  }
+}
+
+function setupFeedbackForms() {
+  document.addEventListener("click", async (event) => {
+    const star = event.target.closest(".rating-star");
+    if (!star) return;
+
+    const stars = star.closest(".rating-stars");
+    const widget = star.closest(".feedback-panel");
+    const status = widget?.querySelector(".feedback-status");
+    if (!stars || !status || stars.dataset.submitting === "true") return;
+
+    const rating = Number(star.dataset.rating);
+    const contentType = stars.dataset.feedbackType;
+    const contentId = stars.dataset.contentId;
+    if (!contentId || !["live", "podcast"].includes(contentType) || !Number.isInteger(rating) || rating < 1 || rating > 5) return;
+
+    stars.dataset.submitting = "true";
+    stars.querySelectorAll("button").forEach(button => {
+      button.disabled = true;
+      button.classList.toggle("selected", Number(button.dataset.rating) <= rating);
+    });
+    status.textContent = "Saving your rating…";
+
+    try {
+      const { error } = await supabase.from("content_feedback").insert({
+        content_type: contentType,
+        content_id: contentId,
+        rating,
+        approved: true
+      });
+      if (error) throw error;
+
+      const key = feedbackKey(contentType, contentId);
+      const current = feedbackSummary.get(key) || { count: 0, average: 0 };
+      const count = current.count + 1;
+      const average = ((current.average * current.count) + rating) / count;
+      feedbackSummary.set(key, { count, average });
+
+      const card = widget.closest("article");
+      const summary = card?.querySelector(`[data-rating-summary="${CSS.escape(key)}"]`);
+      if (summary) summary.outerHTML = feedbackSummaryMarkup(contentType, contentId);
+      status.textContent = "Thanks for rating!";
+      stars.setAttribute("aria-label", `You rated ${rating} out of 5 stars`);
+    } catch (error) {
+      logSupabaseError("Could not submit rating", error);
+      // Keep the visitor-facing message simple while exposing the exact
+      // Supabase reason in the browser console for troubleshooting.
+      const reason = error?.message || error?.details || error?.hint || "Unknown Supabase error";
+      status.textContent = "Could not save your rating. Please try again.";
+      status.title = reason;
+      console.error("Rating save failed — Supabase details:", {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        contentType,
+        contentId
+      });
+      stars.querySelectorAll("button").forEach(button => {
+        button.disabled = false;
+        button.classList.remove("selected");
+      });
+    } finally {
+      stars.dataset.submitting = "false";
+    }
+  });
+}
+
+/* =========================================
    PODCAST CARDS
 ========================================= */
 
@@ -282,6 +483,7 @@ function podcastCard(episode) {
   return `
     <article
       class="podcast-card"
+      data-podcast-id="${safe(episode.id)}"
       data-category="${safe(category)}"
       data-search="${safe([
         episode.title,
@@ -319,6 +521,9 @@ function podcastCard(episode) {
         <p class="podcast-date">
           ${safe(niceDate(episode.created_at))}
         </p>
+        <div class="item-action-row">${shareButton("podcast", episode.id, episode.title)}</div>
+        ${feedbackSummaryMarkup("podcast", episode.id)}
+        ${feedbackForm("podcast", episode.id, episode.title)}
       </div>
     </article>
   `;
@@ -573,6 +778,7 @@ async function loadPodcasts() {
     grid.innerHTML = allEpisodes.map(podcastCard).join("");
 
     setupAudioPlayers();
+    focusSharedItem();
     filterPodcasts();
 
     console.info("Mac&Talk podcasts loaded:", {
@@ -630,9 +836,12 @@ function liveCard(session) {
   const joinUrl = validHttpUrl(session.join_url || "")
     ? session.join_url
     : "";
+  const startedAt = session.started_at || "";
+  const elapsed = startedAt ? Math.max(0, Date.now() - new Date(startedAt).getTime()) : 0;
+  const hasStart = Boolean(startedAt && Number.isFinite(new Date(startedAt).getTime()));
 
   return `
-    <article class="live-card">
+    <article class="live-card" data-live-id="${safe(session.id)}">
       <div class="session-cover">
         ${cover(session)}
         <span class="live-badge">LIVE</span>
@@ -640,31 +849,83 @@ function liveCard(session) {
 
       <div class="session-content">
         <h3>${safe(session.title || "Live broadcast")}</h3>
-
-        <p>
-          ${safe(session.description || "Join the conversation on Mac&Talk.")}
-        </p>
-
-        <p class="session-date">Live now</p>
-
+        <p>${safe(session.description || "Join the conversation on Mac&Talk.")}</p>
+        ${session.host_name || session.host ? `<p class="session-note session-host">Hosted by ${safe(session.host_name || session.host)}</p>` : ""}
+        ${session.invitedNames?.length ? `<p class="session-note session-invitees"><strong>Invited:</strong> ${safe(session.invitedNames.join(", "))}</p>` : ""}
+        <div class="item-action-row">${shareButton("live", session.id, session.title)}</div>
+        <div class="session-timer" aria-label="Live session elapsed time">
+          <span>⏱ Live duration</span>
+          <strong class="live-timer" data-started-at="${safe(startedAt)}">${hasStart ? formatElapsed(elapsed) : "Timer unavailable"}</strong>
+        </div>
         ${
           joinUrl
-            ? `
-              <a
-                class="session-button"
-                href="${safe(joinUrl)}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Join Live
-              </a>
-            `
-            : `
-              <p class="session-note">
-                The listening link is not available yet.
-              </p>
-            `
+            ? `<a class="session-button" href="${safe(joinUrl)}" target="_blank" rel="noopener noreferrer">Join Live</a>`
+            : `<p class="session-note">The listening link is not available yet.</p>`
         }
+        ${feedbackSummaryMarkup("live", session.id)}
+        ${feedbackForm("live", session.id, session.title)}
+      </div>
+    </article>
+  `;
+}
+
+function formatElapsed(milliseconds) {
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return [hours, minutes, seconds].map(value => String(value).padStart(2, "0")).join(":");
+}
+
+function updateLiveTimers() {
+  document.querySelectorAll(".live-timer[data-started-at]").forEach((timer) => {
+    const start = new Date(timer.dataset.startedAt).getTime();
+    if (!Number.isFinite(start)) {
+      timer.textContent = "Timer unavailable";
+      return;
+    }
+    timer.textContent = formatElapsed(Date.now() - start);
+  });
+}
+
+function endedCard(session) {
+  const recordingUrl = validHttpUrl(session.recording_url || "")
+    ? session.recording_url
+    : "";
+  const host = session.host_name || session.host || "";
+  const started = session.started_at ? new Date(session.started_at).getTime() : NaN;
+  const ended = session.ended_at ? new Date(session.ended_at).getTime() : NaN;
+  const durationMs = Number.isFinite(started) && Number.isFinite(ended) && ended >= started
+    ? ended - started
+    : (Number.isFinite(Number(session.duration_seconds)) && Number(session.duration_seconds) >= 0
+        ? Number(session.duration_seconds) * 1000
+        : 0);
+  const durationText = durationMs > 0 ? formatElapsed(durationMs) : "Duration unavailable";
+  const endedDate = session.ended_at || session.updated_at || session.created_at;
+
+  return `
+    <article class="ended-card" data-live-id="${safe(session.id)}">
+      <div class="session-cover">
+        ${cover(session)}
+        <span class="ended-badge">SESSION ENDED</span>
+      </div>
+      <div class="session-content">
+        ${host ? `<p class="ended-host">Hosted by ${safe(host)}</p>` : ""}
+        <h3>${safe(session.title || "Mac&Talk conversation")}</h3>
+        <p>${safe(session.description || "A past conversation from Mac&Talk.")}</p>
+        ${session.invitedNames?.length ? `<p class="session-note session-invitees"><strong>Invited:</strong> ${safe(session.invitedNames.join(", "))}</p>` : ""}
+        <p class="ended-duration">◷ ${safe(durationText)}</p>
+        <p class="session-date">${safe(niceDate(endedDate))}</p>
+        <div class="ended-actions">
+          ${
+            recordingUrl
+              ? `<a class="card-link" href="${safe(recordingUrl)}" target="_blank" rel="noopener noreferrer">▶ Replay session</a>`
+              : `<span class="card-link secondary disabled" aria-disabled="true">Replay unavailable</span>`
+          }
+        </div>
+        <div class="item-action-row">${shareButton("live", session.id, session.title)}</div>
+        ${feedbackSummaryMarkup("live", session.id)}
+        ${feedbackForm("live", session.id, session.title)}
       </div>
     </article>
   `;
@@ -676,7 +937,7 @@ function upcomingCard(session) {
     : "";
 
   return `
-    <article class="upcoming-card">
+    <article class="upcoming-card" data-live-id="${safe(session.id)}">
       <div class="session-cover">
         ${cover(session)}
         <span class="upcoming-badge">UPCOMING</span>
@@ -689,10 +950,24 @@ function upcomingCard(session) {
           ${safe(session.description || "A new Mac&Talk broadcast is coming soon.")}
         </p>
 
+        ${session.host_name || session.host ? `<p class="session-note session-host">Hosted by ${safe(session.host_name || session.host)}</p>` : ""}
+        ${session.invitedNames?.length ? `<p class="session-note session-invitees"><strong>Invited:</strong> ${safe(session.invitedNames.join(", "))}</p>` : ""}
         <p class="session-date">
           ${safe(niceDate(session.scheduled_at))}
         </p>
+        ${session.scheduled_at ? `
+          <div class="session-countdown" aria-live="off">
+            <span class="countdown-label">STARTS IN</span>
+            <strong class="countdown-timer" data-scheduled-at="${safe(session.scheduled_at)}">${safe(formatCountdown(new Date(session.scheduled_at).getTime() - Date.now()))}</strong>
+          </div>
+        ` : `
+          <div class="session-countdown session-countdown-unscheduled">
+            <span class="countdown-label">START TIME</span>
+            <strong class="countdown-timer">To be announced</strong>
+          </div>
+        `}
 
+        <div class="item-action-row">${shareButton("live", session.id, session.title)}${calendarButton(session)}</div>
         ${
           joinUrl
             ? `
@@ -716,13 +991,39 @@ function upcomingCard(session) {
   `;
 }
 
+function formatCountdown(milliseconds) {
+  if (!Number.isFinite(milliseconds)) return "Time not set";
+  if (milliseconds <= 0) return "Starting now";
+
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = value => String(value).padStart(2, "0");
+
+  return days > 0
+    ? `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`
+    : `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+}
+
+function updateCountdownTimers() {
+  document.querySelectorAll(".countdown-timer[data-scheduled-at]").forEach(timer => {
+    const scheduledAt = new Date(timer.dataset.scheduledAt).getTime();
+    timer.textContent = formatCountdown(scheduledAt - Date.now());
+    const container = timer.closest(".session-countdown");
+    if (container) container.classList.toggle("session-countdown-due", scheduledAt <= Date.now());
+  });
+}
+
 /* =========================================
    LIVE EMPTY STATES
 ========================================= */
 
-function showEmptyStates(liveCount, upcomingCount) {
+function showEmptyStates(liveCount, upcomingCount, endedCount = 0) {
   showElement("noLive", liveCount === 0);
   showElement("noUpcoming", upcomingCount === 0);
+  showElement("noEnded", endedCount === 0);
 
   if (liveCount === 0) {
     setMessage(
@@ -737,6 +1038,10 @@ function showEmptyStates(liveCount, upcomingCount) {
       "There are no upcoming broadcasts yet."
     );
   }
+
+  if (endedCount === 0) {
+    setMessage("noEnded", "No completed live sessions are available yet.");
+  }
 }
 
 /* =========================================
@@ -745,14 +1050,49 @@ function showEmptyStates(liveCount, upcomingCount) {
    Reads the columns from your live_sessions table.
 ========================================= */
 
+async function attachInviteeNames(sessions) {
+  if (!sessions.length) return;
+  try {
+    const { data: inviteRows, error: inviteError } = await supabase
+      .from("live_session_invitees")
+      .select("session_id,user_id")
+      .in("session_id", sessions.map(session => session.id));
+    if (inviteError) {
+      console.warn("Invitee names are unavailable (check public SELECT policies):", inviteError.message);
+      return;
+    }
+    const rows = inviteRows || [];
+    const userIds = [...new Set(rows.map(row => row.user_id).filter(Boolean))];
+    if (!userIds.length) return;
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("id,display_name,username")
+      .in("id", userIds);
+    if (profilesError) {
+      console.warn("Invitee profile names are unavailable (check public SELECT policies):", profilesError.message);
+      return;
+    }
+    const names = new Map((profiles || []).map(profile => [profile.id, profile.display_name || profile.username || "Invited guest"]));
+    const bySession = new Map();
+    rows.forEach(row => {
+      const name = names.get(row.user_id);
+      if (!name) return;
+      if (!bySession.has(row.session_id)) bySession.set(row.session_id, []);
+      if (!bySession.get(row.session_id).includes(name)) bySession.get(row.session_id).push(name);
+    });
+    sessions.forEach(session => { session.invitedNames = bySession.get(session.id) || []; });
+  } catch (error) {
+    console.warn("Could not load invitee names:", error);
+  }
+}
+
 async function loadLiveSessions() {
   const liveGrid = byId("liveGrid");
   const upcomingGrid = byId("upcomingGrid");
+  const endedGrid = byId("endedGrid");
 
   if (!liveGrid || !upcomingGrid) {
-    console.warn(
-      "Mac&Talk: #liveGrid or #upcomingGrid was not found."
-    );
+    console.warn("Mac&Talk: #liveGrid or #upcomingGrid was not found.");
     return;
   }
 
@@ -769,7 +1109,14 @@ async function loadLiveSessions() {
         emoji,
         status,
         approved,
-        created_at
+        created_at,
+        updated_at,
+        host,
+        host_name,
+        started_at,
+        ended_at,
+        duration_seconds,
+        recording_url
       `)
       .eq("approved", true)
       .order("created_at", { ascending: false });
@@ -777,72 +1124,69 @@ async function loadLiveSessions() {
     if (error) throw error;
 
     const sessions = data || [];
+    await attachInviteeNames(sessions);
     const now = Date.now();
 
-    const liveSessions = sessions.filter((session) => {
-      return String(session.status || "").toLowerCase() === "live";
-    });
+    const liveSessions = sessions.filter(session =>
+      String(session.status || "").toLowerCase() === "live"
+    );
 
-    const upcomingSessions = sessions.filter((session) => {
-      if (
-        String(session.status || "").toLowerCase() !== "scheduled"
-      ) {
-        return false;
-      }
-
-      // Scheduled sessions without a date remain visible.
+    const upcomingSessions = sessions.filter(session => {
+      if (String(session.status || "").toLowerCase() !== "scheduled") return false;
       if (!session.scheduled_at) return true;
-
-      const scheduledTime = new Date(
-        session.scheduled_at
-      ).getTime();
-
-      return (
-        Number.isFinite(scheduledTime) &&
-        scheduledTime >= now
-      );
+      const scheduledTime = new Date(session.scheduled_at).getTime();
+      return Number.isFinite(scheduledTime) && scheduledTime >= now;
     });
+
+    const endedSessions = sessions.filter(session =>
+      ["ended", "completed", "finished"].includes(String(session.status || "").toLowerCase())
+    );
 
     liveGrid.innerHTML = liveSessions.map(liveCard).join("");
+    upcomingGrid.innerHTML = upcomingSessions.map(upcomingCard).join("");
+    if (endedGrid) endedGrid.innerHTML = endedSessions.map(endedCard).join("");
 
-    upcomingGrid.innerHTML = upcomingSessions
-      .map(upcomingCard)
-      .join("");
-
-    showEmptyStates(
-      liveSessions.length,
-      upcomingSessions.length
-    );
+    focusSharedItem();
+    updateLiveTimers();
+    showEmptyStates(liveSessions.length, upcomingSessions.length, endedSessions.length);
 
     setMessage("liveMessage", "");
 
     console.info("Mac&Talk sessions loaded:", {
       totalRows: sessions.length,
       live: liveSessions.length,
-      upcoming: upcomingSessions.length
+      upcoming: upcomingSessions.length,
+      ended: endedSessions.length
     });
-
   } catch (error) {
-    logSupabaseError(
-      "Could not load Mac&Talk live sessions",
-      error
-    );
-
+    logSupabaseError("Could not load Mac&Talk live sessions", error);
     setMessage(
       "liveMessage",
       "Live broadcasts could not be loaded. Check the live_sessions columns and Supabase permissions."
     );
-
     liveGrid.innerHTML = "";
     upcomingGrid.innerHTML = "";
-
-    showEmptyStates(0, 0);
+    if (endedGrid) endedGrid.innerHTML = "";
+    showEmptyStates(0, 0, 0);
   }
 }
 
 /* =========================================
    MOBILE NAVIGATION
 ========================================= */
+
+function setupCarouselButtons() {
+  document.querySelectorAll("[data-carousel-target][data-direction]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const track = byId(button.dataset.carouselTarget);
+      if (!track) return;
+      const firstCard = track.querySelector(".live-card, .upcoming-card, .ended-card, .podcast-card");
+      const gap = 14;
+      const step = firstCard ? firstCard.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
+      track.scrollBy({ left: Number(button.dataset.direction) * step, behavior: "smooth" });
+    });
+  });
+}
 
 function setupNavigation() {
   const menuToggle = byId("menuToggle");
@@ -891,7 +1235,11 @@ async function initialize() {
   }
 
   setupNavigation();
+  setupCarouselButtons();
   setupPodcastSearch();
+  setupFeedbackForms();
+  setupShareAndCalendarActions();
+  await loadFeedbackSummaries();
 
   await Promise.allSettled([
     loadPodcasts(),
@@ -924,3 +1272,10 @@ setInterval(async () => {
     refreshInProgress = false;
   }
 }, LIVE_REFRESH_MS);
+
+
+// Keep elapsed live-session timers accurate between database refreshes.
+setInterval(updateLiveTimers, 1000);
+
+// Keep scheduled-start countdowns updating every second.
+setInterval(updateCountdownTimers, 1000);
