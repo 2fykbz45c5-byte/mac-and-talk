@@ -341,6 +341,11 @@ function feedbackForm(type, id, title) {
         ${[1,2,3,4,5].map(n => `<button type="button" class="rating-star" data-rating="${n}" aria-label="${n} ${n === 1 ? "star" : "stars"}" title="${n} ${n === 1 ? "star" : "stars"}">★</button>`).join("")}
       </div>
       <p class="feedback-status" role="status" aria-live="polite"></p>
+      <form class="feedback-comment-form" data-comment-type="${safe(type)}" data-content-id="${safe(id)}">
+        <textarea name="comment" maxlength="1000" placeholder="Write a comment (up to 1000 characters)..." aria-label="Write a comment" required></textarea>
+        <button class="card-link" type="submit">Post comment</button>
+      </form>
+      <div class="feedback-comments" data-comments-for="${safe(type)}:${safe(id)}"></div>
     </div>
   `;
 }
@@ -374,6 +379,89 @@ async function loadFeedbackSummaries() {
   }
 }
 
+let currentAccount = null;
+let accountMode = "signup";
+function openAccount(mode = "signup") {
+  accountMode = mode;
+  const modal = byId("accountModal");
+  if (!modal) return;
+  modal.hidden = false; updateAccountMode();
+  byId("accountStatus").textContent = "";
+  byId("accountEmail")?.focus();
+}
+function closeAccount() { if (byId("accountModal")) byId("accountModal").hidden = true; }
+function updateAccountMode() {
+  const signup = accountMode === "signup";
+  byId("signupTab")?.classList.toggle("active", signup);
+  byId("loginTab")?.classList.toggle("active", !signup);
+  if (byId("accountNameField")) byId("accountNameField").hidden = !signup;
+  if (byId("accountPassword")) byId("accountPassword").autocomplete = signup ? "new-password" : "current-password";
+  if (byId("accountSubmit")) byId("accountSubmit").textContent = signup ? "Create account" : "Log in";
+  if (byId("accountTitle")) byId("accountTitle").textContent = signup ? "Join the conversation" : "Welcome back";
+}
+function updateAccountButton() {
+  const button = byId("accountButton");
+  if (button) { button.textContent = currentAccount ? "Log out" : "Create account"; button.title = currentAccount ? `Signed in as ${currentAccount.email || "member"}` : "Create an account to rate and comment"; }
+}
+function setupAccount() {
+  byId("accountButton")?.addEventListener("click", async () => {
+    if (currentAccount) {
+      const { error } = await supabase.auth.signOut();
+      if (error) console.error("Could not log out:", error.message);
+      currentAccount = null; updateAccountButton(); return;
+    }
+    openAccount("signup");
+  });
+  byId("signupTab")?.addEventListener("click", () => { accountMode = "signup"; updateAccountMode(); });
+  byId("loginTab")?.addEventListener("click", () => { accountMode = "login"; updateAccountMode(); });
+  document.querySelectorAll("[data-close-account]").forEach(el => el.addEventListener("click", closeAccount));
+  byId("accountForm")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const status = byId("accountStatus"), submit = byId("accountSubmit");
+    const email = byId("accountEmail").value.trim(), password = byId("accountPassword").value;
+    const displayName = byId("accountName").value.trim();
+    status.classList.remove("error"); status.textContent = accountMode === "signup" ? "Creating your account…" : "Logging in…"; submit.disabled = true;
+    try {
+      if (accountMode === "signup") {
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { display_name: displayName || email.split("@")[0], purpose: "ratings_comments" } } });
+        if (error) throw error;
+        if (data.session) { currentAccount = data.user; closeAccount(); }
+        else status.textContent = "Account created. Check your email to confirm it, then log in here.";
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        currentAccount = data.user; closeAccount();
+      }
+      updateAccountButton();
+    } catch (error) { status.classList.add("error"); status.textContent = error.message || "Could not complete account action."; }
+    finally { submit.disabled = false; }
+  });
+  supabase.auth.getSession().then(({ data, error }) => {
+    if (error) console.error("Could not check account session:", error.message);
+    currentAccount = data?.session?.user || null; updateAccountButton();
+  });
+  supabase.auth.onAuthStateChange((_event, session) => { currentAccount = session?.user || null; updateAccountButton(); });
+}
+async function requireFeedbackAccount() {
+  if (currentAccount) return true;
+  openAccount("signup");
+  if (byId("accountStatus")) byId("accountStatus").textContent = "Create an account or log in to rate and comment.";
+  return false;
+}
+async function loadComments(type, id) {
+  const target = document.querySelector(`[data-comments-for="${CSS.escape(`${type}:${id}`)}"]`);
+  if (!target) return;
+  try {
+    const { data, error } = await supabase.from("content_comments").select("id, display_name, comment, created_at")
+      .eq("content_type", type).eq("content_id", id).eq("approved", true).order("created_at", { ascending: false }).limit(10);
+    if (error) throw error;
+    target.innerHTML = (data || []).map(item => `<div class="feedback-comment"><strong>${safe(item.display_name || "Mac&Talk member")}</strong>${safe(item.comment)}<time>${safe(niceDate(item.created_at))}</time></div>`).join("");
+  } catch (error) { console.error("Could not load comments:", error.message || error); }
+}
+function loadAllComments() {
+  document.querySelectorAll("[data-comments-for]").forEach(el => { const [type, id] = el.dataset.commentsFor.split(":"); loadComments(type, id); });
+}
+
 function setupFeedbackForms() {
   document.addEventListener("click", async (event) => {
     const star = event.target.closest(".rating-star");
@@ -388,6 +476,7 @@ function setupFeedbackForms() {
     const contentType = stars.dataset.feedbackType;
     const contentId = stars.dataset.contentId;
     if (!contentId || !["live", "podcast"].includes(contentType) || !Number.isInteger(rating) || rating < 1 || rating > 5) return;
+    if (!(await requireFeedbackAccount())) return;
 
     stars.dataset.submitting = "true";
     stars.querySelectorAll("button").forEach(button => {
@@ -401,6 +490,7 @@ function setupFeedbackForms() {
         content_type: contentType,
         content_id: contentId,
         rating,
+        user_id: currentAccount.id,
         approved: true
       });
       if (error) throw error;
@@ -438,6 +528,33 @@ function setupFeedbackForms() {
     } finally {
       stars.dataset.submitting = "false";
     }
+  });
+
+  document.addEventListener("submit", async event => {
+    const form = event.target.closest(".feedback-comment-form");
+    if (!form) return;
+    event.preventDefault();
+    if (!(await requireFeedbackAccount())) return;
+    const textarea = form.querySelector("textarea"), button = form.querySelector('button[type="submit"]');
+    const comment = textarea.value.trim();
+    if (!comment) return;
+    button.disabled = true; const original = button.textContent; button.textContent = "Posting…";
+    try {
+      const { error } = await supabase.from("content_comments").insert({
+        content_type: form.dataset.commentType, content_id: form.dataset.contentId,
+        user_id: currentAccount.id,
+        display_name: currentAccount.user_metadata?.display_name || currentAccount.email?.split("@")[0] || "Mac&Talk member",
+        comment, approved: false
+      });
+      if (error) throw error;
+      textarea.value = "";
+      const status = form.closest(".feedback-panel")?.querySelector(".feedback-status");
+      if (status) { status.classList.remove("error"); status.textContent = "Comment submitted for review."; }
+    } catch (error) {
+      console.error("Could not post comment:", error);
+      const status = form.closest(".feedback-panel")?.querySelector(".feedback-status");
+      if (status) { status.classList.add("error"); status.textContent = error.message || "Could not post comment. Please try again."; }
+    } finally { button.disabled = false; button.textContent = original; }
   });
 }
 
@@ -1238,6 +1355,7 @@ async function initialize() {
   setupCarouselButtons();
   setupPodcastSearch();
   setupFeedbackForms();
+  setupAccount();
   setupShareAndCalendarActions();
   await loadFeedbackSummaries();
 
@@ -1245,6 +1363,7 @@ async function initialize() {
     loadPodcasts(),
     loadLiveSessions()
   ]);
+  loadAllComments();
 }
 
 initialize();
