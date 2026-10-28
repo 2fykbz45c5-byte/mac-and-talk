@@ -335,7 +335,11 @@ function feedbackSummaryMarkup(type, id) {
 function feedbackForm(type, id, title) {
   if (!id) return "";
   return `
-    <div class="feedback-panel" data-rating-widget="${safe(type)}:${safe(id)}">
+    <button type="button" class="feedback-toggle card-link secondary"
+      aria-expanded="false" aria-controls="feedback-${safe(type)}-${safe(id)}"
+      data-feedback-toggle="${safe(type)}:${safe(id)}">★ Rate &amp; Comment</button>
+    <div class="feedback-panel" id="feedback-${safe(type)}-${safe(id)}"
+      data-rating-widget="${safe(type)}:${safe(id)}" hidden>
       <p class="rating-prompt">Rate this ${type === "live" ? "live session" : "podcast"}</p>
       <div class="rating-stars" role="group" aria-label="Rate from one to five stars" data-feedback-type="${safe(type)}" data-content-id="${safe(id)}" data-content-title="${safe(title || "Mac&Talk content")}">
         ${[1,2,3,4,5].map(n => `<button type="button" class="rating-star" data-rating="${n}" aria-label="${n} ${n === 1 ? "star" : "stars"}" title="${n} ${n === 1 ? "star" : "stars"}">★</button>`).join("")}
@@ -464,6 +468,25 @@ function loadAllComments() {
 
 function setupFeedbackForms() {
   document.addEventListener("click", async (event) => {
+    const toggle = event.target.closest("[data-feedback-toggle]");
+    if (toggle) {
+      const panel = toggle.parentElement.querySelector(".feedback-panel");
+      if (panel) {
+        const opening = panel.hidden;
+        panel.hidden = !opening;
+        toggle.setAttribute("aria-expanded", String(opening));
+        toggle.textContent = opening ? "× Hide rating & comments" : "★ Rate & Comment";
+        if (opening) {
+          const comments = panel.querySelector("[data-comments-for]");
+          if (comments) {
+            const [type, id] = comments.dataset.commentsFor.split(":");
+            loadComments(type, id);
+          }
+        }
+      }
+      return;
+    }
+
     const star = event.target.closest(".rating-star");
     if (!star) return;
 
@@ -611,13 +634,15 @@ function podcastCard(episode) {
       ].join(" ").toLowerCase())}"
     >
       <div class="podcast-cover">
-        <span class="podcast-cover-emoji" aria-hidden="true">
+        ${episode.resolvedCoverUrl ? `
+          <img class="podcast-cover-image" src="${safe(episode.resolvedCoverUrl)}"
+               alt="${safe(episode.title || "Podcast cover")}" loading="lazy"
+               onerror="this.remove(); this.parentElement.classList.add('cover-missing');">
+        ` : ""}
+        <span class="podcast-cover-emoji${episode.resolvedCoverUrl ? " cover-fallback-hidden" : ""}" aria-hidden="true">
           ${coverEmoji}
         </span>
-
-        <span class="podcast-category">
-          ${safe(coverLabel)}
-        </span>
+        <span class="podcast-category">${safe(coverLabel)}</span>
       </div>
 
       <div class="podcast-content">
@@ -835,18 +860,7 @@ async function loadPodcasts() {
   try {
     const { data, error } = await supabase
       .from("podcast_episodes")
-      .select(`
-        id,
-        host_user_id,
-        host_name,
-        title,
-        description,
-        audio_path,
-        audio_url,
-        published,
-        created_at,
-        episode_type
-      `)
+      .select("*")
       .eq("published", true)
       .order("created_at", { ascending: false });
 
@@ -873,10 +887,38 @@ async function loadPodcasts() {
       episodes.map(async (episode) => {
         try {
           const resolvedAudioUrl = await resolveAudioUrl(episode);
+          const coverValue = [
+            episode.cover_image_url,
+            episode.cover_url,
+            episode.cover_image,
+            episode.artwork_url,
+            episode.thumbnail_url,
+            episode.image_url,
+            episode.cover_path,
+            episode.artwork_path,
+            episode.thumbnail_path
+          ].find(value => typeof value === "string" && value.trim());
+
+          let resolvedCoverUrl = "";
+          if (coverValue) {
+            const rawCover = String(coverValue).trim();
+            if (validHttpUrl(rawCover)) {
+              resolvedCoverUrl = rawCover;
+            } else {
+              const coverPath = cleanStoragePath(rawCover);
+              try {
+                const { data } = supabase.storage.from(AUDIO_BUCKET).getPublicUrl(coverPath);
+                if (data?.publicUrl && validHttpUrl(data.publicUrl)) resolvedCoverUrl = data.publicUrl;
+              } catch (coverError) {
+                console.warn("Could not resolve podcast cover:", episode.title, coverError);
+              }
+            }
+          }
 
           return {
             ...episode,
-            resolvedAudioUrl
+            resolvedAudioUrl,
+            resolvedCoverUrl
           };
         } catch (error) {
           logSupabaseError(
