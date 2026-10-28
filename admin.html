@@ -14,6 +14,17 @@
 .content{padding:30px 34px 50px;max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}.welcome h2{font-size:25px;margin:0 0 8px}.welcome p{color:var(--muted);margin:0;line-height:1.5}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn:disabled{opacity:.55;cursor:wait}.btn-primary{background:var(--navy);color:white}.btn-primary:hover{background:var(--navy2)}.btn-yellow{background:var(--yellow);color:var(--navy)}.btn-light{background:#eef2f8;color:var(--navy)}.btn-danger{background:#fff0f1;color:var(--red)}.btn-small{padding:8px 10px;font-size:12px;border-radius:8px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:700}.stat-icon{width:37px;height:37px;border-radius:12px;background:#fff4cf;display:grid;place-items:center;font-size:18px}.stat strong{display:block;font-size:29px;margin-top:13px}.stat small{display:block;color:var(--muted);margin-top:5px;font-size:11px}
 .panel{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.panel-head h3{margin:0;font-size:16px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.filters{display:flex;gap:9px;flex-wrap:wrap}.field-control{border:1px solid var(--line);background:white;border-radius:9px;padding:10px 11px;color:var(--navy);outline:none;min-width:145px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:15px 20px;border-bottom:1px solid #edf0f5;font-size:13px;vertical-align:middle}th{background:#fbfcfe;color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.session-title{font-weight:800;margin-bottom:4px}.session-sub{font-size:11px;color:var(--muted);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:850}.pill-live,.pill-approved{background:#e2f8ed;color:#14734e}.pill-scheduled{background:#e9efff;color:#3159b9}.pill-ended,.pill-cancelled{background:#eef0f4;color:#5f6b7b}.pill-pending{background:#fff2cf;color:#8a6100}.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}.notice{margin-bottom:18px;padding:12px 15px;border-radius:10px;font-size:13px;display:none;overflow-wrap:anywhere}.notice.show{display:block}.notice.success{background:#e5f8ed;color:#146c49}.notice.error{background:#fff0f1;color:#a52d3a}.page{display:none}.page.active{display:block}.grid-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.info-card{padding:22px}.info-card h3{margin:0 0 10px;font-size:16px}.info-card p,.info-card li{font-size:13px;line-height:1.7;color:var(--muted)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-field{display:grid;gap:7px;min-width:0}.form-field.full{grid-column:1/-1}.form-field label{font-size:12px;font-weight:800}.form-field input,.form-field select,.form-field textarea{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;background:white;color:var(--navy)}.form-field textarea{min-height:95px;resize:vertical}.form-field small{font-size:11px;color:var(--muted);line-height:1.5}.loading{min-height:100vh;display:grid;place-items:center;padding:25px;text-align:center}.loading-card{background:white;padding:30px;border-radius:18px;max-width:480px;box-shadow:var(--shadow)}.loading-card h2{margin:0 0 10px}.loading-card p{color:var(--muted);font-size:14px;line-height:1.6}.spinner{width:30px;height:30px;border:3px solid #e5eaf1;border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}
 .modal-backdrop{position:fixed;inset:0;background:#06112199;z-index:20;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{background:white;border-radius:18px;width:min(760px,100%);max-height:92vh;overflow:auto}.modal-body{padding:22px}.modal-foot{display:flex;justify-content:flex-end;gap:9px;padding:17px 22px;border-top:1px solid var(--line)}.multi-help{font-size:11px;color:var(--muted);margin:0}.status-line{font-size:12px;color:var(--muted);margin-top:8px}
+.app-dialog-backdrop{position:fixed;inset:0;background:rgba(6,17,33,.62);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.app-dialog-backdrop.open{display:flex}
+.app-dialog{width:min(440px,100%);background:#fff;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.28);overflow:hidden;border:1px solid #e5eaf1}
+.app-dialog-head{display:flex;align-items:center;gap:12px;padding:20px 22px 12px}
+.app-dialog-icon{width:38px;height:38px;border-radius:12px;background:#fff2cf;color:#8a6100;display:grid;place-items:center;font-size:20px;font-weight:900;flex:0 0 auto}
+.app-dialog-backdrop.error .app-dialog-icon{background:#fff0f1;color:#a52d3a}
+.app-dialog-backdrop.success .app-dialog-icon{background:#e5f8ed;color:#146c49}
+.app-dialog-head h3{margin:0;font-size:17px;color:var(--navy)}
+.app-dialog-message{padding:0 22px 20px;color:#536174;font-size:14px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-line}
+.app-dialog-foot{display:flex;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--line)}
+.app-dialog-close{min-width:90px}
 .invite-mode-switch{display:flex;gap:9px;margin:18px 0 15px;flex-wrap:wrap}.invite-mode{flex:1;min-width:130px}.invite-mode.active{background:var(--yellow);color:var(--navy)}.invite-status{font-size:12px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}.invite-preview{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe;font-size:12px;line-height:1.7;max-height:180px;overflow:auto}.invite-preview strong{display:block;margin-bottom:5px}.invite-preview .bad{color:var(--red)}.invite-preview .good{color:#14734e}.form-field textarea#inviteList{min-height:150px;line-height:1.55}@media(max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-two{grid-template-columns:1fr}}@media(max-width:760px){.sidebar{width:72px;padding:18px 9px}.brand{padding:0 5px 25px;justify-content:center}.brand-name,.eyebrow,.nav-text,.side-bottom{display:none}.nav button{justify-content:center;padding:13px 7px}.main{margin-left:72px}.topbar{padding:12px 17px;min-height:72px}.content{padding:22px 14px 35px}.welcome{flex-direction:column}.stats{gap:10px}.stat{padding:15px}.stat strong{font-size:25px}.admin-chip .admin-email{display:none}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}}@media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.filters{width:100%}.filters .field-control{flex:1;min-width:0}}
 
 .access-students-list .access-student-option{display:flex;gap:10px;align-items:center;padding:10px;border-radius:9px;cursor:pointer;line-height:1.35}
@@ -35,6 +46,10 @@
 <button data-page="accounts"><span class="ico">👥</span><span class="nav-text">Account Management</span></button>
 <button data-page="users"><span class="ico">👤</span><span class="nav-text">Users Management</span></button>
 <button data-page="student-access"><span class="ico">🔑</span><span class="nav-text">Student Access</span></button>
+<button type="button" onclick="window.location.href='mac-talk-podcast-admin.html'">
+  <span class="ico">📨</span>
+  <span class="nav-text">Submissions & Support</span>
+</button>
 <button data-page="guide"><span class="ico">⚙</span><span class="nav-text">Setup & security</span></button>
 </nav><div class="side-bottom">Mac&Talk Admin<br>Manage sessions and accounts safely.</div></aside>
 <main class="main"><header class="topbar"><div><h1 id="pageHeading">Admin overview</h1><p id="todayLabel">Mac&Talk Control Center</p></div><div class="admin-chip"><div class="avatar" id="adminAvatar">A</div><span class="admin-email" id="adminEmail">Admin</span><button class="btn btn-light btn-small" id="signOutBtn">Sign out</button></div></header>
@@ -61,6 +76,13 @@
 </section>
 <section class="page" id="page-guide"><div class="welcome"><div><h2>Setup & security</h2><p>Required configuration before production.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Supabase</h3><p>Open this page through <code>http://localhost</code> or HTTPS, not <code>file://</code>. This page checks the admin role in <code>public.profiles.role</code>, where <code>profiles.id</code> remains the internal Auth UUID and <code>mac_talk_id</code> is the official user-facing ID.</p></div><div class="panel info-card"><h3>Registered users</h3><p>The host and invitee lists use <code>admin_list_live_users()</code>. Users Management uses <code>admin_list_managed_users()</code>. Both functions must check the admin role internally.</p></div><div class="panel info-card"><h3>Session schema</h3><p>Uses <code>owner_id</code>, <code>title</code>, <code>description</code>, <code>scheduled_at</code>, <code>join_url</code>, <code>cover_image_url</code>, <code>status</code>, and <code>approved</code> in <code>public.live_sessions</code>.</p></div><div class="panel info-card"><h3>Account controls</h3><p>Blocking updates <code>profiles.is_blocked</code> and must be enforced by your app's login flow and data-access policies. Deleting a profile does not delete its Supabase Auth account. Auth account bans/deletion require a trusted server-side component.</p></div></div></section>
 </div></main></div>
+<div class="app-dialog-backdrop" id="appDialogModal" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
+ <div class="app-dialog">
+  <div class="app-dialog-head"><div class="app-dialog-icon" id="appDialogIcon">i</div><h3 id="appDialogTitle">Mac&amp;Talk notification</h3></div>
+  <div class="app-dialog-message" id="appDialogMessage"></div>
+  <div class="app-dialog-foot"><button type="button" class="btn btn-primary app-dialog-close" id="appDialogOk">OK</button></div>
+ </div>
+</div>
 <div class="modal-backdrop" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><form class="modal" id="sessionForm"><div class="panel-head"><h3 id="modalTitle">Create session</h3><button type="button" class="btn btn-light btn-small" id="closeModal" aria-label="Close dialog">×</button></div><div class="modal-body"><input type="hidden" id="sessionId"><p class="multi-help" style="margin:0 0 16px;line-height:1.6">Choose one or more hosts/co-hosts, then select additional presenters under Invite users. Once approved, assigned hosts and presenters open Creator Studio: the first host starts the session, and everyone else clicks Join as presenter to talk. All selected hosts are also authorized presenters.</p><div class="form-grid"><div class="form-field"><label for="sessionTitle">Session title *</label><input id="sessionTitle" required maxlength="100"></div><div class="form-field full"><label for="sessionHost">Hosts / co-hosts *</label><select id="sessionHost" multiple size="6" aria-describedby="hostHelp"><option value="">Loading registered users…</option></select><small id="hostHelp">Select one or more hosts. The first selected host is the primary host; additional hosts can also join and speak. Use Ctrl (Windows) or Command (Mac) to select multiple users.</small></div><div class="form-field"><label for="sessionStatus">Status *</label><select id="sessionStatus" required><option value="scheduled">Scheduled</option><option value="live">Live</option><option value="ended">Ended</option><option value="cancelled">Cancelled</option></select></div><div class="form-field"><label for="sessionApproved">Approval</label><select id="sessionApproved"><option value="false">Pending approval</option><option value="true">Approved — visible to members</option></select></div><div class="form-field full"><label for="sessionDescription">Description</label><textarea id="sessionDescription" maxlength="1000" placeholder="What is this live session about?"></textarea></div><div class="form-field"><label for="sessionScheduledAt">Scheduled date and time</label><input id="sessionScheduledAt" type="datetime-local"></div><div class="form-field"><label for="sessionJoinUrl">Live meeting URL</label><input id="sessionJoinUrl" type="url" placeholder="https://…" autocomplete="url"></div><div class="form-field full"><label for="sessionCoverUrl">Cover image URL (optional)</label><input id="sessionCoverUrl" type="url" placeholder="https://…"></div><div class="form-field full"><label for="sessionInviters">Invite users</label><select id="sessionInviters" multiple size="7" aria-describedby="inviteHelp"></select><p class="multi-help" id="inviteHelp">Use Ctrl (Windows) or Command (Mac) to select multiple users. The host can also be an invitee if selected.</p></div></div></div><div class="modal-foot"><button type="button" class="btn btn-light" id="cancelModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveSessionBtn">Save session</button></div></form></div>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -73,14 +95,35 @@ const EMAILJS_SERVICE_ID = "service_1tsuefo";
 const EMAILJS_TEMPLATE_ID = "template_savlx3u";
 const EMAILJS_PUBLIC_KEY = "SvTx8lUUtNdlQFP2n";
 const INVITATION_PAGE = "https://mac-and-talk.vercel.app/accept-invitation.html";
+const FIRST_ADMIN_EMAIL = "jemaay55@gmail.com";
+function isFirstAdmin(user){return String(user?.email||"").trim().toLowerCase()===FIRST_ADMIN_EMAIL;}
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
 const $ = id => document.getElementById(id);
-let sessions=[], liveUsers=[], editingId=null, noticeTimer=null, loadingSessions=false, managedUsers=[], studentAccessRows=[], currentAdminId=null;
+let sessions=[], liveUsers=[], editingId=null, noticeTimer=null, loadingSessions=false, managedUsers=[], studentAccessRows=[], currentAdminId=null, currentAdminEmail="";
 const VALID_STATUSES=["scheduled","live","ended","cancelled"];
 function esc(value=""){return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]);}
 function showGate(title,message,link=false,loading=false){$("gateTitle").textContent=title;$("gateText").textContent=message;$("spinner").classList.toggle("hidden",!loading);$("gateActions").classList.toggle("hidden",!link);$("gate").classList.remove("hidden");$("adminApp").classList.add("hidden");}
-function showNotice(message,type="success"){$("notice").textContent=message;$("notice").className=`notice show ${type}`;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{$("notice").className="notice";},7000);}
+function showNotice(message,type="success"){
+ const modal=$("appDialogModal");
+ if(!modal){$("notice").textContent=message;$("notice").className=`notice show ${type}`;return;}
+ $("appDialogTitle").textContent=type==="error"?"Action blocked / Error":type==="success"?"Mac&Talk notification":"Notice";
+ $("appDialogIcon").textContent=type==="error"?"!":type==="success"?"✓":"i";
+ $("appDialogMessage").textContent=String(message||"");
+ modal.className=`app-dialog-backdrop open ${type}`;
+ $("appDialogOk").focus();
+}
+function closeAppDialog(){$("appDialogModal").classList.remove("open","error","success");}
+$("appDialogOk").addEventListener("click",closeAppDialog);
+$("appDialogModal").addEventListener("click",event=>{if(event.target===$("appDialogModal"))closeAppDialog();});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&$("appDialogModal").classList.contains("open"))closeAppDialog();});
+async function sendRoleAttemptWarning(targetEmail,attemptedRole,reason){
+ try{
+  const {data,error}=await supabase.functions.invoke("role-lock-alert",{body:{target_email:targetEmail||"unknown",attempted_role:attemptedRole||"unknown",attempted_by:currentAdminEmail||"unknown",attempted_by_user_id:currentAdminId||null,reason:reason||"Unauthorized role change attempt",alert_to:FIRST_ADMIN_EMAIL,source:"admin.html"}});
+  if(error)throw error;if(data?.error)throw new Error(data.error);return true;
+ }catch(error){console.error("Role-change warning email could not be sent:",error);return false;}
+}
+function isFounderAdminSession(){return String(currentAdminEmail||"").trim().toLowerCase()===FIRST_ADMIN_EMAIL;}
 function setButton(button,loading,text){if(!button)return;button.disabled=loading;button.textContent=text;}
 function getUserName(user){return user?.full_name||user?.display_name||user?.email||"Unknown user";}
 function getUserLabel(user){return `${getUserName(user)} (${user.email||user.id}) — ${user.role||"student"}`;}
@@ -120,18 +163,23 @@ function renderManagedUsers(){
   return(!query||searchText.includes(query))&&(roleFilter==="all"||role===roleFilter)&&(approvalFilter==="all"||status===approvalFilter)&&(statusFilter==="all"||(statusFilter==="blocked"?blocked:!blocked));
  });
  $("managedUsersRows").innerHTML=filtered.length?filtered.map(user=>{
-  const isSelf=user.id===currentAdminId,role=["student","teacher","admin"].includes(String(user.role||"").toLowerCase())?String(user.role).toLowerCase():"student",status=approvalStatus(user),blocked=user.is_blocked===true;
+  const isSelf=user.id===currentAdminId,protectedAdmin=isFirstAdmin(user),role=["student","teacher","admin"].includes(String(user.role||"").toLowerCase())?String(user.role).toLowerCase():"student",status=approvalStatus(user),blocked=user.is_blocked===true;
   const statusClass=status==="approved"?"pill-approved":status==="rejected"?"pill-cancelled":"pill-pending";
   let actionButtons="";
-  if(status!=="approved"){
-   actionButtons+=`<button type="button" class="btn btn-yellow btn-small" data-user-action="approve" data-id="${esc(user.id)}" ${isSelf?"disabled":""}>Approve &amp; assign ID</button>`;
-   if(status==="pending")actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="reject" data-id="${esc(user.id)}" ${isSelf?"disabled":""}>Reject</button>`;
+  if(protectedAdmin){
+   actionButtons='<span class="pill pill-approved">Protected founder admin</span>';
   }else{
-   actionButtons+=`<button type="button" class="btn btn-light btn-small" data-user-action="role" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot change your own role here'":""}>Save role</button>`;
+   if(status!=="approved"){
+    actionButtons+=`<button type="button" class="btn btn-yellow btn-small" data-user-action="approve" data-id="${esc(user.id)}" ${isSelf?"disabled":""}>Approve &amp; assign ID</button>`;
+    if(status==="pending")actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="reject" data-id="${esc(user.id)}" ${isSelf?"disabled":""}>Reject</button>`;
+   }else{
+    actionButtons+=`<button type="button" class="btn btn-light btn-small" data-user-action="role" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot change your own role here'":""}>Save role</button>`;
+   }
+   actionButtons+=`<button type="button" class="btn ${blocked?"btn-yellow":"btn-light"} btn-small" data-user-action="block" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot block your own account here'":""}>${blocked?"Unblock":"Block"}</button>`;
+   actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="delete" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot delete your own profile here'":""}>Delete profile</button>`;
   }
-  actionButtons+=`<button type="button" class="btn ${blocked?"btn-yellow":"btn-light"} btn-small" data-user-action="block" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot block your own account here'":""}>${blocked?"Unblock":"Block"}</button>`;
-  actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="delete" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot delete your own profile here'":""}>Delete profile</button>`;
-  return `<tr><td><div class="session-title">${esc(user.display_name||"Unnamed user")}</div></td><td>${esc(user.email||"No email")}</td><td><div class="actions"><select class="field-control" data-user-role="${esc(user.id)}" aria-label="Role for ${esc(user.email||user.id)}" ${isSelf||status==="approved"&&isSelf?"disabled":""}><option value="student" ${role==="student"?"selected":""}>Student</option><option value="teacher" ${role==="teacher"?"selected":""}>Teacher</option><option value="admin" ${role==="admin"?"selected":""}>Admin</option></select></div></td><td>${user.mac_talk_id?`<strong>${esc(user.mac_talk_id)}</strong>`:'<span class="session-sub">Not assigned</span>'}</td><td><span class="pill ${statusClass}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td><td><span class="pill ${blocked?"pill-cancelled":"pill-approved"}">${blocked?"Blocked":"Active"}</span></td><td>${user.created_at?esc(new Date(user.created_at).toLocaleDateString()):"—"}</td><td><div class="actions">${actionButtons}</div></td></tr>`;
+  const roleControl=protectedAdmin?'<strong>ADMIN 🔒</strong>':(!isFounderAdminSession()?'<strong title="Only jemaay55@gmail.com can change roles">Role locked 🔒</strong>':`<select class="field-control" data-user-role="${esc(user.id)}" aria-label="Role for ${esc(user.email||user.id)}" ${isSelf?"disabled":""}><option value="student" ${role==="student"?"selected":""}>Student</option><option value="teacher" ${role==="teacher"?"selected":""}>Teacher</option><option value="admin" ${role==="admin"?"selected":""}>Admin</option></select>`);
+  return `<tr><td><div class="session-title">${esc(user.display_name||"Unnamed user")}</div>${protectedAdmin?'<small>Original Mac&amp;Talk administrator</small>':""}</td><td>${esc(user.email||"No email")}</td><td><div class="actions">${roleControl}</div></td><td>${user.mac_talk_id?`<strong>${esc(user.mac_talk_id)}</strong>`:'<span class="session-sub">Not assigned</span>'}</td><td><span class="pill ${statusClass}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td><td><span class="pill ${blocked?"pill-cancelled":"pill-approved"}">${blocked?"Blocked":"Active"}</span></td><td>${user.created_at?esc(new Date(user.created_at).toLocaleDateString()):"—"}</td><td><div class="actions">${actionButtons}</div></td></tr>`;
  }).join(""):'<tr><td colspan="8" class="empty">No users match these filters.</td></tr>';
  $("managedUsersCount").textContent=`${filtered.length} of ${managedUsers.length} registered accounts`;
 }
@@ -148,6 +196,16 @@ async function loadManagedUsers(){
  }catch(profileError){console.error("Could not load profile approval fields:",profileError);body.innerHTML=`<tr><td colspan="8" class="empty">Could not load approval fields: ${esc(profileError.message)}</td></tr>`;showNotice("The admin user list loaded, but profile status/ID fields could not be read: "+profileError.message,"error");}
 }
 async function saveManagedUserRole(id){
+ const targetUser=managedUsers.find(u=>u.id===id);
+ if(targetUser&&isFirstAdmin(targetUser)){
+  const mailed=await sendRoleAttemptWarning(targetUser.email,"change founder admin role","Someone attempted to change the protected founder administrator's role.");
+  showNotice("The founder administrator account is permanently protected. The role change was blocked."+(mailed?" A warning email was sent to jemaay55@gmail.com.":" The warning email could not be confirmed; check the role-lock-alert Edge Function."),"error");return;
+ }
+ if(!isFounderAdminSession()){
+  const target=targetUser;
+  const mailed=await sendRoleAttemptWarning(target?.email,"requested role","A non-founder administrator attempted to change a user's role.");
+  showNotice("Only jemaay55@gmail.com is allowed to change user roles. The protected action was blocked."+(mailed?" A warning email was sent to jemaay55@gmail.com.":" Warning email could not be confirmed; check the role-lock-alert Edge Function."),"error");return;
+ }
  if(id===currentAdminId)return showNotice("You cannot change your own role here.","error");
  const user=managedUsers.find(u=>u.id===id);if(!user)return;
  if(approvalStatus(user)!=="approved")return showNotice("Choose the role first, then use Approve & assign ID.","error");
@@ -162,6 +220,16 @@ async function saveManagedUserRole(id){
  }catch(error){console.error("Role update failed:",error);showNotice("Could not update role: "+error.message,"error");}
 }
 async function approveManagedUser(id){
+ const targetUser=managedUsers.find(u=>u.id===id);
+ if(targetUser&&isFirstAdmin(targetUser)){
+  const mailed=await sendRoleAttemptWarning(targetUser.email,"change founder admin role through approval","Someone attempted to change the protected founder administrator's role through approval.");
+  showNotice("The founder administrator account is permanently protected. This action was blocked."+(mailed?" A warning email was sent to jemaay55@gmail.com.":" The warning email could not be confirmed; check the role-lock-alert Edge Function."),"error");return;
+ }
+ if(!isFounderAdminSession()){
+  const target=targetUser;
+  const mailed=await sendRoleAttemptWarning(target?.email,"approval/assigned role","A non-founder administrator attempted to approve an account and assign its role.");
+  showNotice("Only jemaay55@gmail.com can approve accounts when that operation assigns a role. The action was blocked."+(mailed?" A warning email was sent to jemaay55@gmail.com.":" Warning email could not be confirmed; check the role-lock-alert Edge Function."),"error");return;
+ }
  if(id===currentAdminId)return showNotice("Your own admin account is already approved.","error");
  const user=managedUsers.find(u=>u.id===id);if(!user)return;
  const select=Array.from(document.querySelectorAll("[data-user-role]")).find(el=>el.dataset.userRole===id);const role=select?.value||user.role||"student";
@@ -185,7 +253,7 @@ async function rejectManagedUser(id){
  if(!confirm(`Reject the registration for ${user.email||user.display_name||id}?`))return;
  try{const {data,error}=await supabase.from("profiles").update({status:"rejected",mac_talk_id:null}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check the admin UPDATE policy.");showNotice("Registration rejected. No Mac&Talk ID was assigned.");await loadManagedUsers();}catch(error){console.error("Account rejection failed:",error);showNotice("Could not reject account: "+error.message,"error");}
 }
-async function toggleManagedUserBlock(id){if(id===currentAdminId)return showNotice("You cannot block your own account here.","error");const user=managedUsers.find(u=>u.id===id);if(!user)return;const nextBlocked=!user.is_blocked,label=user.email||user.display_name||id;if(!confirm(`${nextBlocked?"Block":"Unblock"} ${label} in the application?`))return;try{const {data,error}=await supabase.from("profiles").update({is_blocked:nextBlocked}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check that the profile exists and the admin UPDATE policy is installed.");showNotice(nextBlocked?"Profile marked as blocked.":"Profile unblocked.");await loadManagedUsers();}catch(error){console.error("Block update failed:",error);showNotice("Could not change block status: "+error.message,"error");}}
+async function toggleManagedUserBlock(id){const user=managedUsers.find(u=>u.id===id);if(!user)return;if(isFirstAdmin(user))return showNotice("Protected founder admin: this account cannot be blocked.","error");if(id===currentAdminId)return showNotice("You cannot block your own account here.","error");const nextBlocked=!user.is_blocked,label=user.email||user.display_name||id;if(!confirm(`${nextBlocked?"Block":"Unblock"} ${label} in the application?`))return;try{const {data,error}=await supabase.from("profiles").update({is_blocked:nextBlocked}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check that the profile exists and the admin UPDATE policy is installed.");showNotice(nextBlocked?"Profile marked as blocked.":"Profile unblocked.");await loadManagedUsers();}catch(error){console.error("Block update failed:",error);showNotice("Could not change block status: "+error.message,"error");}}
 async function deleteManagedUserProfile(id){
   if(id===currentAdminId)return showNotice("You cannot delete your own account here.","error");
   const user=managedUsers.find(u=>u.id===id);if(!user)return;
@@ -354,7 +422,7 @@ document.getElementById("managedUsersRows").addEventListener("click", event => {
   else if (action === "delete") void deleteManagedUserProfile(id);
 });
 $("signOutBtn").addEventListener("click",async()=>{const button=$("signOutBtn");button.disabled=true;try{const {error}=await supabase.auth.signOut();if(error)throw error;location.replace("login.html");}catch(error){showNotice("Could not sign out: "+error.message,"error");button.disabled=false;}});
-async function initialize(){showGate("Opening Admin Control Center","Checking your Mac&Talk account…",false,true);try{const {data,error}=await supabase.auth.getSession();if(error)throw error;const user=data.session?.user;if(!user){showGate("Sign in required","Please sign in, then open the admin page.",true,false);return;}const role=await getRole(user);if(role!=="admin"){showGate("Access denied",`Your account role is "${role}", not "admin".`,false,false);return;}currentAdminId=user.id;
+async function initialize(){showGate("Opening Admin Control Center","Checking your Mac&Talk account…",false,true);try{const {data,error}=await supabase.auth.getSession();if(error)throw error;const user=data.session?.user;if(!user){showGate("Sign in required","Please sign in, then open the admin page.",true,false);return;}const role=await getRole(user);if(role!=="admin"){showGate("Access denied",`Your account role is "${role}", not "admin".`,false,false);return;}currentAdminId=user.id;currentAdminEmail=user.email||"";
   supabase.channel("admin-managed-users-live")
     .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>{
       if(!$("page-users").classList.contains("active"))return;
