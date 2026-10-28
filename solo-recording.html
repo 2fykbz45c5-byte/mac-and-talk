@@ -3602,7 +3602,7 @@ async function loadMacTalkMemberId(user) {
     </script>
 
 
-<script type="module">/* Shared session notification behavior */
+<script type="module">/* Shared Mac&Talk notifications: live sessions + creator/admin messages */
 import { createClient as createNotificationClient } from "https://esm.sh/@supabase/supabase-js@2";
 const notifyClient = window.supabaseClient || createNotificationClient(
   "https://gprdmwjqgyrvqrgjkycc.supabase.co",
@@ -3610,41 +3610,59 @@ const notifyClient = window.supabaseClient || createNotificationClient(
 );
 const $n = id => document.getElementById(id);
 const seenKey = "mactalk_seen_sessions_v1";
-let loadedOnce = false, currentSessions = [];
+let loadedOnce = false, currentSessions = [], creatorNotifications = [];
 const getSeen = () => { try { return new Set(JSON.parse(localStorage.getItem(seenKey)||"[]")); } catch { return new Set(); } };
 const setSeen = s => { try { localStorage.setItem(seenKey, JSON.stringify([...s].slice(-300))); } catch {} };
 const dateLabel = value => { const d = new Date(value); return Number.isNaN(d.getTime()) ? "Recently added" : new Intl.DateTimeFormat(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d); };
 function renderNoticeSessions(list) {
   const seen=getSeen();
   if(!loadedOnce){ if(!seen.size){list.filter(s=>!s._personalInvite).forEach(s=>seen.add(String(s.id)));setSeen(seen);} loadedOnce=true; }
-  const fresh=list.filter(s=>!seen.has(String(s.id)));
-  $n("notificationBadge").textContent=fresh.length>99?"99+":String(fresh.length);
-  $n("notificationBadge").hidden=!fresh.length;
-  $n("notificationCount").textContent=`${list.length} session${list.length===1?"":"s"}`;
+  const unreadCreator=creatorNotifications.filter(n=>!n.is_read);
+  const freshSessions=list.filter(s=>!seen.has(String(s.id)));
+  const freshCount=freshSessions.length+unreadCreator.length;
+  $n("notificationBadge").textContent=freshCount>99?"99+":String(freshCount);
+  $n("notificationBadge").hidden=!freshCount;
+  $n("notificationCount").textContent=`${list.length+creatorNotifications.length} notification${list.length+creatorNotifications.length===1?"":"s"}`;
   const container=$n("notificationList"); container.replaceChildren();
-  if(!list.length){const empty=document.createElement("div");empty.className="notification-empty";empty.innerHTML="<span>🎙️</span><p>No approved sessions yet. Check back soon!</p>";container.append(empty);return;}
-  const sorted=[...list].sort((a,b)=>Number(!seen.has(String(b.id)))-Number(!seen.has(String(a.id))) || (a.status==="live"?-1:0)-(b.status==="live"?-1:0));
-  sorted.slice(0,12).forEach(s=>{
-    const item=document.createElement("div");item.className="notification-item";item.tabIndex=0;item.setAttribute("role","button");
-    const icon=document.createElement("div");icon.className="notification-item-icon"+(s.status==="live"?" is-live":"");icon.textContent=s.emoji||"🎙️";
+  if(!list.length&&!creatorNotifications.length){const empty=document.createElement("div");empty.className="notification-empty";empty.innerHTML="<span>🎙️</span><p>No new notifications yet. Check back soon!</p>";container.append(empty);return;}
+  const entries=[
+    ...list.map(s=>({_kind:"session",_sort:s.created_at||s.scheduled_at||"",_unread:!seen.has(String(s.id)),data:s})),
+    ...creatorNotifications.map(n=>({_kind:"creator",_sort:n.created_at||"",_unread:!n.is_read,data:n}))
+  ].sort((a,b)=>Number(b._unread)-Number(a._unread)||new Date(b._sort||0)-new Date(a._sort||0));
+  entries.slice(0,15).forEach(entry=>{
+    const isCreator=entry._kind==="creator", s=entry.data;
+    const item=document.createElement("div");item.className="notification-item"+(entry._unread?" is-unread":"");item.tabIndex=0;item.setAttribute("role","button");
+    const icon=document.createElement("div");icon.className="notification-item-icon"+(!isCreator&&s.status==="live"?" is-live":"");icon.textContent=isCreator?"📩":(s.emoji||"🎙️");
     const content=document.createElement("div");content.className="notification-item-content";
-    const h=document.createElement("h4");h.textContent=(!seen.has(String(s.id))?"● ":"")+(s.title||"New session");
-    const p=document.createElement("p");p.textContent=(s._personalInvite?"📨 You're invited · ":(s.status==="live"?"🔴 Live now · ":"📅 Scheduled · "))+(s.host||s.host_name||"Mac&Talk Community")+(s.scheduled_at?" · "+dateLabel(s.scheduled_at):"");
+    const h=document.createElement("h4");h.textContent=(entry._unread?"● ":"")+(isCreator?(s.title||"Podcast update"):(s.title||"New session"));
+    const p=document.createElement("p");
+    p.textContent=isCreator?(s.message||"You have an update from the Mac&Talk team."):((s._personalInvite?"📨 You're invited · ":(s.status==="live"?"🔴 Live now · ":"📅 Scheduled · "))+(s.host||s.host_name||"Mac&Talk Community")+(s.scheduled_at?" · "+dateLabel(s.scheduled_at):""));
     const t=document.createElement("span");t.className="notification-item-time";t.textContent=s.created_at?dateLabel(s.created_at):"Recently added";
     content.append(h,p,t);item.append(icon,content);
-    const open=()=>{const updated=getSeen();updated.add(String(s.id));setSeen(updated);renderNoticeSessions(currentSessions);$n("notificationPanel").hidden=true;$n("notificationButton").setAttribute("aria-expanded","false");if(s.status==="live"){window.location.href="sessions.html?session="+encodeURIComponent(s.id);}else if(s._personalInvite){window.location.href="studio.html#assignedSessions";}else{window.location.href="sessions.html";}};
+    const open=async()=>{
+      if(isCreator){
+        try { const {error}=await notifyClient.from("creator_notifications").update({is_read:true}).eq("id",s.id); if(error) throw error; s.is_read=true; }
+        catch(err){ console.warn("Could not mark creator notification read:",err); }
+        renderNoticeSessions(currentSessions);
+        $n("notificationPanel").hidden=true;$n("notificationButton").setAttribute("aria-expanded","false");
+        if(s.related_episode_id){window.location.href="solo-recording.html#myEpisodes";}
+        else if(s.related_episode_id===null){window.location.href="studio.html";}
+        return;
+      }
+      const updated=getSeen();updated.add(String(s.id));setSeen(updated);renderNoticeSessions(currentSessions);$n("notificationPanel").hidden=true;$n("notificationButton").setAttribute("aria-expanded","false");
+      if(s.status==="live"){window.location.href="sessions.html?session="+encodeURIComponent(s.id);}else if(s._personalInvite){window.location.href="studio.html#assignedSessions";}else{window.location.href="sessions.html";}
+    };
     item.addEventListener("click",open);item.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});container.append(item);
   });
 }
 async function refreshNoticeSessions(){
-  const {data,error}=await notifyClient.from("live_sessions").select("id,title,description,status,host,host_name,emoji,created_at,approved").eq("approved",true).in("status",["live","scheduled"]).order("created_at",{ascending:false}).limit(50);
-  if(error){console.warn("Session notifications:",error);return;}
-  currentSessions=data||[];
-  // Personal presenter invitations appear in the same notification panel as public sessions.
+  const {data,error}=await notifyClient.from("live_sessions").select("id,title,description,status,host,host_name,emoji,created_at,scheduled_at,approved").eq("approved",true).in("status",["live","scheduled"]).order("created_at",{ascending:false}).limit(50);
+  if(error) console.warn("Session notifications:",error);
+  currentSessions=error?[]:(data||[]);
   try {
     const {data:authData}=await notifyClient.auth.getUser(); const user=authData?.user;
     if(user){
-      const {data:invites, error:inviteError}=await notifyClient.from("live_session_invitees").select("session_id,user_id").eq("user_id",user.id);
+      const {data:invites,error:inviteError}=await notifyClient.from("live_session_invitees").select("session_id,user_id").eq("user_id",user.id);
       if(!inviteError && invites?.length){
         const ids=invites.map(x=>x.session_id).filter(Boolean);
         if(ids.length){const {data:inviteSessions}=await notifyClient.from("live_sessions").select("id,title,description,status,host,host_name,emoji,created_at,scheduled_at,approved").in("id",ids).in("status",["scheduled","live"]);
@@ -3652,8 +3670,11 @@ async function refreshNoticeSessions(){
           currentSessions=[...invited,...currentSessions].filter((x,i,a)=>a.findIndex(y=>String(y.id)===String(x.id))===i);
         }
       }
-    }
-  } catch(inviteErr){console.warn("Could not load personal live invitations:",inviteErr);}
+      const {data:notices,error:noticeError}=await notifyClient.from("creator_notifications").select("id,title,message,is_read,created_at,related_episode_id").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50);
+      if(noticeError){ if(noticeError.code!=="42P01") console.warn("Creator notifications (check table/RLS):",noticeError); creatorNotifications=[]; }
+      else creatorNotifications=notices||[];
+    } else creatorNotifications=[];
+  } catch(err){console.warn("Could not load personalized notifications:",err);creatorNotifications=[];}
   renderNoticeSessions(currentSessions);
 }
 const button=$n("notificationButton"),panel=$n("notificationPanel");
@@ -3983,10 +4004,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   }
   workflow.scrollIntoView({behavior:'smooth',block:'start'});
  }
- options.forEach(b=>b.addEventListener('click',()=>{const files={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};window.location.href=files[b.dataset.mode]||'creator-studio.html';}));
- document.getElementById('continueModeBtn').addEventListener('click',()=>{const files={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};window.location.href=files[selected]||'creator-studio.html';});
+ options.forEach(b=>b.addEventListener('click',()=>{const files={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};window.location.href=files[b.dataset.mode]||'studio.html';}));
+ document.getElementById('continueModeBtn').addEventListener('click',()=>{const files={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};window.location.href=files[selected]||'studio.html';});
  document.getElementById('changeModeBtn').addEventListener('click',()=>{
-  if(document.body.dataset.creatorMode){window.location.href='creator-studio.html';return;}
+  if(document.body.dataset.creatorMode){window.location.href='studio.html';return;}
   workflow.hidden=true;picker.hidden=false;
   document.getElementById('pageTitle').textContent='Creator Studio';
   const url=new URL(window.location.href);url.searchParams.delete('mode');

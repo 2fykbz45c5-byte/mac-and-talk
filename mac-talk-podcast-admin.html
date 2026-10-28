@@ -5,97 +5,114 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mac&Talk · Podcast Review</title>
 <style>
-:root{--navy:#10243e;--navy2:#183754;--gold:#ffc629;--bg:#f4f6fa;--muted:#718096;--line:#e4e9f1;--white:#fff;--green:#16835d;--red:#c43b4b;--blue:#315be8}
+
+:root{--navy:#10243e;--navy2:#183754;--gold:#ffc629;--bg:#f2f5fa;--muted:#718096;--line:#e2e8f0;--white:#fff;--green:#16835d;--red:#c43b4b;--blue:#315be8;--shadow:0 8px 28px rgba(16,36,62,.055)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--navy);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:750}
-button:disabled{opacity:.55;cursor:not-allowed}
-.shell{min-height:100vh;display:grid;grid-template-columns:245px 1fr}
-.side{background:var(--navy);color:white;padding:26px 18px;display:flex;flex-direction:column;gap:28px}
-.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:20px}
-.logo{background:var(--gold);color:var(--navy);padding:9px 8px;border-radius:10px;font-size:13px}
-.side small{color:#afbed0}
-.navtitle{font-size:10px;letter-spacing:1.5px;color:#91a4ba;font-weight:900;margin-bottom:-15px}
-.navbtn{display:flex;width:100%;text-align:left;background:transparent;color:#e7edf5;margin:4px 0;gap:10px;align-items:center}
-.navbtn.active,.navbtn:hover{background:#ffffff17;color:var(--gold)}
-.sidefoot{margin-top:auto;color:#aebdd0;font-size:12px}
-.main{min-width:0;padding:30px clamp(16px,3vw,42px) 50px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:25px}
-.eyebrow{color:#667b96;text-transform:uppercase;letter-spacing:1.8px;font-size:10px;font-weight:900}
-.top h1{font-size:clamp(25px,3vw,34px);letter-spacing:-1px;margin:4px 0}
-.top p{margin:0;color:var(--muted)}
-.top-actions{display:flex;gap:9px;align-items:center}
-.btn-dark{background:var(--navy);color:#fff}
-.btn-gold{background:var(--gold);color:var(--navy)}
-.btn-soft{background:#edf1f7;color:var(--navy)}
-.btn-green{background:#e2f5ec;color:#146747}
-.btn-red{background:#ffeaec;color:#a52334}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
-.stat,.panel,.item{background:white;border:1px solid var(--line);border-radius:17px;box-shadow:0 4px 18px #142b4506}
-.stat{padding:18px}
-.stat span{color:var(--muted);font-size:12px;font-weight:700}
-.stat strong{display:block;font-size:28px;letter-spacing:-.8px;margin-top:4px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.tab{background:#e9edf4;color:#53647b}
-.tab.active{background:var(--navy);color:white}
-.toolbar{display:flex;gap:10px;margin-bottom:14px}
-.toolbar input,.toolbar select{min-width:0;background:white;border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--navy)}
-.toolbar input{flex:1}
-.queue{display:grid;gap:13px}
-.item{padding:19px}
-.itemhead{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
-.item h3{margin:0;font-size:18px;overflow-wrap:anywhere}
-.meta{color:var(--muted);font-size:12px;margin-top:5px}
-.pill{display:inline-flex;align-items:center;border-radius:99px;padding:5px 9px;background:#f0f3f8;color:#56657a;font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:900;white-space:nowrap}
-.pill.pending,.pill.submitted{background:#fff3cf;color:#876100}
-.pill.approved,.pill.resolved,.pill.responded{background:#e2f5ec;color:#146747}
-.pill.rejected{background:#ffeaec;color:#a52334}
-.pill.under_review{background:#e7edff;color:#3151b8}
-.desc{color:#53647b;white-space:pre-wrap;overflow-wrap:anywhere;margin:13px 0}
-.media{display:flex;gap:15px;align-items:flex-start;flex-wrap:wrap;margin:12px 0}
-.cover{width:115px;height:115px;object-fit:cover;border-radius:12px;background:#edf1f7}
-.media audio{width:min(100%,520px);display:block;margin:4px 0}
-.field{display:grid;gap:6px;margin-top:13px}
-.field label{font-size:11px;font-weight:850;color:#617189}
-.field textarea,.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--navy)}
-.field textarea{min-height:75px;resize:vertical}
-.itemactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
-.empty,.notice{padding:24px;text-align:center;border:1px dashed #ccd5e2;border-radius:14px;background:white;color:var(--muted)}
-.notice{border-style:solid;text-align:left;margin-bottom:15px;padding:12px 14px}
-.notice.error{background:#fff0f1;color:#a52334;border-color:#ffd1d7}
-.notice.ok{background:#e9f8f0;color:#146747;border-color:#c7ead7}
-.login{max-width:420px;margin:8vh auto;background:white;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 15px 50px #10243e12}
-.login h1{margin:0 0 6px}
-.login p{color:var(--muted);margin:0 0 20px}
-.login label{display:block;font-weight:800;font-size:12px;margin:12px 0 6px}
-.login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px}
-.login button{width:100%;margin-top:15px}
-.hidden{display:none!important}
-.footnote{font-size:11px;color:var(--muted);margin-top:18px}
-@media(max-width:800px){
- .shell{grid-template-columns:1fr}
- .side{padding:14px 16px;gap:12px}
- .side .navtitle,.sidefoot{display:none}
- .side nav{display:flex;gap:6px;overflow:auto}
- .navbtn{width:auto;white-space:nowrap;margin:0}
- .main{padding:20px 14px 36px}
- .top{align-items:flex-start;flex-direction:column}
- .stats{gap:8px}
- .stat{padding:13px}
- .stat strong{font-size:23px}
- .toolbar{flex-wrap:wrap}
- .toolbar input{flex-basis:100%}
- .itemhead{flex-direction:column;gap:8px}
-}
+body{margin:0;background:var(--bg);color:var(--navy);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:800;transition:background .16s,transform .16s,box-shadow .16s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.shell{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
+.side{position:sticky;top:0;height:100vh;background:var(--navy);color:#fff;padding:25px 16px 18px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:950;font-size:19px;letter-spacing:-.5px;padding:0 5px}
+.logo{display:grid;place-items:center;background:var(--gold);color:var(--navy);width:39px;height:39px;border-radius:12px;font-size:12px;box-shadow:0 5px 14px #ffc62926}
+.navtitle{font-size:10px;letter-spacing:1.5px;color:#aebdd0;font-weight:900;margin:0 9px -16px}
+.side nav{display:grid;gap:7px}
+.navbtn{display:flex;width:100%;text-align:left;background:transparent;color:#dce5ef;margin:0;gap:11px;align-items:center;justify-content:flex-start;border-radius:11px;padding:13px 12px;font-size:13px}
+.navbtn.active,.navbtn:hover{background:#ffffff15;color:var(--gold)}
+.navbtn .navbadge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:11px;font-weight:950;border-radius:99px;min-width:24px;text-align:center;padding:2px 7px}
+.sidefoot{margin-top:auto;color:#aebdd0;font-size:12px;line-height:1.7;padding:14px 10px;border-top:1px solid #ffffff1c}
+#signOutBtn{border:1px solid #ffffff25;margin-top:0}
+.main{min-width:0;padding:30px clamp(16px,3vw,42px) 50px;max-width:1650px;width:100%;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:27px}
+.eyebrow{color:#667b96;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:950}
+.top h1{font-size:clamp(27px,3vw,36px);line-height:1.2;letter-spacing:-1.1px;margin:7px 0}
+.top p{margin:0;color:var(--muted);font-size:14px}
+.top-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.btn-dark{background:var(--navy);color:#fff;box-shadow:0 5px 14px #10243e1a}.btn-dark:hover{background:var(--navy2)}
+.btn-gold{background:var(--gold);color:var(--navy);box-shadow:0 5px 14px #ffc62924}.btn-gold:hover{background:#ffd34d}
+.btn-soft{background:#edf1f7;color:var(--navy)}.btn-green{background:#e2f5ec;color:#146747}.btn-red{background:#ffeaec;color:#a52334}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:25px}
+.stat{position:relative;overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:15px;padding:19px 21px;box-shadow:var(--shadow)}
+.stat:after{content:"";position:absolute;right:-25px;bottom:-38px;width:110px;height:110px;border-radius:50%;background:#ffc62917}
+.stat span{color:var(--muted);font-size:12px;font-weight:800;display:block;max-width:190px}
+.stat strong{position:relative;z-index:1;display:block;font-size:32px;line-height:1.2;letter-spacing:-1px;margin-top:9px}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.tab{background:#e7ecf3;color:#53647b;border:1px solid transparent;padding:9px 15px}.tab.active{background:var(--navy);color:white;box-shadow:0 4px 12px #10243e1c}
+.toolbar{display:flex;gap:10px;margin-bottom:19px;padding:11px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.toolbar input,.toolbar select{min-width:0;background:#f8fafd;border:1px solid #e3e9f1;border-radius:9px;padding:11px 12px;color:var(--navy);outline:none}
+.toolbar input:focus,.toolbar select:focus,.field textarea:focus,.field input:focus,.field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffc6292b}
+.toolbar input{flex:1}.toolbar select{max-width:200px}
+.queue{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:stretch}
+.item{position:relative;overflow:hidden;background:#fff;border:1px solid #e0e6ef;border-radius:17px;padding:0;box-shadow:var(--shadow);transition:box-shadow .18s,border-color .18s}
+/* Compact, clickable overview cards */
+.queue .summary-card{min-height:220px;display:flex;flex-direction:column;cursor:pointer;padding:17px;gap:10px;text-align:left;color:var(--navy);width:100%;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);white-space:normal}
+.summary-card:hover{border-color:var(--gold);box-shadow:0 12px 28px #10243e12;transform:translateY(-2px)}
+.summary-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.summary-icon{width:42px;height:42px;display:grid;place-items:center;flex-shrink:0;border-radius:12px;background:#fff3cf;font-size:21px}
+.summary-card h3{font-size:16px;line-height:1.35;margin:2px 0;overflow-wrap:anywhere}
+.summary-desc{font-size:12px;line-height:1.55;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.summary-meta{font-size:11px;color:var(--muted);margin-top:auto;padding-top:8px;border-top:1px solid #edf1f6}
+.summary-open{font-size:12px;font-weight:900;color:#315be8;margin-top:2px}
+.modal-overlay{position:fixed;inset:0;z-index:9999;background:rgba(16,36,62,.58);display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(5px)}
+.modal-overlay.open{display:flex}
+.modal-panel{width:min(900px,100%);max-height:92vh;overflow:auto;background:var(--bg);border-radius:20px;box-shadow:0 25px 80px #07172a55}
+.modal-bar{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid var(--line);padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.modal-bar strong{font-size:15px}.modal-close{background:#edf1f7;color:var(--navy);font-size:20px;padding:5px 12px}
+#modalContent{padding:16px}.modal-panel .item{box-shadow:none;border-radius:15px}.modal-panel .itemhead{border-radius:15px 15px 0 0}
+@media(max-width:1250px){.queue{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.queue{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.queue{grid-template-columns:1fr}.queue .summary-card{min-height:180px}.modal-overlay{padding:8px}.modal-panel{max-height:96vh;border-radius:14px}.modal-bar{padding:12px 14px}#modalContent{padding:8px}}
+.item:hover{border-color:#cbd7e6;box-shadow:0 13px 32px #10243e0c}
+.itemhead{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:19px 21px 16px;border-bottom:1px solid #edf1f6;background:#fff}
+.item h3{margin:5px 0 0;font-size:clamp(18px,2vw,22px);line-height:1.3;letter-spacing:-.4px;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:12px;margin-top:7px;overflow-wrap:anywhere}
+.pill{display:inline-flex;align-items:center;border-radius:8px;padding:6px 9px;background:#f0f3f8;color:#56657a;font-size:10px;text-transform:uppercase;letter-spacing:.55px;font-weight:950;white-space:nowrap}
+.pill.pending,.pill.submitted{background:#fff3cf;color:#876100}.pill.approved,.pill.resolved,.pill.responded{background:#e2f5ec;color:#146747}.pill.rejected{background:#ffeaec;color:#a52334}.pill.under_review{background:#e7edff;color:#3151b8}
+.episode-body{padding:20px 21px 22px}
+.episode-details{display:grid;grid-template-columns:132px minmax(0,1fr);gap:19px;align-items:start}
+.cover{width:132px;height:132px;object-fit:cover;border-radius:13px;background:#edf1f7;box-shadow:0 4px 15px #10243e12}
+.cover-placeholder{width:132px;height:132px;border-radius:13px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-size:37px}
+.desc{color:#53647b;white-space:pre-wrap;overflow-wrap:anywhere;margin:9px 0 12px;line-height:1.7}
+.media{display:flex;gap:15px;align-items:flex-start;flex-wrap:wrap;margin:9px 0}
+.media audio{width:min(100%,680px);display:block;margin:4px 0;accent-color:var(--gold)}
+.audio-label{font-size:10px;font-weight:950;color:#667b96;text-transform:uppercase;letter-spacing:1.2px;margin:20px 0 7px}
+.field{display:grid;gap:7px;margin-top:15px}
+.field label,.field>span{font-size:11px;font-weight:900;color:#617189}
+.field textarea,.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--navy);outline:none}
+.field textarea{min-height:82px;resize:vertical}
+.review-box{margin-top:18px;padding:14px 15px;border-radius:12px;background:#f7f9fc;border:1px solid #e8edf4}
+.review-title{font-size:10px;font-weight:950;letter-spacing:1px;text-transform:uppercase;color:#667b96}
+.history-list{display:grid;gap:8px;margin-top:9px}
+.history-entry{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:#53647b;padding-top:8px;border-top:1px solid #e7edf4}
+.itemactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px;padding-top:15px;border-top:1px solid #edf1f6}
+.itemactions button{padding:11px 15px}.itemactions .btn-green{background:var(--green);color:white}.itemactions .btn-red{background:#ffeaec;color:#a52334}
+.item > .desc{padding:0 21px;margin:19px 0}
+.empty,.notice{padding:27px;text-align:center;border:1px dashed #ccd5e2;border-radius:14px;background:white;color:var(--muted)}
+.empty{padding:42px 20px}
+.notice{border-style:solid;text-align:left;margin-bottom:15px;padding:13px 15px}.notice.error{background:#fff0f1;color:#a52334;border-color:#ffd1d7}.notice.ok{background:#e9f8f0;color:#146747;border-color:#c7ead7}
+.login{max-width:430px;margin:8vh auto;background:white;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 18px 60px #10243e14}
+.login h1{margin:24px 0 6px;letter-spacing:-.7px}.login p{color:var(--muted);margin:0 0 20px}.login label{display:block;font-weight:850;font-size:12px;margin:12px 0 6px}.login input{width:100%;border:1px solid var(--line);border-radius:10px;padding:13px}.login button{width:100%;margin-top:15px}
+.hidden{display:none!important}.footnote{font-size:11px;color:var(--muted);margin-top:18px}.history-empty{font-size:12px;color:var(--muted);margin-top:8px}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto;padding:15px 16px;gap:14px}.side .navtitle,.sidefoot{display:none}.side nav{display:flex;gap:6px;overflow:auto}.navbtn{width:auto;white-space:nowrap;flex-shrink:0}.main{padding:22px 14px 35px}.top{align-items:flex-start;flex-direction:column}.stats{gap:8px}.stat{padding:14px}.stat strong{font-size:25px}.toolbar{flex-wrap:wrap}.toolbar input{flex-basis:100%}.toolbar select{flex:1;max-width:none}.itemhead{padding:16px;flex-direction:row;gap:8px}.episode-body{padding:16px}.episode-details{grid-template-columns:100px minmax(0,1fr);gap:13px}.cover,.cover-placeholder{width:100px;height:100px}.itemactions button{flex:1 1 auto}}
+@media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}.episode-details{grid-template-columns:1fr}.cover,.cover-placeholder{width:112px;height:112px}.top-actions{width:100%;justify-content:space-between}.itemhead{flex-direction:column}.itemhead .pill{align-self:flex-start}.itemactions{display:grid;grid-template-columns:1fr}.itemactions button{width:100%}.login{margin:5vh 14px;padding:24px}}
+
+
+/* Keep all support controls comfortably inside the modal card. */
+.support-detail-body{min-width:0;overflow:hidden;padding:20px 22px 22px}
+.support-detail-body .desc{margin:0 0 18px;padding:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.support-detail-body .field{width:100%;min-width:0;margin-top:16px}
+.support-detail-body .field textarea,.support-detail-body .field select{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.support-detail-body .itemactions{margin-top:18px;padding-top:16px}
+.modal-panel .item{width:100%;min-width:0;overflow:hidden}
+@media(max-width:520px){.support-detail-body{padding:15px}.support-detail-body .itemactions button{width:100%}}
+
 </style>
 </head>
 <body>
 
 <section id="loginScreen" class="login">
   <div class="brand"><span class="logo">M&T</span><span>Mac&Talk Admin</span></div>
-  <h1 style="margin-top:24px">Podcast review desk</h1>
-  <p>Enter the page password to continue.</p>
+  <h1 style="margin-top:24px">Podcast review workspace</h1>
+  <p>Sign in to your admin workspace to continue.</p>
   <form id="loginForm">
     <label for="password">Page password</label>
     <input id="password" type="password" autocomplete="current-password" required autofocus>
@@ -110,10 +127,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div class="brand"><span class="logo">M&T</span><span>Mac&Talk</span></div>
     <div class="navtitle">ADMIN WORKSPACE</div>
     <nav>
-      <button class="navbtn active" data-view="submissions">🎙️ Podcast submissions</button>
-      <button class="navbtn" data-view="support">💬 Support requests</button>
+      <button class="navbtn active" data-view="submitted">📥 Review queue <span id="submittedBadge" class="navbadge">0</span></button>
+      <button class="navbtn" data-view="submissions">🎧 All submissions</button>
+      <button class="navbtn" data-view="support">💬 Member support</button>
     </nav>
-    <div class="sidefoot">Review creator submissions, manage approval status, and reply to support requests.</div>
+    <div class="sidefoot">Your workspace for creator reviews and member support.</div>
     <button id="signOutBtn" class="navbtn">🔒 Lock page</button>
   </aside>
 
@@ -122,7 +140,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
       <div>
         <div class="eyebrow">Mac&Talk · Creator support</div>
         <h1 id="pageHeading">Podcast submissions</h1>
-        <p id="pageSub">Review audio before it becomes public.</p>
+        <p id="pageSub">A clear workspace to review creator audio, publish episodes, and help members.</p>
       </div>
       <div class="top-actions">
         <span id="adminLabel" class="pill">Admin</span>
@@ -164,8 +182,15 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <section id="queue" class="queue">
       <div class="empty">Loading admin queue…</div>
     </section>
-    <p class="footnote">Approval publishes a submission only if your public Podcasts page uses the <code>published = true</code> field. Test the public page after approving the first item.</p>
+    <p class="footnote">New unpublished submissions appear in <strong>Submitted</strong> until you approve or reject them. Approval publishes a submission only if your public Podcasts page uses the <code>published = true</code> field. Test the public page after approving the first item.</p>
   </main>
+</div>
+
+<div id="detailModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Manage item">
+  <div class="modal-panel">
+    <div class="modal-bar"><strong id="modalTitle">Manage details</strong><button type="button" class="modal-close" id="closeModalBtn" aria-label="Close">×</button></div>
+    <div id="modalContent"></div>
+  </div>
 </div>
 
 <script type="module">
@@ -176,7 +201,8 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const $ = id => document.getElementById(id);
-let user = null, view = "submissions", filter = "all", episodes = [], requests = [];
+let user = null, view = "submitted", filter = "pending", episodes = [], requests = [], histories = [];
+const macTalkIds = new Map();
 
 const safe = v => String(v ?? "");
 
@@ -269,7 +295,7 @@ async function loadData() {
   hideNotice();
   $("queue").innerHTML = '<div class="empty">Loading requests…</div>';
 
-  const [ep, sp] = await Promise.all([
+  const [ep, sp, hp] = await Promise.all([
     supabase
       .from("podcast_episodes")
       .select("id,host_user_id,host_name,title,description,audio_path,audio_url,cover_image_url,episode_type,published,approval_status,admin_note,submitted_at,created_at")
@@ -280,7 +306,13 @@ async function loadData() {
       .from("podcast_support_requests")
       .select("id,user_id,request_type,subject,message,status,admin_response,created_at,related_session_id,related_session_title")
       .order("created_at", {ascending:false})
-      .limit(200)
+      .limit(200),
+
+    supabase
+      .from("podcast_submission_history")
+      .select("id,episode_id,action,admin_user_id,admin_email,admin_note,created_at")
+      .order("created_at", {ascending:false})
+      .limit(500)
   ]);
 
   if (ep.error) {
@@ -290,6 +322,11 @@ async function loadData() {
     episodes = ep.data || [];
   }
 
+  if (hp.error) {
+    histories = [];
+    if (!ep.error && !sp.error) notice("History is not enabled yet. Run the companion SQL setup file to enable review history and creator notifications.", "error");
+  } else { histories = hp.data || []; }
+
   if (sp.error) {
     requests = [];
     notice("Could not load support requests: " + sp.error.message + " — check the admin SELECT policy on podcast_support_requests.", "error");
@@ -297,9 +334,30 @@ async function loadData() {
     requests = sp.data || [];
   }
 
-  $("pendingCount").textContent = episodes.filter(x =>
+  // Resolve Supabase UUIDs to the public Mac&Talk ID for display only.
+  // The underlying user_id / host_user_id values remain unchanged.
+  macTalkIds.clear();
+  const profileIds = [...new Set([
+    ...episodes.map(x => x.host_user_id),
+    ...requests.map(x => x.user_id)
+  ].filter(Boolean))];
+  if (profileIds.length) {
+    const { data: profileRows, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, mac_talk_id")
+      .in("id", profileIds);
+    if (!profileError) {
+      (profileRows || []).forEach(profile => {
+        if (profile.id && profile.mac_talk_id) macTalkIds.set(profile.id, profile.mac_talk_id);
+      });
+    }
+  }
+
+  const submittedTotal = episodes.filter(x =>
     !x.published && !["approved","rejected"].includes(safe(x.approval_status).toLowerCase())
   ).length;
+  $("pendingCount").textContent = submittedTotal;
+  $("submittedBadge").textContent = submittedTotal > 99 ? "99+" : submittedTotal;
 
   $("supportCount").textContent = requests.filter(x =>
     ["submitted","under_review"].includes(safe(x.status).toLowerCase())
@@ -315,14 +373,17 @@ async function loadData() {
 function filtered(items) {
   const q = $("searchBox").value.trim().toLowerCase();
 
-  if (view === "submissions") {
+  if (view === "submissions" || view === "submitted") {
     return items.filter(x => {
       const s = safe(x.approval_status || "pending").toLowerCase();
 
-      const ok = filter === "all" ||
-        (filter === "pending" && !x.published && !["approved","rejected"].includes(s)) ||
-        (filter === "approved" && (s === "approved" || x.published)) ||
-        (filter === "rejected" && s === "rejected");
+      const isSubmitted = !x.published && !["approved","rejected"].includes(s);
+      const ok = view === "submitted"
+        ? isSubmitted
+        : filter === "all" ||
+          (filter === "pending" && isSubmitted) ||
+          (filter === "approved" && (s === "approved" || x.published)) ||
+          (filter === "rejected" && s === "rejected");
 
       const type = $("typeFilter").value;
 
@@ -347,7 +408,7 @@ function render() {
   const queue = $("queue");
   queue.replaceChildren();
 
-  const items = filtered(view === "submissions" ? episodes : requests);
+  const items = filtered(view === "support" ? requests : episodes);
 
   if (!items.length) {
     queue.innerHTML = '<div class="empty">Nothing to show for these filters.</div>';
@@ -355,108 +416,101 @@ function render() {
   }
 
   for (const row of items) {
-    queue.append(view === "submissions" ? episodeCard(row) : requestCard(row));
+    queue.append(view === "support" ? requestCard(row) : episodeCard(row));
   }
 }
 
+function openDetailModal(title, content) {
+  $("modalTitle").textContent = title;
+  const target = $("modalContent");
+  target.replaceChildren(content);
+  $("detailModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeDetailModal() {
+  $("detailModal").classList.remove("open");
+  $("modalContent").replaceChildren();
+  document.body.style.overflow = "";
+}
+$("closeModalBtn").addEventListener("click", closeDetailModal);
+$("detailModal").addEventListener("click", e => { if (e.target === $("detailModal")) closeDetailModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetailModal(); });
+
 function episodeCard(row) {
+  const card = document.createElement("button"); card.type = "button"; card.className = "summary-card";
+  const state = row.published ? "approved" : (row.approval_status || "pending");
+  const kind = row.episode_type === "live_replay" ? "Prerecorded live" : "Podcast";
+  card.innerHTML = `<div class="summary-top"><span class="summary-icon">🎙️</span>${pill(state)}</div><div class="eyebrow">${esc(kind)}</div><h3>${esc(row.title || "Untitled submission")}</h3><div class="summary-desc">${esc(row.description || "No description provided.")}</div><div class="summary-meta">By ${esc(row.host_name || "Mac&Talk member")} · ${esc(date(row.submitted_at || row.created_at))}</div><div class="summary-open">Open details & manage →</div>`;
+  card.addEventListener("click", () => openDetailModal(row.title || "Podcast submission", episodeDetail(row)));
+  return card;
+}
+function requestCard(row) {
+  const card = document.createElement("button"); card.type = "button"; card.className = "summary-card";
+  card.innerHTML = `<div class="summary-top"><span class="summary-icon">💬</span>${pill(row.status || "submitted")}</div><div class="eyebrow">${esc(row.request_type === "priority_review" ? "Priority review" : "Technical support")}</div><h3>${esc(row.subject || "Podcast support request")}</h3><div class="summary-desc">${esc(row.message || "No message provided.")}</div><div class="summary-meta">${esc(row.related_session_title || "Member support")} · ${esc(date(row.created_at))}</div><div class="summary-open">Open details & manage →</div>`;
+  card.addEventListener("click", () => openDetailModal(row.subject || "Support request", requestDetail(row)));
+  return card;
+}
+
+function episodeDetail(row) {
   const card = document.createElement("article");
   card.className = "item";
-
   const kind = row.episode_type === "live_replay" ? "Prerecorded Live" : "Podcast";
   const state = row.published ? "approved" : (row.approval_status || "pending");
-
   const heading = document.createElement("div");
   heading.className = "itemhead";
-
   const left = document.createElement("div");
   left.innerHTML = `<div class="eyebrow">${esc(kind)} · Submitted ${esc(date(row.submitted_at || row.created_at))}</div>
     <h3>${esc(row.title || "Untitled submission")}</h3>
-    <div class="meta">Host: ${esc(row.host_name || "Mac&Talk member")} · User ID: ${esc(row.host_user_id || "—")}</div>`;
+    <div class="meta">Creator: ${esc(row.host_name || "Mac&Talk member")} · Mac&Talk ID: ${esc(macTalkIds.get(row.host_user_id) || "—")}</div>`;
+  const badge = document.createElement("div"); badge.innerHTML = pill(state);
+  heading.append(left, badge); card.append(heading);
 
-  const badge = document.createElement("div");
-  badge.innerHTML = pill(state);
-  heading.append(left, badge);
-  card.append(heading);
-
+  const body = document.createElement("div"); body.className = "episode-body";
+  const details = document.createElement("div"); details.className = "episode-details";
   if (row.cover_image_url) {
-    const img = document.createElement("img");
-    img.className = "cover";
-    img.alt = "Podcast cover";
-    img.src = row.cover_image_url;
+    const img = document.createElement("img"); img.className = "cover"; img.alt = "Podcast cover"; img.src = row.cover_image_url; img.loading = "lazy";
+    img.onerror = () => { img.replaceWith(makeCoverPlaceholder()); };
+    details.append(img);
+  } else details.append(makeCoverPlaceholder());
+  const detailText = document.createElement("div");
+  detailText.innerHTML = `<div class="eyebrow">Submission details</div><p class="desc">${esc(row.description || "No description provided by the creator.")}</p><div class="meta">Submitted: ${esc(date(row.submitted_at || row.created_at))}</div>`;
+  details.append(detailText); body.append(details);
 
-    const media = document.createElement("div");
-    media.className = "media";
-    media.append(img);
-    card.append(media);
+  const audioLabel = document.createElement("div"); audioLabel.className = "audio-label"; audioLabel.textContent = "Preview submission"; body.append(audioLabel);
+  const media = document.createElement("div"); media.className = "media";
+  const audio = document.createElement("audio"); audio.controls = true; audio.preload = "none";
+  if (row.audio_url) audio.src = row.audio_url;
+  else if (row.audio_path) {
+    supabase.storage.from("podcasts").createSignedUrl(row.audio_path, 3600).then(({data,error}) => {
+      if (!error && data?.signedUrl) audio.src = data.signedUrl;
+      else audio.title = "Audio could not be loaded. Check Storage SELECT permissions.";
+    });
+  } else { audio.disabled = true; audio.title = "No audio file attached"; }
+  media.append(audio); body.append(media);
+
+  const reviewBox = document.createElement("div"); reviewBox.className = "review-box";
+  reviewBox.innerHTML = '<div class="review-title">Review history</div>';
+  const entries = histories.filter(h => h.episode_id === row.id);
+  if (!entries.length) { const empty = document.createElement("div"); empty.className = "history-empty"; empty.textContent = "No approval or rejection recorded yet."; reviewBox.append(empty); }
+  else {
+    const list = document.createElement("div"); list.className = "history-list";
+    entries.forEach(h => { const e = document.createElement("div"); e.className = "history-entry"; e.innerHTML = `<span><strong>${esc(h.action)}</strong> by ${esc(h.admin_email || h.admin_user_id || "Admin")}${h.admin_note ? ` — ${esc(h.admin_note)}` : ""}</span><span>${esc(date(h.created_at))}</span>`; list.append(e); });
+    reviewBox.append(list);
   }
+  body.append(reviewBox);
 
-  if (row.description) {
-    const desc = document.createElement("p");
-    desc.className = "desc";
-    desc.textContent = row.description;
-    card.append(desc);
-  }
-
-  const media = document.createElement("div");
-  media.className = "media";
-
-  const audio = document.createElement("audio");
-  audio.controls = true;
-  audio.preload = "none";
-
-  if (row.audio_url) {
-    audio.src = row.audio_url;
-  } else if (row.audio_path) {
-    supabase.storage.from("podcasts").createSignedUrl(row.audio_path, 3600)
-      .then(({data,error}) => {
-        if (!error && data?.signedUrl) {
-          audio.src = data.signedUrl;
-        } else {
-          audio.title = "Audio could not be loaded. Check Storage SELECT permissions.";
-        }
-      });
-  } else {
-    audio.disabled = true;
-  }
-
-  media.append(audio);
-  card.append(media);
-
-  const note = document.createElement("textarea");
-  note.placeholder = "Optional note to creator (e.g. changes needed before approval)…";
-  note.value = row.admin_note || "";
-  note.className = "field";
-  note.style.width = "100%";
-  note.style.marginTop = "14px";
-  note.style.padding = "10px";
-  note.style.border = "1px solid var(--line)";
-  note.style.borderRadius = "10px";
-  note.style.minHeight = "65px";
-  card.append(note);
-
-  const actions = document.createElement("div");
-  actions.className = "itemactions";
-
-  const approve = document.createElement("button");
-  approve.className = "btn-green";
-  approve.textContent = "✓ Approve & publish";
-  approve.onclick = () => updateEpisode(row, "approved", note.value);
-
-  const reject = document.createElement("button");
-  reject.className = "btn-red";
-  reject.textContent = "✕ Reject";
-  reject.onclick = () => updateEpisode(row, "rejected", note.value);
-
-  const pending = document.createElement("button");
-  pending.className = "btn-soft";
-  pending.textContent = "Mark pending";
-  pending.onclick = () => updateEpisode(row, "pending", note.value);
-
-  actions.append(approve, reject, pending);
-  card.append(actions);
-
+  const noteLabel = document.createElement("label"); noteLabel.className = "field"; noteLabel.innerHTML = '<span>Note to creator</span>';
+  const note = document.createElement("textarea"); note.placeholder = "Optional feedback for the creator. It will be saved with the decision…"; note.value = row.admin_note || ""; noteLabel.append(note); body.append(noteLabel);
+  const actions = document.createElement("div"); actions.className = "itemactions";
+  const approve = document.createElement("button"); approve.className = "btn-green"; approve.textContent = "✓ Approve & publish"; approve.onclick = () => updateEpisode(row, "approved", note.value);
+  const reject = document.createElement("button"); reject.className = "btn-red"; reject.textContent = "✕ Reject"; reject.onclick = () => updateEpisode(row, "rejected", note.value);
+  const pending = document.createElement("button"); pending.className = "btn-soft"; pending.textContent = "↺ Mark pending"; pending.onclick = () => updateEpisode(row, "pending", note.value);
+  actions.append(approve, reject, pending); body.append(actions); card.append(body);
   return card;
+}
+
+function makeCoverPlaceholder() {
+  const el = document.createElement("div"); el.className = "cover-placeholder"; el.textContent = "🎙️"; el.setAttribute("aria-label", "No cover image"); return el;
 }
 
 async function updateEpisode(row, status, note) {
@@ -478,6 +532,7 @@ async function updateEpisode(row, status, note) {
     if (error) throw error;
 
     notice(`"${row.title || "Submission"}" updated: ${status}.`);
+    closeDetailModal();
     await loadData();
   } catch (e) {
     notice("Could not update submission: " + e.message + " — check admin UPDATE policy and column names.", "error");
@@ -486,7 +541,7 @@ async function updateEpisode(row, status, note) {
   }
 }
 
-function requestCard(row) {
+function requestDetail(row) {
   const card = document.createElement("article");
   card.className = "item";
 
@@ -496,17 +551,19 @@ function requestCard(row) {
   const left = document.createElement("div");
   left.innerHTML = `<div class="eyebrow">${esc(row.request_type === "priority_review" ? "Priority review request" : "Technical support")} · ${esc(date(row.created_at))}</div>
     <h3>${esc(row.subject || "Podcast support request")}</h3>
-    <div class="meta">User ID: ${esc(row.user_id || "—")}${row.related_session_title ? " · Related: " + esc(row.related_session_title) : ""}</div>`;
+    <div class="meta">Mac&Talk ID: ${esc(macTalkIds.get(row.user_id) || "—")}${row.related_session_title ? " · Related: " + esc(row.related_session_title) : ""}</div>`;
 
   const badge = document.createElement("div");
   badge.innerHTML = pill(row.status || "submitted");
   heading.append(left, badge);
   card.append(heading);
 
+  const body = document.createElement("div");
+  body.className = "episode-body support-detail-body";
   const msg = document.createElement("p");
   msg.className = "desc";
-  msg.textContent = row.message || "";
-  card.append(msg);
+  msg.textContent = row.message || "No message provided.";
+  body.append(msg);
 
   const label = document.createElement("label");
   label.className = "field";
@@ -516,7 +573,7 @@ function requestCard(row) {
   response.placeholder = "Write a reply the creator can see in their submission support panel…";
   response.value = row.admin_response || "";
   label.append(response);
-  card.append(label);
+  body.append(label);
 
   const statusLabel = document.createElement("label");
   statusLabel.className = "field";
@@ -526,7 +583,7 @@ function requestCard(row) {
   select.innerHTML = '<option value="submitted">Submitted</option><option value="under_review">Under review</option><option value="responded">Responded</option><option value="resolved">Resolved</option>';
   select.value = row.status || "submitted";
   statusLabel.append(select);
-  card.append(statusLabel);
+  body.append(statusLabel);
 
   const actions = document.createElement("div");
   actions.className = "itemactions";
@@ -537,7 +594,8 @@ function requestCard(row) {
   save.onclick = () => updateRequest(row, response.value, select.value);
 
   actions.append(save);
-  card.append(actions);
+  body.append(actions);
+  card.append(body);
 
   return card;
 }
@@ -552,6 +610,7 @@ async function updateRequest(row, response, status) {
     if (error) throw error;
 
     notice("Support request updated. The creator can see the response in their Creator Studio.");
+    closeDetailModal();
     await loadData();
   } catch (e) {
     notice("Could not update support request: " + e.message + " — check the admin UPDATE policy and table columns.", "error");
@@ -560,22 +619,24 @@ async function updateRequest(row, response, status) {
 
 function setView(next) {
   view = next;
-  filter = "all";
+  filter = next === "submitted" ? "pending" : "all";
 
   document.querySelectorAll(".navbtn[data-view]").forEach(b =>
     b.classList.toggle("active", b.dataset.view === view)
   );
 
-  $("pageHeading").textContent = view === "submissions"
-    ? "Podcast submissions"
-    : "Podcast support requests";
+  $("pageHeading").textContent = view === "submitted"
+    ? "Submitted"
+    : view === "submissions" ? "All podcast submissions" : "Podcast support requests";
 
-  $("pageSub").textContent = view === "submissions"
-    ? "Review audio before it becomes public."
-    : "Answer priority-review and technical-problem requests.";
+  $("pageSub").textContent = view === "submitted"
+    ? "New sessions wait here until you approve or reject them."
+    : view === "submissions"
+      ? "Review all submissions, including approved and rejected items."
+      : "Answer priority-review and technical-problem requests.";
 
   document.querySelector(".tabs").classList.toggle("hidden", view !== "submissions");
-  $("typeFilter").classList.toggle("hidden", view !== "submissions");
+  $("typeFilter").classList.toggle("hidden", view === "support");
   $("supportFilter").classList.toggle("hidden", view !== "support");
 
   document.querySelectorAll(".tab").forEach(b =>
@@ -645,7 +706,7 @@ $("signOutBtn").addEventListener("click", () => {
 const {data:{session}} = await supabase.auth.getSession();
 
 if (session?.user) {
-  $("loginMessage").textContent = "Enter the page password to continue.";
+  $("loginMessage").textContent = "Sign in to your admin workspace to continue.";
 }
 
 supabase.auth.onAuthStateChange((_event, session) => {

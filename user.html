@@ -185,6 +185,7 @@ let noticeTimeout = null;
 let signingOut = false;
 let sessions = [];
 let notificationInitialized = false;
+let creatorNotifications = [];
 let authListenerRegistered = false;
 const SEEN_KEY = "mactalk_seen_sessions_v1";
 const pageTitles = {dashboard:"Dashboard",sessions:"Live Sessions",profile:"My Profile",settings:"Settings"};
@@ -352,40 +353,64 @@ async function loadLiveSessions(){
   renderSessions("dashboardSessions",sessions.slice(0,2));
   renderSessions("allSessions",sessions);
   $("sessionCount").textContent=String(sessions.length);
+  creatorNotifications = [];
+  if(currentUser){
+    const {data:notices,error:noticeError}=await supabase.from("creator_notifications")
+      .select("id,title,message,is_read,created_at,related_episode_id")
+      .eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
+    if(noticeError){
+      if(noticeError.code!=="42P01") console.warn("Creator notifications (check table/RLS):",noticeError);
+    } else creatorNotifications = notices || [];
+  }
   renderNotifications(sessions);
 }
 function renderNotifications(list){
   const seen=readSeen();
   if(!notificationInitialized){
-    // Mark the initial list as seen so existing sessions are not all treated as new.
     if(!seen.size){list.forEach(session=>seen.add(String(session.id)));writeSeen(seen);}
     notificationInitialized=true;
   }
+  const unreadCreator=creatorNotifications.filter(n=>!n.is_read);
   const fresh=list.filter(session=>!seen.has(String(session.id)));
-  $("notificationBadge").textContent=fresh.length>99?"99+":String(fresh.length);
-  $("notificationBadge").hidden=fresh.length===0;
-  $("notificationCount").textContent=`${list.length} session${list.length===1?"":"s"}`;
+  const unreadCount=fresh.length+unreadCreator.length;
+  $("notificationBadge").textContent=unreadCount>99?"99+":String(unreadCount);
+  $("notificationBadge").hidden=unreadCount===0;
+  const total=list.length+creatorNotifications.length;
+  $("notificationCount").textContent=`${total} notification${total===1?"":"s"}`;
   const container=$("notificationList");container.replaceChildren();
-  if(!list.length){
+  if(!total){
     const empty=document.createElement("div");empty.className="notification-empty";
     const icon=document.createElement("span");icon.textContent="🎙️";
-    const p=document.createElement("p");p.textContent="No new sessions yet. Check back soon!";
+    const p=document.createElement("p");p.textContent="No new notifications yet. Check back soon!";
     empty.append(icon,p);container.append(empty);return;
   }
-  const ordered=[...list].sort((a,b)=>Number(!seen.has(String(a.id)))-Number(!seen.has(String(b.id)))||(a.status==="live"?-1:0)-(b.status==="live"?-1:0));
-  ordered.slice(0,12).forEach(session=>{
-    const item=document.createElement("div");item.className="notification-item";item.tabIndex=0;item.setAttribute("role","button");
-    const icon=document.createElement("div");icon.className="notification-item-icon"+(session.status==="live"?" is-live":"");icon.textContent=session.emoji||"🎙️";
+  const entries=[
+    ...list.map(session=>({_kind:"session",data:session,unread:!seen.has(String(session.id)),sort:session.created_at||session.scheduled_at||""})),
+    ...creatorNotifications.map(notice=>({_kind:"creator",data:notice,unread:!notice.is_read,sort:notice.created_at||""}))
+  ].sort((a,b)=>Number(b.unread)-Number(a.unread)||new Date(b.sort||0)-new Date(a.sort||0));
+  entries.slice(0,15).forEach(entry=>{
+    const isCreator=entry._kind==="creator", session=entry.data;
+    const item=document.createElement("div");item.className="notification-item"+(entry.unread?" is-unread":"");item.tabIndex=0;item.setAttribute("role","button");
+    const icon=document.createElement("div");icon.className="notification-item-icon"+(!isCreator&&session.status==="live"?" is-live":"");icon.textContent=isCreator?"📩":(session.emoji||"🎙️");
     const content=document.createElement("div");content.className="notification-item-content";
-    const heading=document.createElement("h4");heading.textContent=(!seen.has(String(session.id))?"● ":"")+(session.title||"New live session");
-    const desc=document.createElement("p");desc.textContent=(session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||"Mac&Talk Community");
+    const heading=document.createElement("h4");heading.textContent=(entry.unread?"● ":"")+(isCreator?(session.title||"Podcast update"):(session.title||"New live session"));
+    const desc=document.createElement("p");desc.textContent=isCreator?(session.message||"You have an update from the Mac&Talk team."):((session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||session.host_name||"Mac&Talk Community"));
     const time=document.createElement("span");time.className="notification-item-time";time.textContent=session.created_at?formatDate(session.created_at,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Recently added";
     content.append(heading,desc,time);item.append(icon,content);
-    const open=()=>{
-      const updated=readSeen();updated.add(String(session.id));writeSeen(updated);
-      renderNotifications(sessions);
+    const open=async()=>{
       $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");
-      showPage("sessions");
+      if(isCreator){
+        try{
+          const {error}=await supabase.from("creator_notifications").update({is_read:true}).eq("id",session.id).eq("user_id",currentUser.id);
+          if(error)throw error;
+          session.is_read=true;renderNotifications(sessions);
+        }catch(error){console.error("Could not mark notification as read:",error);}
+        if(session.related_episode_id){showPage("profile");showNotice("Podcast update: "+(session.message||session.title||"Your submission has an update."));}
+        else showNotice(session.message||session.title||"You have an update from Mac&Talk.");
+        return;
+      }
+      const updated=readSeen();updated.add(String(session.id));writeSeen(updated);
+      renderNotifications(sessions);showPage("sessions");
       if(session.status==="live")joinLiveSession(session);
       else showNotice("This session is scheduled. Return when the host goes live.");
     };

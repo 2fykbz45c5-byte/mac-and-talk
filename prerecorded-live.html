@@ -3084,7 +3084,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
  options.forEach(b=>b.addEventListener('click',()=>{const files={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};window.location.href=files[b.dataset.mode]||'creator-studio.html';}));
  document.getElementById('continueModeBtn').addEventListener('click',()=>{const files={solo:'solo-recording.html',friend:'recording-with-a-friend.html',live:'live-audio-session.html',join:'join-admin-created-live.html',replay:'prerecorded-live.html'};window.location.href=files[selected]||'creator-studio.html';});
  document.getElementById('changeModeBtn').addEventListener('click',()=>{
-  if(document.body.dataset.creatorMode){window.location.href='creator-studio.html';return;}
+  if(document.body.dataset.creatorMode){window.location.href='studio.html';return;}
   workflow.hidden=true;picker.hidden=false;
   document.getElementById('pageTitle').textContent='Creator Studio';
   const url=new URL(window.location.href);url.searchParams.delete('mode');
