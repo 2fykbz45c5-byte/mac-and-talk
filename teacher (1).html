@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10243e"><title>Mac&Talk | Teacher Workspace</title>
+<link rel="icon" type="image/png" href="mac-talk-icon.png">
+<link rel="apple-touch-icon" href="mac-talk-icon.png">
+<style>
+:root{--navy:#10243e;--navy2:#1c3657;--yellow:#ffc629;--bg:#f3f6fb;--white:#fff;--muted:#718096;--line:#e5eaf1;--red:#c53b4b;--blue:#3867d6;--shadow:0 12px 35px rgba(16,36,62,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--navy);color:white;padding:24px 16px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:12px;padding:0 10px 30px}.brand-mark{width:44px;height:44px;border-radius:14px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:22px}.brand-name{font-size:20px;font-weight:850}.brand-name span{color:var(--yellow)}.eyebrow{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#9eacc0;margin:8px 12px 12px}.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#d8e0eb;text-align:left;padding:13px 14px;border-radius:11px;display:flex;gap:12px;align-items:center}.nav button:hover,.nav button.active{background:var(--yellow);color:var(--navy)}.nav .ico{width:22px;text-align:center;font-size:17px}.side-bottom{margin-top:auto;padding:14px 10px 0;color:#aab8ca;font-size:12px;line-height:1.6}
+.main{margin-left:250px;min-height:100vh}.topbar{height:82px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;gap:16px}.topbar h1{font-size:21px;margin:0 0 5px}.topbar p{margin:0;color:var(--muted);font-size:12px}.admin-chip{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}.avatar{width:38px;height:38px;background:var(--navy);color:var(--yellow);border-radius:50%;display:grid;place-items:center;font-weight:900}
+.content{padding:30px 34px 50px;max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}.welcome h2{font-size:25px;margin:0 0 8px}.welcome p{color:var(--muted);margin:0;line-height:1.5}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--navy);color:white}.btn-primary:hover{background:var(--navy2)}.btn-yellow{background:var(--yellow);color:var(--navy)}.btn-light{background:#eef2f8;color:var(--navy)}.btn-danger{background:#fff0f1;color:var(--red)}.btn-small{padding:8px 10px;font-size:12px;border-radius:8px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:700}.stat-icon{width:37px;height:37px;border-radius:12px;background:#fff4cf;display:grid;place-items:center;font-size:18px}.stat strong{display:block;font-size:29px;margin-top:13px}.stat small{display:block;color:var(--muted);margin-top:5px;font-size:11px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.panel-head h3{margin:0;font-size:16px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.filters{display:flex;gap:9px;flex-wrap:wrap}.field-control{border:1px solid var(--line);background:white;border-radius:9px;padding:10px 11px;color:var(--navy);outline:none;min-width:145px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:15px 20px;border-bottom:1px solid #edf0f5;font-size:13px;vertical-align:middle}th{background:#fbfcfe;color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.session-title{font-weight:800;margin-bottom:4px}.session-sub{font-size:11px;color:var(--muted);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:850}.pill-live,.pill-approved{background:#e2f8ed;color:#14734e}.pill-scheduled{background:#e9efff;color:#3159b9}.pill-ended{background:#eef0f4;color:#5f6b7b}.pill-pending{background:#fff2cf;color:#8a6100}.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}.notice{margin-bottom:18px;padding:12px 15px;border-radius:10px;font-size:13px;display:none}.notice.show{display:block}.notice.success{background:#e5f8ed;color:#146c49}.notice.error{background:#fff0f1;color:#a52d3a}.page{display:none}.page.active{display:block}.grid-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.info-card{padding:22px}.info-card h3{margin:0 0 10px;font-size:16px}.info-card p,.info-card li{font-size:13px;line-height:1.7;color:var(--muted)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-field{display:grid;gap:7px}.form-field.full{grid-column:1/-1}.form-field label{font-size:12px;font-weight:800}.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;background:white;color:var(--navy)}.form-field textarea{min-height:95px;resize:vertical}.loading{min-height:100vh;display:grid;place-items:center;padding:25px;text-align:center}.loading-card{background:white;padding:30px;border-radius:18px;max-width:480px;box-shadow:var(--shadow)}.loading-card h2{margin:0 0 10px}.loading-card p{color:var(--muted);font-size:14px;line-height:1.6}.spinner{width:30px;height:30px;border:3px solid #e5eaf1;border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}
+.modal-backdrop{position:fixed;inset:0;background:#06112199;z-index:20;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{background:white;border-radius:18px;width:min(640px,100%);max-height:92vh;overflow:auto}.modal-body{padding:22px}.modal-foot{display:flex;justify-content:flex-end;gap:9px;padding:17px 22px;border-top:1px solid var(--line)}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-two{grid-template-columns:1fr}}@media(max-width:760px){.sidebar{width:72px;padding:18px 9px}.brand{padding:0 5px 25px;justify-content:center}.brand-name,.eyebrow,.nav-text,.side-bottom{display:none}.nav button{justify-content:center;padding:13px 7px}.main{margin-left:72px}.topbar{padding:0 17px;height:72px}.content{padding:22px 14px 35px}.welcome{flex-direction:column}.stats{gap:10px}.stat{padding:15px}.stat strong{font-size:25px}.admin-chip .admin-email{display:none}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}}@media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.filters{width:100%}.filters .field-control{flex:1;min-width:0}}
+
+.room-frame{width:100%;height:min(72vh,760px);min-height:420px;border:0;background:#0b1728;border-radius:14px}.student-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:18px}.student-card{border:1px solid var(--line);border-radius:12px;padding:15px;display:flex;gap:12px;align-items:center;min-width:0}.student-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:#fff1c2;color:var(--navy);display:grid;place-items:center;font-weight:900}.student-meta{min-width:0}.student-meta strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.student-meta span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px;margin-top:4px}.session-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px}.session-card{border:1px solid var(--line);border-radius:13px;padding:17px}.session-card h3{margin:0 0 7px;font-size:16px}.session-card p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 13px}.session-actions{display:flex;gap:8px;flex-wrap:wrap}.room-placeholder{padding:36px;text-align:center;color:#d7e0ee;background:#0b1728;border-radius:14px}.tag{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:850;background:#fff2cf;color:#8a6100}.tag.approved{background:#e2f8ed;color:#14734e}.muted-note{font-size:12px;color:var(--muted);line-height:1.7}.search-row{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}.search-row input{flex:1;min-width:200px}.video-controls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+@media(max-width:900px){.student-list{grid-template-columns:repeat(2,minmax(0,1fr))}.session-cards{grid-template-columns:1fr}}
+@media(max-width:560px){.student-list{grid-template-columns:1fr}.room-frame{min-height:340px;height:65vh}.topbar h1{font-size:18px}}
+
+/* Mac&Talk Quiz Center — refreshed, compact and responsive */
+#page-quizzes .welcome{align-items:center;margin-bottom:20px}
+#page-quizzes .welcome h2{letter-spacing:-.5px}
+#page-quizzes .panel{border-radius:18px}
+#page-quizzes .quiz-import{padding:22px;background:linear-gradient(135deg,#fff 0%,#fbfcff 100%)}
+#page-quizzes .quiz-import h3{font-size:17px;display:flex;align-items:center;gap:9px}
+#page-quizzes .quiz-form{padding:22px}
+#page-quizzes .quiz-form h3{font-size:16px;margin-bottom:18px}
+#page-quizzes .form-field input:focus,#page-quizzes .form-field textarea:focus,#page-quizzes .form-field select:focus{border-color:#d7a900;box-shadow:0 0 0 3px rgba(255,198,41,.17)}
+#page-quizzes .quiz-item{padding:18px;border-radius:15px;transition:transform .15s ease,box-shadow .15s ease}
+#page-quizzes .quiz-item:hover{transform:translateY(-1px);box-shadow:0 9px 24px rgba(16,36,62,.07)}
+#page-quizzes .quiz-actions .btn{min-height:36px}
+.quiz-wifi-settings{margin-top:18px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.quiz-wifi-settings summary{cursor:pointer;font-weight:800;font-size:14px;list-style:none;display:flex;align-items:center;gap:9px}
+.quiz-wifi-settings summary::-webkit-details-marker{display:none}
+.quiz-wifi-settings summary:after{content:'＋';margin-left:auto;color:var(--muted);font-size:18px}
+.quiz-wifi-settings[open] summary:after{content:'−'}
+.quiz-wifi-settings .wifi-fields{padding-top:15px}
+.quiz-start-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}
+@media(max-width:650px){#page-quizzes .quiz-import,#page-quizzes .quiz-form{padding:16px}#page-quizzes .quiz-item{padding:14px}.quiz-wifi-settings{padding:15px}}
+.quiz-toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.quiz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.quiz-form{padding:20px}
+.quiz-form h3{margin:0 0 15px;font-size:16px}
+.quiz-form .form-field{margin-bottom:12px}
+.quiz-question-editor{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#fbfcfe}
+.quiz-question-editor .form-grid{gap:10px}
+.quiz-list{display:grid;gap:12px;padding:18px}
+.quiz-item{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fff}
+.quiz-item-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.quiz-item h3{margin:0 0 5px;font-size:15px}
+.quiz-meta{font-size:12px;color:var(--muted);margin:5px 0 12px}
+.quiz-actions{display:flex;gap:7px;flex-wrap:wrap}
+.quiz-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.quiz-qr-box{border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center;background:#fff}
+.quiz-qr-box canvas,.quiz-qr-box img{margin:12px auto;max-width:100%}
+.quiz-pin{font-size:30px;font-weight:900;letter-spacing:5px;color:var(--navy);background:#fff4cf;border-radius:10px;padding:9px 15px;display:inline-block}
+.quiz-help{font-size:12px;color:var(--muted);line-height:1.6}
+.quiz-answer-option{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.quiz-answer-option input{min-width:0}
+@media(max-width:850px){.quiz-grid,.quiz-modal-grid{grid-template-columns:1fr}}
+
+
+.quiz-import{margin:0 0 18px;padding:20px}.quiz-import h3{margin:0 0 8px}.quiz-import .import-help{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 14px}.import-preview{display:grid;gap:12px;margin-top:14px}.import-question{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fbfcfe}.import-question h4{margin:0 0 10px;font-size:13px}.import-question .form-grid{gap:9px}.import-status{font-size:12px;margin-top:10px;color:var(--muted)}.import-status.error{color:#a52d3a}.import-status.success{color:#146c49}.import-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="loading" id="gate"><div class="loading-card"><div class="spinner" id="spinner"></div><h2 id="gateTitle">Opening Teacher Workspace</h2><p id="gateText">Checking your Mac&Talk account…</p><p id="gateActions" class="hidden"><a href="login.html">Return to login</a></p></div></div>
+<div class="layout hidden" id="teacherApp">
+<aside class="sidebar"><div class="brand"><div class="brand-mark">M</div><div class="brand-name">Mac<span>&</span>Talk</div></div><div class="eyebrow">TEACHER WORKSPACE</div>
+<nav class="nav"><button class="active" data-page="overview"><span class="ico">▦</span><span class="nav-text">Overview</span></button><button data-page="sessions"><span class="ico">🎙</span><span class="nav-text">My sessions</span></button><button data-page="students"><span class="ico">👥</span><span class="nav-text">Students</span></button><button data-page="quizzes"><span class="ico">📝</span><span class="nav-text">Quiz Center</span></button><button data-page="room"><span class="ico">📹</span><span class="nav-text">Video room</span></button><button data-page="messages"><span class="ico">💬</span><span class="nav-text">Messages</span></button><button data-page="settings"><span class="ico">⚙</span><span class="nav-text">Settings</span></button></nav>
+<div class="side-bottom">Mac&Talk Teacher<br>Create sessions and teach your community.</div></aside>
+<main class="main"><header class="topbar"><div><h1 id="pageHeading">Teacher overview</h1><p id="todayLabel">Mac&Talk Teacher Workspace</p></div><div class="admin-chip"><div class="avatar" id="teacherAvatar">T</div><span class="admin-email" id="teacherEmail">Teacher</span><button class="btn btn-light btn-small" id="signOutBtn">Sign out</button></div></header>
+<div class="content"><div class="notice" id="notice" role="status" aria-live="polite"></div>
+<section class="page active" id="page-overview"><div class="welcome"><div><h2 id="welcomeTitle">Welcome to your workspace 👋</h2><p>Create sessions, meet students, and host live conversations. New sessions require admin approval.</p></div><button class="btn btn-primary" id="newSessionBtn">＋ Create session</button></div>
+<div class="stats"><div class="stat"><div class="stat-top">My sessions <span class="stat-icon">🎙</span></div><strong id="statTotal">—</strong><small>Sessions created by you</small></div><div class="stat"><div class="stat-top">Awaiting approval <span class="stat-icon">🕓</span></div><strong id="statPending">—</strong><small>Waiting for admin review</small></div><div class="stat"><div class="stat-top">Approved sessions <span class="stat-icon">✓</span></div><strong id="statApproved">—</strong><small>Available to members</small></div><div class="stat"><div class="stat-top">Permitted students <span class="stat-icon">👥</span></div><strong id="statStudents">—</strong><small>Students assigned by admin</small></div></div>
+<div class="panel"><div class="panel-head"><div><h3>Your next sessions</h3><p>Only approved sessions can be opened as live rooms.</p></div><button class="btn btn-light btn-small" data-goto="sessions">View all →</button></div><div id="upcomingSessions" class="session-cards"><p class="empty">Loading your sessions…</p></div></div></section>
+<section class="page" id="page-sessions"><div class="welcome"><div><h2>My live sessions</h2><p>Create sessions for admin approval, update your own sessions, and launch approved rooms.</p></div><button class="btn btn-primary" id="newSessionBtn2">＋ Create session</button></div><div class="panel"><div class="panel-head"><div><h3>Session library</h3><p>Pending sessions are not visible to students until approved.</p></div><button class="btn btn-light btn-small" id="refreshSessionsBtn">↻ Refresh</button></div><div id="mySessions" class="session-cards"><p class="empty">Loading…</p></div></div></section>
+
+<section class="page" id="page-quizzes">
+ <div class="welcome"><div><h2>My Quiz Center</h2><p>Create your own quizzes, prepare exams, and start a live classroom quiz.</p></div><button class="btn btn-light" id="teacherQuizRefresh">↻ Refresh</button></div>
+ <div class="panel quiz-import">
+  <h3>📄 Import a quiz from a file</h3>
+  <p class="import-help">Upload a PDF, DOCX or TXT file. The importer reads questions, options A–D, correct answers and explanations when they are clearly labelled. You can edit every question before saving.</p>
+  <div class="form-grid">
+   <div class="form-field"><label for="teacherImportFile">Quiz file</label><input class="field-control" id="teacherImportFile" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"></div>
+   <div class="form-field"><label for="teacherImportTitle">Quiz title *</label><input class="field-control" id="teacherImportTitle" maxlength="140" placeholder="Imported quiz title"></div>
+   <div class="form-field"><label for="teacherImportSubject">Subject</label><input class="field-control" id="teacherImportSubject" placeholder="Subject"></div>
+  </div>
+  <div class="import-actions"><button class="btn btn-primary" id="teacherImportRead">Read file & preview</button><button class="btn btn-light" id="teacherImportClear" type="button">Clear</button></div>
+  <div class="import-status" id="teacherImportStatus">Nothing uploaded yet.</div>
+  <div id="teacherImportPreview" class="import-preview"></div>
+  <div class="import-actions" id="teacherImportSaveRow" style="display:none"><label style="font-size:12px;display:flex;align-items:center;gap:8px"><input type="checkbox" id="teacherImportReviewed"> I reviewed the questions and verified the correct answers.</label><button class="btn btn-yellow" id="teacherImportSave">Save imported quiz</button></div>
+ </div>
+ <div class="quiz-grid">
+  <div class="panel quiz-form"><h3>＋ Create a quiz</h3>
+   <div class="form-field"><label for="teacherQuizTitle">Quiz title *</label><input class="field-control" id="teacherQuizTitle" maxlength="140" placeholder="e.g. Grammar revision"></div>
+   <div class="form-grid"><div class="form-field"><label for="teacherQuizSubject">Subject</label><input class="field-control" id="teacherQuizSubject"></div><div class="form-field"><label for="teacherQuizStatus">Status</label><select class="field-control" id="teacherQuizStatus"><option value="draft">Draft</option><option value="published">Published</option></select></div></div>
+   <div class="form-field"><label for="teacherQuizDescription">Description</label><textarea class="field-control" id="teacherQuizDescription"></textarea></div><button class="btn btn-primary" id="teacherQuizCreate">Create quiz</button>
+  </div>
+  <div class="panel quiz-form"><h3>＋ Add a question</h3>
+   <div class="form-field"><label for="teacherQuestionQuiz">Choose quiz</label><select class="field-control" id="teacherQuestionQuiz"></select></div>
+   <div class="form-field"><label for="teacherQuestionText">Question *</label><textarea class="field-control" id="teacherQuestionText"></textarea></div>
+   <div class="form-grid"><div class="form-field"><label>Option A</label><input class="field-control" id="teacherOptA"></div><div class="form-field"><label>Option B</label><input class="field-control" id="teacherOptB"></div><div class="form-field"><label>Option C</label><input class="field-control" id="teacherOptC"></div><div class="form-field"><label>Option D</label><input class="field-control" id="teacherOptD"></div></div>
+   <div class="form-grid"><div class="form-field"><label for="teacherCorrect">Correct option</label><select class="field-control" id="teacherCorrect"><option>A</option><option>B</option><option>C</option><option>D</option></select></div><div class="form-field"><label for="teacherPoints">Points</label><input class="field-control" id="teacherPoints" type="number" min="1" value="1"></div><div class="form-field"><label for="teacherTimer">Timer (seconds)</label><input class="field-control" id="teacherTimer" type="number" min="5" max="600" value="30"></div></div>
+   <div class="form-field"><label for="teacherExplanation">Explanation (after reveal)</label><textarea class="field-control" id="teacherExplanation"></textarea></div><button class="btn btn-yellow" id="teacherQuestionAdd">Add question</button>
+  </div>
+ </div>
+ <div class="panel" style="margin-top:18px"><div class="panel-head"><div><h3>My quizzes</h3><p>Only you and administrators can manage your quizzes.</p></div></div><div id="teacherQuizList" class="quiz-list"><p class="empty">Loading quizzes…</p></div></div>
+ <details class="quiz-wifi-settings">
+  <summary><span>📶</span> Classroom Wi-Fi settings <span class="tag">Optional</span></summary>
+  <div class="wifi-fields"><p class="quiz-help">If students need classroom Wi-Fi, enter its details here. The Wi-Fi QR code will appear on the separate Join Quiz page after you start the quiz. These details are kept in this browser tab and are not added to the quiz URL.</p>
+   <div class="form-grid"><div class="form-field"><label for="quizWifiName">Wi-Fi network name (SSID)</label><input class="field-control" id="quizWifiName" autocomplete="off" placeholder="Classroom Wi-Fi"></div><div class="form-field"><label for="quizWifiPassword">Wi-Fi password</label><input class="field-control" id="quizWifiPassword" type="password" autocomplete="new-password" placeholder="Wi-Fi password"></div></div>
+  </div>
+ </details>
+ <p class="quiz-start-note">When you select <strong>Start this quiz</strong>, Mac&Talk opens a separate Join Quiz screen with the quiz QR code, PIN and optional Wi-Fi QR code.</p>
+</section>
+
+<section class="page" id="page-students"><div class="welcome"><div><h2>My permitted students</h2><p>Only students explicitly assigned to you by a Mac&Talk administrator appear here.</p></div></div><div class="panel"><div class="search-row"><input class="field-control" id="studentSearch" placeholder="Search students by name or email…"><span class="tag" id="studentCount">Loading…</span></div><div id="studentsList" class="student-list"><p class="empty">Loading students…</p></div></div></section>
+<section class="page" id="page-room"><div class="welcome"><div><h2>Live video room</h2><p>Choose one of your approved sessions to start or join its embedded video room.</p></div></div><div class="panel"><div class="panel-head"><div><h3 id="roomTitle">Choose a session</h3><p id="roomStatus">The room opens inside Mac&Talk.</p></div><button class="btn btn-light btn-small" id="leaveRoomBtn">Leave room</button></div><div style="padding:18px"><div class="video-controls"><select id="roomSessionSelect" class="field-control"><option value="">Choose approved session…</option></select><button class="btn btn-primary" id="launchRoomBtn">Open video room</button></div><div id="roomContainer"><div class="room-placeholder"><div style="font-size:42px;margin-bottom:12px">📹</div><strong>Your classroom, in one place</strong><p class="muted-note" style="color:#b9c7d9">Select an approved session and open its room. Allow microphone and camera access when prompted.</p></div></div><p class="muted-note">Video rooms are embedded using Jitsi Meet. It is an external video service displayed inside this page; production use should review its privacy and service terms.</p></div></div></section>
+<section class="page" id="page-messages"><div class="welcome"><div><h2>Messages</h2><p>Quick access to Mac&Talk conversations, when a compatible messaging page is installed.</p></div></div><div class="panel info-card"><h3>💬 Student communication</h3><p id="messageInfo">Messaging is not connected in this project bundle yet.</p><p class="muted-note">The supplied files do not include a chat/messages page or a confirmed messaging database schema. This section is intentionally read-only until those are added.</p></div></section>
+<section class="page" id="page-settings"><div class="welcome"><div><h2>Account & settings</h2><p>Your signed-in teacher account.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Teacher profile</h3><p><strong>Name:</strong> <span id="profileName">—</span></p><p><strong>Email:</strong> <span id="profileEmail">—</span></p><p><strong>Role:</strong> Teacher</p></div><div class="panel info-card"><h3>Security</h3><p>Sessions are linked to your signed-in Supabase account. Admin approval is required before members can access new sessions.</p><button class="btn btn-danger" id="settingsSignOutBtn">Sign out</button></div></div></section>
+</div></main></div>
+<div class="modal-backdrop" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><form class="modal" id="sessionForm"><div class="panel-head"><h3 id="modalTitle">Create session</h3><button type="button" class="btn btn-light btn-small" id="closeModal">×</button></div><div class="modal-body"><div class="form-grid"><div class="form-field full"><label for="sessionTitle">Session title *</label><input id="sessionTitle" required maxlength="100" placeholder="e.g. English Conversation Club"></div><div class="form-field"><label for="sessionDate">Date and time *</label><input id="sessionDate" type="datetime-local" required></div><div class="form-field"><label for="sessionEmoji">Session icon</label><input id="sessionEmoji" maxlength="8" value="🎙️"></div><div class="form-field full"><label for="sessionDescription">Description</label><textarea id="sessionDescription" maxlength="1000" placeholder="What will students learn or discuss?"></textarea></div></div><p class="muted-note">All sessions are submitted as <strong>Pending approval</strong>. An admin must approve your session before its room becomes available to students.</p></div><div class="modal-foot"><button type="button" class="btn btn-light" id="cancelModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveSessionBtn">Submit for approval</button></div></form></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script>if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
+const SUPABASE_KEY="sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id); let user=null,profile=null,sessions=[],students=[],editingId=null,noticeTimer=null,roomFrame=null;
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function notice(msg,type="success"){const n=$("notice");n.textContent=msg;n.className="notice show "+(type==="error"?"error":"success");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>n.className="notice",6000)}
+function gate(title,msg,showLink=true){$("gateTitle").textContent=title;$("gateText").textContent=msg;$("spinner").classList.add("hidden");if(showLink)$("gateActions").classList.remove("hidden")}
+
+/* ================= MAC&TALK TEACHER QUIZ CENTER ================= */
+let teacherQuizzes=[];
+async function loadTeacherQuizzes(){
+ const {data,error}=await supabase.from("quizzes").select("id,title,description,subject,status,created_at,quiz_questions(id)").order("created_at",{ascending:false});
+ if(error)throw error;teacherQuizzes=data||[];
+ $("teacherQuestionQuiz").innerHTML=teacherQuizzes.map(q=>`<option value="${esc(q.id)}">${esc(q.title)} · ${q.quiz_questions?.length||0} questions</option>`).join("")||'<option value="">Create a quiz first</option>';
+ $("teacherQuizList").innerHTML=teacherQuizzes.length?teacherQuizzes.map(q=>`<article class="quiz-item"><div class="quiz-item-head"><div><h3>${esc(q.title)}</h3><div class="quiz-meta">${esc(q.subject||"No subject")} · ${q.quiz_questions?.length||0} questions</div></div><span class="pill ${q.status==="published"?"pill-approved":"pill-pending"}">${esc(q.status)}</span></div><div class="quiz-actions"><button class="btn btn-primary btn-small" data-teacher-quiz-launch="${esc(q.id)}">Start this quiz</button><button class="btn btn-light btn-small" data-teacher-quiz-publish="${esc(q.id)}">Publish</button><button class="btn btn-danger btn-small" data-teacher-quiz-delete="${esc(q.id)}">Delete</button></div></article>`).join(""):'<p class="empty">You have not created any quizzes yet.</p>';
+}
+async function createTeacherQuiz(){
+ const title=$("teacherQuizTitle").value.trim();if(!title)return notice("Enter a quiz title.","error");
+ const {data,error}=await supabase.from("quizzes").insert({owner_id:user.id,title,subject:$("teacherQuizSubject").value.trim(),description:$("teacherQuizDescription").value.trim(),status:$("teacherQuizStatus").value}).select("id").single();
+ if(error)throw error;$("teacherQuizTitle").value="";$("teacherQuizSubject").value="";$("teacherQuizDescription").value="";await loadTeacherQuizzes();$("teacherQuestionQuiz").value=data.id;notice("Quiz created.");
+}
+async function addTeacherQuestion(){
+ const id=$("teacherQuestionQuiz").value,question=$("teacherQuestionText").value.trim(),keys=["A","B","C","D"],options=keys.map(k=>({id:k,text:$("teacherOpt"+k).value.trim()}));
+ if(!id||!question||options.some(o=>!o.text))return notice("Choose a quiz and complete the question and all four options.","error");
+ const q=teacherQuizzes.find(x=>x.id===id);
+ const {error}=await supabase.from("quiz_questions").insert({quiz_id:id,position:(q?.quiz_questions?.length||0)+1,question_text:question,options,correct_option_id:$("teacherCorrect").value,explanation:$("teacherExplanation").value.trim(),points:Math.max(1,Number($("teacherPoints").value)||1),timer_seconds:Math.min(600,Math.max(5,Number($("teacherTimer").value)||30))});
+ if(error)throw error;$("teacherQuestionText").value="";keys.forEach(k=>$("teacherOpt"+k).value="");$("teacherExplanation").value="";await loadTeacherQuizzes();notice("Question added.");
+}
+async function startTeacherQuiz(id){
+ const q=teacherQuizzes.find(x=>x.id===id);if(!q)return notice("Quiz not found.","error");
+ if(!q.quiz_questions?.length)return notice("Add at least one question before starting.","error");
+ const {data,error}=await supabase.rpc("quiz_create_session",{p_quiz_id:id});if(error)throw error;
+ // Keep Wi-Fi data in this tab only; never expose the password in the URL.
+ const wifi={ssid:$("quizWifiName").value.trim(),password:$("quizWifiPassword").value};
+ sessionStorage.setItem("mactalk_quiz_wifi_"+data.session_id,JSON.stringify(wifi));
+ const joinUrl=new URL("join.html",location.href);joinUrl.searchParams.set("pin",data.pin);joinUrl.searchParams.set("session",data.session_id);joinUrl.searchParams.set("host","1");
+ location.href=joinUrl.href;
+}
+async function teacherQuizAction(action,id){
+ if(action==="delete"&&!confirm("Delete this quiz and all its questions?"))return;
+ if(action==="publish"){const {error}=await supabase.from("quizzes").update({status:"published"}).eq("id",id);if(error)throw error;await loadTeacherQuizzes();notice("Quiz published.");}
+ if(action==="delete"){const {error}=await supabase.from("quizzes").delete().eq("id",id);if(error)throw error;await loadTeacherQuizzes();notice("Quiz deleted.");}
+ if(action==="launch")await startTeacherQuiz(id);
+}
+
+function switchPage(name){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id==="page-"+name));document.querySelectorAll(".nav button[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===name));const names={overview:"Teacher overview",sessions:"My live sessions",students:"My permitted students",room:"Live video room",messages:"Messages",settings:"Account & settings",quizzes:"Quiz Center"};$("pageHeading").textContent=names[name]||"Teacher workspace";if(name==="students")loadStudents();if(name==="sessions"||name==="overview")loadSessions();if(name==="quizzes")loadTeacherQuizzes().catch(e=>notice("Quiz Center: "+e.message,"error"));}
+function pill(s){return s.approved?'<span class="tag approved">Approved</span>':'<span class="tag">Pending approval</span>'}
+function sessionCard(s){const when=s.scheduled_at?new Date(s.scheduled_at).toLocaleString():"Time not set";return `<article class="session-card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><h3>${esc(s.emoji||"🎙️")} ${esc(s.title)}</h3>${pill(s)}</div><p>${esc(s.description||"No description added.")}</p><p>📅 ${esc(when)} · <span class="pill pill-${esc(s.status||"scheduled")}">${esc(s.status||"scheduled")}</span></p><div class="session-actions">${s.approved?`<button class="btn btn-primary btn-small" data-room="${esc(s.id)}">📹 Open room</button><span class="muted-note">Ask admin to change approved details</span>`:`<button class="btn btn-light btn-small" data-edit="${esc(s.id)}">✎ Edit details</button>`}<button class="btn btn-danger btn-small" data-delete="${esc(s.id)}">Delete</button></div></article>`}
+function renderSessions(){const cards=sessions.length?sessions.map(sessionCard).join(""):'<p class="empty">You have not created any sessions yet. Click “Create session” to start.</p>';$("mySessions").innerHTML=cards;const next=[...sessions].sort((a,b)=>new Date(a.scheduled_at||a.created_at)-new Date(b.scheduled_at||b.created_at)).slice(0,4);$("upcomingSessions").innerHTML=next.length?next.map(sessionCard).join(""):'<p class="empty">No sessions yet. Create your first session.</p>';$("statTotal").textContent=sessions.length;$("statPending").textContent=sessions.filter(s=>!s.approved).length;$("statApproved").textContent=sessions.filter(s=>s.approved).length;const sel=$("roomSessionSelect"),old=sel.value;sel.innerHTML='<option value="">Choose approved session…</option>'+sessions.filter(s=>s.approved&&s.status!=="ended").map(s=>`<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("");if([...sel.options].some(o=>o.value===old))sel.value=old}
+async function loadSessions(){if(!user)return;try{const {data,error}=await supabase.from("live_sessions").select("id,owner_id,title,host,emoji,status,description,approved,scheduled_at,created_at,updated_at").eq("owner_id",user.id).order("created_at",{ascending:false});if(error)throw error;sessions=data||[];renderSessions()}catch(e){console.error(e);$("mySessions").innerHTML=`<p class="empty">Could not load sessions: ${esc(e.message)}. Run the teacher SQL setup and verify RLS.</p>`;$("upcomingSessions").innerHTML='<p class="empty">Session data unavailable.</p>'}}
+async function loadStudents(){try{const {data,error}=await supabase.rpc("teacher_list_registered_students");if(error)throw error;students=data||[];$("statStudents").textContent=students.length;renderStudents()}catch(e){console.error(e);$("studentsList").innerHTML=`<p class="empty">Could not load students: ${esc(e.message)}. Run the teacher SQL setup.</p>`;$("studentCount").textContent="Unavailable"}}
+function renderStudents(){const q=$("studentSearch").value.trim().toLowerCase();const filtered=students.filter(s=>`${s.display_name||""} ${s.email||""}`.toLowerCase().includes(q));$("studentCount").textContent=`${filtered.length} student${filtered.length===1?"":"s"}`;$("studentsList").innerHTML=filtered.length?filtered.map(s=>`<article class="student-card"><div class="student-avatar">${esc((s.display_name||s.email||"S").slice(0,1).toUpperCase())}</div><div class="student-meta"><strong>${esc(s.display_name||"Student")}</strong><span>${esc(s.email||"No email")}</span><span>Joined ${s.created_at?esc(new Date(s.created_at).toLocaleDateString()):"—"}</span></div></article>`).join(""):'<p class="empty">No students match your search.</p>'}
+function openModal(s=null){editingId=s?.id||null;$("modalTitle").textContent=editingId?"Edit session":"Create session";$("sessionTitle").value=s?.title||"";$("sessionEmoji").value=s?.emoji||"🎙️";$("sessionDescription").value=s?.description||"";if(s?.scheduled_at){const d=new Date(s.scheduled_at);$("sessionDate").value=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}else $("sessionDate").value="";$("saveSessionBtn").textContent=editingId?"Save changes":"Submit for approval";$("sessionModal").classList.add("open")}
+function closeModal(){$("sessionModal").classList.remove("open");editingId=null}
+async function saveSession(e){e.preventDefault();const title=$("sessionTitle").value.trim();if(!title)return;const scheduled=new Date($("sessionDate").value);if(!$("sessionDate").value||Number.isNaN(scheduled.getTime()))return notice("Choose a valid date and time.","error");const payload={title,host:profile?.display_name||user.email||"Mac&Talk Teacher",emoji:$("sessionEmoji").value.trim()||"🎙️",description:$("sessionDescription").value.trim(),scheduled_at:scheduled.toISOString(),status:"scheduled",approved:false,updated_at:new Date().toISOString()};const b=$("saveSessionBtn");b.disabled=true;b.textContent="Saving…";try{let q=editingId?supabase.from("live_sessions").update(payload).eq("id",editingId).eq("owner_id",user.id):supabase.from("live_sessions").insert({...payload,owner_id:user.id,created_at:new Date().toISOString()});const {error}=await q;if(error)throw error;closeModal();notice(editingId?"Changes saved. The session is pending admin approval.":"Session submitted for admin approval.");await loadSessions()}catch(e){console.error(e);notice("Could not save session: "+e.message,"error")}finally{b.disabled=false;b.textContent=editingId?"Save changes":"Submit for approval"}}
+async function deleteSession(id){const s=sessions.find(x=>String(x.id)===String(id));if(!s||!confirm(`Delete “${s.title}”? This cannot be undone.`))return;try{const {error}=await supabase.from("live_sessions").delete().eq("id",id).eq("owner_id",user.id);if(error)throw error;notice("Session deleted.");leaveRoom();await loadSessions()}catch(e){notice("Could not delete session: "+e.message,"error")}}
+function launchRoom(id){const s=sessions.find(x=>String(x.id)===String(id));if(!s||!s.approved)return notice("This session must be approved by an admin before its room can open.","error");if(s.status==="ended")return notice("This session has ended. Change its status from the admin panel before reopening.","error");switchPage("room");$("roomSessionSelect").value=s.id;$("roomTitle").textContent=s.title;$("roomStatus").textContent="Room is open for “"+s.title+"”. Allow camera and microphone access in the room.";const roomName="MacTalk-"+String(s.id).replace(/[^a-zA-Z0-9]/g,"");$("roomContainer").innerHTML=`<iframe class="room-frame" title="Mac&Talk video room: ${esc(s.title)}" allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write" referrerpolicy="no-referrer" src="https://meet.jit.si/${encodeURIComponent(roomName)}#config.prejoinPageEnabled=true&config.startWithAudioMuted=false&config.startWithVideoMuted=false"></iframe>`;roomFrame=$("roomContainer").querySelector("iframe")}
+function leaveRoom(){$("roomContainer").innerHTML='<div class="room-placeholder"><div style="font-size:42px;margin-bottom:12px">📹</div><strong>Your classroom, in one place</strong><p class="muted-note" style="color:#b9c7d9">Select an approved session and open its room. Allow microphone and camera access when prompted.</p></div>';$ ("roomTitle").textContent="Choose a session";$("roomStatus").textContent="The room opens inside Mac&Talk.";roomFrame=null}
+async function signOut(){await supabase.auth.signOut();location.href="login.html"}
+async function init(){try{const {data:{session},error}=await supabase.auth.getSession();if(error)throw error;if(!session){gate("Sign in required","Please sign in with your Mac&Talk teacher account.");return}user=session.user;const {data:p,error:pe}=await supabase.from("profiles").select("id,display_name,role").eq("id",user.id).maybeSingle();if(pe)throw pe;profile=p;if(!p||String(p.role||"").toLowerCase()!=="teacher"){gate("Teacher access required","This account does not have the teacher role. Ask an administrator to update your role.");return}$("gate").classList.add("hidden");$("teacherApp").classList.remove("hidden");const name=p.display_name||user.user_metadata?.full_name||user.email?.split("@")[0]||"Teacher";$("welcomeTitle").textContent=`Welcome back, ${name} 👋`;$("teacherEmail").textContent=user.email||name;$("teacherAvatar").textContent=name.slice(0,1).toUpperCase();$("profileName").textContent=name;$("profileEmail").textContent=user.email||"—";$("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});await Promise.all([loadSessions(),loadStudents()]);checkMessagePages()}catch(e){console.error(e);gate("Could not open Teacher Workspace",e.message||"Check your Supabase configuration and try again.")}}
+function checkMessagePages(){$("messageInfo").textContent="Messaging is not connected in this project bundle yet. Add a messages page and a verified messaging schema before enabling this feature."}
+document.querySelectorAll(".nav button[data-page]").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.page)));document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.goto)));$("newSessionBtn").addEventListener("click",()=>openModal());$("newSessionBtn2").addEventListener("click",()=>openModal());$("closeModal").addEventListener("click",closeModal);$("cancelModal").addEventListener("click",closeModal);$("sessionModal").addEventListener("click",e=>{if(e.target===$("sessionModal"))closeModal()});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});$("sessionForm").addEventListener("submit",saveSession);$("refreshSessionsBtn").addEventListener("click",loadSessions);$("studentSearch").addEventListener("input",renderStudents);$("signOutBtn").addEventListener("click",signOut);$("settingsSignOutBtn").addEventListener("click",signOut);$("leaveRoomBtn").addEventListener("click",leaveRoom);$("launchRoomBtn").addEventListener("click",()=>launchRoom($("roomSessionSelect").value));document.addEventListener("click",e=>{const room=e.target.closest("[data-room]");if(room)return launchRoom(room.dataset.room);const edit=e.target.closest("[data-edit]");if(edit){const s=sessions.find(x=>String(x.id)===edit.dataset.edit);if(s)openModal(s);return}const del=e.target.closest("[data-delete]");if(del)deleteSession(del.dataset.delete)});
+/* File-to-quiz importer: review and validate before inserting into Supabase. */
+let teacherImportedQuestions=[];
+function teacherImportStatus(message,type=''){const el=$("teacherImportStatus");el.textContent=message;el.className='import-status '+type;}
+function teacherParseQuizText(raw){
+ const lines=raw.replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean),out=[];let cur=null,mode='';
+ const finish=()=>{if(cur){cur.question=cur.question.trim();out.push(cur);cur=null;mode='';}};
+ for(const line of lines){
+  const qmatch=line.match(/^(?:Q(?:uestion)?\s*)?(\d{1,3})[.)\-:]\s*(.+)$/i);
+  const opt=line.match(/^([A-D])\s*[).:\-]\s*(.+)$/i);
+  const ans=line.match(/^(?:correct\s*)?(?:answer|ans|correct\s*option)\s*[:\-]\s*([A-D])(?:\b.*)?$/i);
+  const exp=line.match(/^(?:explanation|rationale)\s*[:\-]\s*(.*)$/i);
+  if(qmatch){finish();cur={question:qmatch[2],options:{},correct:'',explanation:''};mode='question';continue;}
+  if(!cur)continue;
+  if(opt){cur.options[opt[1].toUpperCase()]=opt[2].trim();mode='option';continue;}
+  if(ans){cur.correct=ans[1].toUpperCase();mode='';continue;}
+  if(exp){cur.explanation=exp[1].trim();mode='explanation';continue;}
+  if(mode==='question')cur.question+=' '+line;else if(mode==='explanation')cur.explanation+=' '+line;else if(mode==='option'){const last=Object.keys(cur.options).slice(-1)[0];if(last)cur.options[last]+=' '+line;}
+ }finish();return out;
+}
+async function teacherReadImportFile(){
+ const file=$("teacherImportFile").files[0];if(!file)throw new Error('Choose a PDF, DOCX or TXT file first.');
+ let text='';const name=file.name.toLowerCase();
+ if(name.endsWith('.txt'))text=await file.text();
+ else if(name.endsWith('.pdf')){
+  if(!window.pdfjsLib)throw new Error('PDF reader could not load. Check your internet connection and try again.');
+  const data=new Uint8Array(await file.arrayBuffer());const pdf=await pdfjsLib.getDocument({data}).promise;let pages=[];
+  for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();const lineMap=new Map();for(const item of content.items){const y=Math.round(item.transform?.[5]||0);if(!lineMap.has(y))lineMap.set(y,[]);lineMap.get(y).push(item.str);}pages.push([...lineMap.entries()].sort((a,b)=>b[0]-a[0]).map(([,parts])=>parts.join(' ')).join('\n'));}text=pages.join('\n');
+ }else if(name.endsWith('.docx')){
+  if(!window.mammoth)throw new Error('DOCX reader could not load. Check your internet connection and try again.');
+  const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});text=result.value;
+ }else throw new Error('Unsupported file type. Please use PDF, DOCX or TXT.');
+ const parsed=teacherParseQuizText(text);
+ if(!parsed.length)throw new Error('No questions were detected. Use numbered questions and options labelled A), B), C), D), plus a line such as Answer: B.');
+ teacherImportedQuestions=parsed;$("teacherImportTitle").value=$("teacherImportTitle").value||file.name.replace(/\.[^.]+$/,'');
+ teacherRenderImportPreview();teacherImportStatus(`Detected ${parsed.length} question(s). Review every question and correct answer before saving.`, 'success');
+}
+function teacherRenderImportPreview(){
+ const root=$("teacherImportPreview");root.innerHTML='';
+ teacherImportedQuestions.forEach((q,i)=>{const card=document.createElement('div');card.className='import-question';card.dataset.index=i;
+  card.innerHTML=`<h4>Question ${i+1}</h4><div class="form-field"><label>Question text</label><textarea class="field-control iq-question"></textarea></div><div class="form-grid">${['A','B','C','D'].map(k=>`<div class="form-field"><label>Option ${k}</label><input class="field-control iq-option" data-option="${k}"></div>`).join('')}</div><div class="form-grid"><div class="form-field"><label>Correct answer</label><select class="field-control iq-correct"><option value="">Choose correct option</option>${['A','B','C','D'].map(k=>`<option value="${k}">${k}</option>`).join('')}</select></div><div class="form-field"><label>Explanation (optional)</label><input class="field-control iq-explanation"></div></div><div class="import-status iq-validation"></div>`;
+  card.querySelector('.iq-question').value=q.question;card.querySelectorAll('.iq-option').forEach(el=>el.value=q.options[el.dataset.option]||'');card.querySelector('.iq-correct').value=q.correct||'';card.querySelector('.iq-explanation').value=q.explanation||'';root.appendChild(card);
+ });
+ $("teacherImportSaveRow").style.display='flex';$("teacherImportReviewed").checked=false;teacherValidateImportedQuiz();
+}
+function teacherCollectImportedQuiz(){return [...$("teacherImportPreview").querySelectorAll('.import-question')].map(card=>({question:card.querySelector('.iq-question').value.trim(),options:['A','B','C','D'].map(k=>({id:k,text:card.querySelector(`.iq-option[data-option="${k}"]`).value.trim()})),correct:card.querySelector('.iq-correct').value,explanation:card.querySelector('.iq-explanation').value.trim()}));}
+function teacherValidateImportedQuiz(){
+ const questions=teacherCollectImportedQuiz();let errors=0;
+ [...$("teacherImportPreview").querySelectorAll('.import-question')].forEach((card,i)=>{const q=questions[i],issues=[];if(!q.question)issues.push('Question text is missing');if(q.options.some(o=>!o.text))issues.push('All four options are required');if(new Set(q.options.map(o=>o.text.toLowerCase())).size!==4)issues.push('Options must be different');if(!q.correct)issues.push('Correct answer is not identified');if(q.correct&&!q.options.find(o=>o.id===q.correct)?.text)issues.push('Correct option is empty');const el=card.querySelector('.iq-validation');el.textContent=issues.length?'Needs attention: '+issues.join('; '):'Structure looks complete — please verify the answer is factually correct.';el.className='import-status iq-validation '+(issues.length?'error':'success');if(issues.length)errors++;});
+ const valid=questions.length>0&&errors===0;$("teacherImportSave").disabled=!valid;return valid;
+}
+async function teacherSaveImportedQuiz(){
+ const title=$("teacherImportTitle").value.trim();if(!title)throw new Error('Enter a title for this quiz.');if(!teacherValidateImportedQuiz())throw new Error('Fix all highlighted questions before saving.');if(!$("teacherImportReviewed").checked)throw new Error('Confirm that you reviewed the questions and correct answers.');
+ const questions=teacherCollectImportedQuiz();const button=$("teacherImportSave");button.disabled=true;button.textContent='Saving…';let quizId=null;
+ try{const {data,error}=await supabase.from('quizzes').insert({owner_id:user.id,title,subject:$("teacherImportSubject").value.trim(),description:'Imported from '+($("teacherImportFile").files[0]?.name||'file'),status:'draft'}).select('id').single();if(error)throw error;quizId=data.id;
+  const rows=questions.map((q,i)=>({quiz_id:quizId,position:i+1,question_text:q.question,options:q.options,correct_option_id:q.correct,explanation:q.explanation,points:1,timer_seconds:30}));
+  const {error:insertError}=await supabase.from('quiz_questions').insert(rows);if(insertError)throw insertError;
+  await loadTeacherQuizzes();$("teacherQuestionQuiz").value=quizId;$("teacherImportPreview").innerHTML='';$("teacherImportSaveRow").style.display='none';$("teacherImportFile").value='';$("teacherImportReviewed").checked=false;teacherImportedQuestions=[];teacherImportStatus('Quiz saved as a draft. You can review it, then publish it when ready.','success');notice('Imported quiz saved as draft.');
+ }catch(error){if(quizId){await supabase.from('quizzes').delete().eq('id',quizId);}throw error;}
+ finally{button.disabled=false;button.textContent='Save imported quiz';}
+}
+function teacherClearImport(){teacherImportedQuestions=[];$("teacherImportFile").value='';$("teacherImportTitle").value='';$("teacherImportSubject").value='';$("teacherImportPreview").innerHTML='';$("teacherImportSaveRow").style.display='none';teacherImportStatus('Nothing uploaded yet.');}
+$("teacherImportRead")?.addEventListener('click',()=>teacherReadImportFile().catch(e=>teacherImportStatus(e.message,'error')));
+$("teacherImportClear")?.addEventListener('click',teacherClearImport);
+$("teacherImportSave")?.addEventListener('click',()=>teacherSaveImportedQuiz().catch(e=>teacherImportStatus(e.message,'error')));
+$("teacherImportPreview")?.addEventListener('input',()=>teacherValidateImportedQuiz());
+$("teacherImportPreview")?.addEventListener('change',()=>teacherValidateImportedQuiz());
+
+$("teacherQuizRefresh")?.addEventListener("click",()=>loadTeacherQuizzes().catch(e=>notice(e.message,"error")));
+$("teacherQuizCreate")?.addEventListener("click",()=>createTeacherQuiz().catch(e=>notice(e.message,"error")));
+$("teacherQuestionAdd")?.addEventListener("click",()=>addTeacherQuestion().catch(e=>notice(e.message,"error")));
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-teacher-quiz-launch],[data-teacher-quiz-publish],[data-teacher-quiz-delete]");if(!b)return;
+ const id=b.dataset.teacherQuizLaunch||b.dataset.teacherQuizPublish||b.dataset.teacherQuizDelete;
+ const action=b.hasAttribute("data-teacher-quiz-launch")?"launch":b.hasAttribute("data-teacher-quiz-publish")?"publish":"delete";
+ teacherQuizAction(action,id).catch(err=>notice(err.message,"error"));
+});
+
+init();
+</script>
+</body></html>
