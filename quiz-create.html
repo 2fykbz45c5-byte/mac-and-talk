@@ -55,7 +55,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 clamp(16px, 4vw, 40px);
+  padding: 0 clamp(22px, 4vw, 52px);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -75,7 +75,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   display: grid;
   place-items: center;
   font-weight: 950;
-  font-size: 22px;
+  font-size: 28px;
   box-shadow: 0 4px 12px rgba(255, 198, 41, 0.35);
   transition: transform 0.2s ease;
 }
@@ -126,7 +126,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   font-size: 13px;
   font-weight: 750;
   background: rgba(255, 255, 255, 0.06);
-  padding: 4px 12px 4px 6px;
+  padding: 7px 17px 7px 9px;
   border-radius: 99px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -797,8 +797,37 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (max-width: 900px) {
   .review-grid { grid-template-columns: 1fr; }
   .form-grid, .options-grid, .q-meta-row { grid-template-columns: 1fr; }
-  .topbar-center, .teacher-chip span { display: none; }
+  .topbar-center { display: none; }
+  .topbar { min-height:82px; height:82px; }
+  .step-navbar { top:82px; }
+  .brand-mark { width:46px; height:46px; }
+  .brand-name { font-size:22px; }
+  .teacher-chip { font-size:12px; gap:7px; padding:5px 10px 5px 6px; }
+  .avatar { width:34px; height:34px; }
 }
+
+/* Flexible question types */
+.q-type-row { display:grid; grid-template-columns:minmax(180px, 260px) 1fr; gap:14px; align-items:end; margin:0 0 16px; }
+.q-type-help { color:var(--muted); font-size:11px; line-height:1.5; }
+.answer-panel { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:var(--radius-md); background:#fbfcfe; }
+.answer-panel-title { font-size:10px; font-weight:900; color:var(--muted); letter-spacing:.7px; text-transform:uppercase; margin-bottom:10px; }
+.answer-choice { display:flex; align-items:center; gap:10px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:#fff; margin:7px 0; font-size:12px; }
+.answer-choice input { accent-color:var(--blue); }
+.answer-choice input[type="text"] { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--navy); }
+.answer-inline { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.answer-inline input, .answer-panel textarea { border:1px solid var(--line); border-radius:9px; padding:10px 12px; background:#fff; color:var(--navy); width:100%; }
+.answer-panel textarea { min-height:72px; resize:vertical; }
+.q-type-tag { display:inline-flex; align-items:center; background:#fff2cf; color:var(--navy); border-radius:99px; padding:4px 9px; font-size:10px; font-weight:900; }
+@media(max-width:650px){
+  .q-type-row{grid-template-columns:1fr;}
+  .q-meta-row{grid-template-columns:1fr 1fr;}
+  .topbar { padding:0 12px; gap:8px; }
+  .topbar-right { gap:7px; }
+  .topbar-right .btn[onclick] { display:none; }
+  .teacher-chip span { display:block; max-width:105px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #btnOpenSaved { padding:8px 9px; font-size:10px; }
+}
+
 </style>
 </head>
 <body>
@@ -817,10 +846,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     <div class="topbar-right">
       <button class="btn btn-light btn-small" type="button" onclick="history.back()">← Teacher Workspace</button>
+      <button class="btn btn-light btn-small" id="btnNewQuiz" type="button">＋ New Quiz</button>
       <button class="btn btn-yellow btn-small" id="btnOpenSaved" type="button">▣ Saved Drafts</button>
       <div class="teacher-chip">
         <div class="avatar">T</div>
-        <span>Teacher Account</span>
+        <span id="teacherAccountName">Loading teacher…</span>
       </div>
     </div>
   </header>
@@ -866,8 +896,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     <section id="view-details" class="view-panel active">
       <div class="view-banner">
         <div class="banner-title">
-          <h1>Step 1: Basic Quiz Settings</h1>
-          <p>Define title, subject, default timer, and overview description for your students.</p>
+          <h1>Build one quiz with multiple questions</h1>
+          <p>Enter the quiz details first, then add as many questions as you need below. A question is never saved as a separate quiz.</p>
         </div>
         <button class="btn btn-yellow" onclick="switchView('view-import')" type="button">Next: Smart Import →</button>
       </div>
@@ -875,8 +905,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
       <div class="card">
         <div class="card-header">
           <div>
-            <h2>General Information</h2>
-            <p>Fill out the primary parameters of this quiz draft.</p>
+            <h2>1. Quiz information</h2>
+            <p>These details belong to the whole quiz. All questions added later stay inside this quiz.</p>
           </div>
         </div>
         <div class="card-body">
@@ -955,14 +985,14 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     <section id="view-builder" class="view-panel">
       <div class="view-banner">
         <div class="banner-title">
-          <h1>Step 3: Question Studio</h1>
-          <p>Add, edit, refine, or organize quiz questions and set correct answer keys.</p>
+          <h1>2. Questions in this quiz</h1>
+          <p>Add multiple questions below. Choose a question type and set its correct answer for each one.</p>
         </div>
         <button class="btn btn-yellow" id="btnAddQuestionTop" type="button">＋ Add New Question</button>
       </div>
 
       <div class="builder-toolbar">
-        <span style="font-size:13px; font-weight:800; color:var(--navy);" id="builderCountText">0 questions in draft</span>
+        <span style="font-size:13px; font-weight:800; color:var(--navy);" id="builderCountText">0 questions in this quiz</span>
         <div style="display:flex; gap:10px;">
           <button class="btn btn-light btn-small" id="btnExpandAll" type="button">Expand All</button>
           <button class="btn btn-light btn-small" id="btnCollapseAll" type="button">Collapse All</button>
@@ -1009,7 +1039,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
               <label class="check-label">
                 <input type="checkbox" id="chkReviewConfirm">
-                <span><strong>Teacher Audit Confirmation:</strong> I have reviewed all question stems, option text, time limits, and correct choices.</span>
+                <span><strong>Teacher Audit Confirmation:</strong> I have reviewed every question, its type, answer key or marking guidance, points, and time limit.</span>
               </label>
             </div>
           </div>
@@ -1093,12 +1123,15 @@ window.mactalkQuizReady = (async () => {
   if (sessionError) throw sessionError;
   if (!session?.user) throw new Error("Please sign in to your Mac&Talk teacher account first.");
   const { data: profile, error: profileError } = await client.from("profiles")
-    .select("role,status,is_blocked").eq("id", session.user.id).maybeSingle();
+    .select("role,status,is_blocked,display_name,username").eq("id", session.user.id).maybeSingle();
   if (profileError) throw profileError;
   if (!profile || !["teacher","admin"].includes(profile.role) || profile.status !== "approved" || profile.is_blocked) {
     throw new Error("An approved teacher account is required to save a quiz.");
   }
-  return { client, user: session.user };
+  const teacherName = profile.display_name || profile.username ||
+    session.user.user_metadata?.full_name || session.user.user_metadata?.name ||
+    session.user.email?.split("@")[0] || "Teacher";
+  return { client, user: session.user, profile, teacherName };
 })();
 </script>
 
@@ -1108,6 +1141,9 @@ window.mactalkQuizReady = (async () => {
   const letters = ['A','B','C','D'];
   let questions = [];
   let importedFileName = '';
+  let currentDraftId = null;
+  let currentCloudQuizId = null;
+  let currentDraftCreatedAt = null;
 
   // Tabbed View Switching System
   window.switchView = function(viewId) {
@@ -1125,14 +1161,38 @@ window.mactalkQuizReady = (async () => {
   });
 
   const createQuestion = () => ({
+    type: 'multiple_choice',
     text: '',
     options: ['', '', '', ''],
     correct: '',
+    acceptedAnswer: '',
     points: 1,
     timer: Number($('quizDuration').value || 30),
     explanation: '',
     collapsed: false
   });
+
+  const questionTypes = {
+    multiple_choice: 'Multiple choice (A–D)',
+    true_false: 'True / False',
+    multiple_select: 'Multiple select',
+    short_answer: 'Short answer',
+    long_answer: 'Long answer',
+    fill_blank: 'Fill in the blank',
+    matching: 'Matching'
+  };
+
+  function typeHelp(type) {
+    return ({
+      multiple_choice: 'Write four choices (A, B, C, D) and select one correct answer.',
+      true_false: 'Choose whether the statement is true or false.',
+      multiple_select: 'Add choices and select every correct answer.',
+      short_answer: 'Students type a short response. Add the expected answer for answer-key guidance.',
+      long_answer: 'Students write a longer response. The teacher reviews it manually.',
+      fill_blank: 'Write the sentence with a blank and enter the expected missing word.',
+      matching: 'Write the correct matching answer or pairs in the answer field.'
+    })[type] || '';
+  }
 
   const escapeHTML = val => String(val ?? '').replace(/[&<>"']/g, ch => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -1148,10 +1208,17 @@ window.mactalkQuizReady = (async () => {
   function questionIssues(q) {
     const issues = [];
     if(!q.text.trim()) issues.push('Question text missing');
-    if(q.options.some(opt => !String(opt).trim())) issues.push('All 4 options required');
-    const normalized = q.options.map(o => String(o).trim().toLowerCase()).filter(Boolean);
-    if(new Set(normalized).size !== normalized.length) issues.push('Duplicate options');
-    if(!letters.includes(q.correct)) issues.push('Select correct choice');
+    if(q.type === 'multiple_choice') {
+      if(q.options.slice(0,4).some(opt => !String(opt).trim())) issues.push('All 4 choices required');
+      if(!letters.includes(q.correct)) issues.push('Select one correct choice');
+    } else if(q.type === 'true_false') {
+      if(!['true','false'].includes(q.correct)) issues.push('Select True or False');
+    } else if(q.type === 'multiple_select') {
+      if(q.options.filter(x => String(x).trim()).length < 2) issues.push('Add at least 2 choices');
+      if(!Array.isArray(q.correct) || !q.correct.length) issues.push('Select at least one correct choice');
+    } else if(['short_answer','long_answer','fill_blank','matching'].includes(q.type)) {
+      if(!String(q.acceptedAnswer || '').trim() && q.type !== 'long_answer') issues.push('Add the expected answer');
+    }
     return issues;
   }
 
@@ -1164,7 +1231,7 @@ window.mactalkQuizReady = (async () => {
     $('drawerBadge').textContent = questions.length;
 
     if(!questions.length) {
-      container.innerHTML = '<div class="empty-box">No questions added yet. Click "+ Add Question" or import a file in Step 2.</div>';
+      container.innerHTML = '<div class="empty-box">This quiz has no questions yet. Click “Add Question” to add the first one. Keep adding questions here to build one complete quiz.</div>';
       renderReview();
       return;
     }
@@ -1172,58 +1239,73 @@ window.mactalkQuizReady = (async () => {
     container.innerHTML = questions.map((q, i) => {
       const issues = questionIssues(q);
       const isReady = issues.length === 0;
+      const typeOptions = Object.entries(questionTypes).map(([value,label]) =>
+        `<option value="${value}" ${q.type === value ? 'selected' : ''}>${label}</option>`
+      ).join('');
+      let answerEditor = '';
+      if(q.type === 'multiple_choice' || q.type === 'multiple_select') {
+        answerEditor = `
+          <div class="options-grid">
+            ${q.options.map((opt, j) => `
+              <div class="option-box">
+                <span class="option-letter">${letters[j]}</span>
+                <input class="option-input q-opt" data-index="${i}" data-opt="${j}" value="${escapeHTML(opt)}" placeholder="Choice ${letters[j]}">
+              </div>`).join('')}
+          </div>
+          <div class="answer-panel">
+            <div class="answer-panel-title">${q.type === 'multiple_select' ? 'Select all correct answers' : 'Choose the correct answer'}</div>
+            ${letters.map((letter,j) => `
+              <label class="answer-choice">
+                <input class="q-answer" data-index="${i}" type="${q.type === 'multiple_select' ? 'checkbox' : 'radio'}"
+                  name="correct-${i}" value="${letter}"
+                  ${q.type === 'multiple_select' ? (Array.isArray(q.correct) && q.correct.includes(letter) ? 'checked' : '') : (q.correct === letter ? 'checked' : '')}>
+                <strong>${letter}</strong><span>${escapeHTML(q.options[j] || `Choice ${letter}`)}</span>
+              </label>`).join('')}
+          </div>`;
+      } else if(q.type === 'true_false') {
+        answerEditor = `<div class="answer-panel"><div class="answer-panel-title">Correct answer for this question</div>
+          <div class="answer-inline">
+            <label class="answer-choice"><input class="q-answer" data-index="${i}" type="radio" name="correct-${i}" value="true" ${q.correct === 'true' ? 'checked' : ''}> True</label>
+            <label class="answer-choice"><input class="q-answer" data-index="${i}" type="radio" name="correct-${i}" value="false" ${q.correct === 'false' ? 'checked' : ''}> False</label>
+          </div></div>`;
+      } else {
+        answerEditor = `<div class="answer-panel">
+          <div class="answer-panel-title">${q.type === 'long_answer' ? 'Teacher marking guidance (optional)' : 'Expected answer'}</div>
+          <textarea class="q-accepted" data-index="${i}" placeholder="${q.type === 'long_answer' ? 'Add marking points or a model answer…' : 'Type the expected answer…'}">${escapeHTML(q.acceptedAnswer || '')}</textarea>
+        </div>`;
+      }
       return `
         <article class="q-card ${q.collapsed ? 'collapsed' : ''}" data-index="${i}">
           <div class="q-header" onclick="toggleCard(${i})">
             <div class="q-header-left">
               <span class="q-badge">Q${String(i + 1).padStart(2, '0')}</span>
-              <span class="q-title-preview">${escapeHTML(q.text) || '<em>Empty question statement...</em>'}</span>
+              <span class="q-title-preview">${escapeHTML(q.text) || '<em>New question</em>'}</span>
+              <span class="q-type-tag">${questionTypes[q.type]}</span>
             </div>
             <div class="q-header-right">
-              <span class="q-status-chip ${isReady ? 'ready' : 'fix'}">${isReady ? 'Field Ready' : `${issues.length} issue(s)`}</span>
+              <span class="q-status-chip ${isReady ? 'ready' : 'fix'}">${isReady ? 'Ready' : `${issues.length} issue(s)`}</span>
               <button class="btn btn-danger btn-small" type="button" onclick="event.stopPropagation(); deleteQuestion(${i})">Delete</button>
             </div>
           </div>
-
           <div class="q-body">
+            <div class="q-type-row">
+              <div class="mini-field"><label>Question type</label>
+                <select class="q-type" data-index="${i}">${typeOptions}</select>
+              </div>
+              <div class="q-type-help">${typeHelp(q.type)}</div>
+            </div>
             <div class="field full">
-              <label>Question Statement</label>
-              <textarea class="q-input q-text" data-index="${i}" placeholder="Type question here...">${escapeHTML(q.text)}</textarea>
+              <label>Question ${i + 1}</label>
+              <textarea class="q-input q-text" data-index="${i}" placeholder="Write your question here…">${escapeHTML(q.text)}</textarea>
             </div>
-
-            <div class="options-grid">
-              ${q.options.map((opt, j) => `
-                <div class="option-box">
-                  <span class="option-letter">${letters[j]}</span>
-                  <input class="option-input q-opt" data-index="${i}" data-opt="${j}" value="${escapeHTML(opt)}" placeholder="Option ${letters[j]}">
-                </div>
-              `).join('')}
-            </div>
-
+            ${answerEditor}
             <div class="q-meta-row">
-              <div class="mini-field">
-                <label>Correct Choice *</label>
-                <select class="q-correct" data-index="${i}">
-                  <option value="">Select choice</option>
-                  ${letters.map(l => `<option value="${l}" ${q.correct === l ? 'selected' : ''}>Option ${l}</option>`).join('')}
-                </select>
-              </div>
-              <div class="mini-field">
-                <label>Points</label>
-                <input class="q-points" type="number" min="1" max="100" data-index="${i}" value="${Number(q.points) || 1}">
-              </div>
-              <div class="mini-field">
-                <label>Timer (Sec)</label>
-                <input class="q-timer" type="number" min="0" max="600" data-index="${i}" value="${Number(q.timer) || 0}">
-              </div>
-              <div class="mini-field">
-                <label>Explanation</label>
-                <input class="q-exp" type="text" data-index="${i}" value="${escapeHTML(q.explanation || '')}" placeholder="Optional explanation">
-              </div>
+              <div class="mini-field"><label>Points</label><input class="q-points" type="number" min="1" max="100" data-index="${i}" value="${Number(q.points) || 1}"></div>
+              <div class="mini-field"><label>Timer (Sec)</label><input class="q-timer" type="number" min="0" max="600" data-index="${i}" value="${Number(q.timer) || 0}"></div>
+              <div class="mini-field"><label>Explanation</label><input class="q-exp" type="text" data-index="${i}" value="${escapeHTML(q.explanation || '')}" placeholder="Optional explanation"></div>
             </div>
           </div>
-        </article>
-      `;
+        </article>`;
     }).join('');
 
     renderReview();
@@ -1287,15 +1369,29 @@ window.mactalkQuizReady = (async () => {
     if(e.target.classList.contains('q-points')) questions[idx].points = Math.max(1, Number(e.target.value) || 1);
     if(e.target.classList.contains('q-timer')) questions[idx].timer = Math.max(0, Number(e.target.value) || 0);
     if(e.target.classList.contains('q-exp')) questions[idx].explanation = e.target.value;
+    if(e.target.classList.contains('q-accepted')) questions[idx].acceptedAnswer = e.target.value;
 
     renderReview();
   });
 
   $('questionAccordion').addEventListener('change', e => {
-    if(e.target.classList.contains('q-correct')) {
-      const idx = Number(e.target.dataset.index);
-      if(questions[idx]) questions[idx].correct = e.target.value;
-      renderReview();
+    const idx = Number(e.target.dataset.index);
+    if(!Number.isInteger(idx) || !questions[idx]) return;
+    if(e.target.classList.contains('q-type')) {
+      const q = questions[idx];
+      q.type = e.target.value;
+      q.correct = q.type === 'multiple_select' ? [] : '';
+      q.options = q.type === 'true_false' ? ['True','False'] : ['', '', '', ''];
+      q.acceptedAnswer = '';
+      renderQuestions();
+    } else if(e.target.classList.contains('q-answer')) {
+      const q = questions[idx];
+      if(q.type === 'multiple_select') {
+        q.correct = Array.from(document.querySelectorAll(`.q-answer[data-index="${idx}"]:checked`)).map(el => el.value);
+      } else {
+        q.correct = e.target.value;
+      }
+      renderQuestions();
     }
   });
 
@@ -1405,7 +1501,7 @@ window.mactalkQuizReady = (async () => {
 
   function getQuizObject() {
     return {
-      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      id: currentDraftId || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
       title: $('quizTitle').value.trim(),
       subject: $('quizSubject').value.trim(),
       description: $('quizDescription').value.trim(),
@@ -1413,14 +1509,19 @@ window.mactalkQuizReady = (async () => {
       source_file: importedFileName || null,
       questions: questions.map((q, i) => ({
         number: i + 1,
+        type: q.type || 'multiple_choice',
         text: q.text.trim(),
-        options: q.options.map(o => o.trim()),
+        options: q.type === 'multiple_choice' || q.type === 'multiple_select' ? q.options.map(o => o.trim()) :
+          (q.type === 'true_false' ? ['True','False'] : []),
         correct_answer: q.correct,
+        accepted_answer: q.acceptedAnswer || '',
         points: Number(q.points) || 1,
         time_limit: Number(q.timer) || 0,
         explanation: q.explanation.trim()
       })),
-      created_at: new Date().toISOString()
+      created_at: currentDraftCreatedAt || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      cloud_quiz_id: currentCloudQuizId || null
     };
   }
 
@@ -1433,48 +1534,63 @@ window.mactalkQuizReady = (async () => {
     try {
       const { client, user } = await window.mactalkQuizReady;
       const quiz = getQuizObject();
-      const { data: created, error: quizError } = await client.from('quizzes').insert({
-        owner_id: user.id,
-        title: quiz.title,
-        subject: quiz.subject,
-        description: quiz.description,
-        status: 'draft'
-      }).select('id').single();
-      if(quizError) throw quizError;
-
-      const rows = quiz.questions.map((item, index) => ({
-        quiz_id: created.id,
-        position: index + 1,
-        question_text: item.text,
-        options: item.options.map((text, optionIndex) => ({ id: letters[optionIndex], text })),
-        correct_option_id: item.correct_answer,
-        explanation: item.explanation,
-        points: item.points,
-        timer_seconds: item.time_limit
-      }));
-      const { error: questionError } = await client.from('quiz_questions').insert(rows);
-      if(questionError) {
-        await client.from('quizzes').delete().eq('id', created.id);
-        throw questionError;
+      let quizId = currentCloudQuizId;
+      if(quizId) {
+        const { error } = await client.from('quizzes').update({
+          title: quiz.title, subject: quiz.subject, description: quiz.description, status: 'draft'
+        }).eq('id', quizId).eq('owner_id', user.id);
+        if(error) throw error;
+        const { error: deleteError } = await client.from('quiz_questions').delete().eq('quiz_id', quizId);
+        if(deleteError) throw deleteError;
+      } else {
+        const { data: created, error } = await client.from('quizzes').insert({
+          owner_id: user.id, title: quiz.title, subject: quiz.subject,
+          description: quiz.description, status: 'draft'
+        }).select('id').single();
+        if(error) throw error;
+        quizId = created.id;
+        currentCloudQuizId = quizId;
       }
-      showNotice('Quiz and questions saved to your Mac&Talk teacher account.', 'success');
-      button.textContent = '✓ Saved to Mac&Talk';
+      const rows = quiz.questions.map((item, index) => ({
+        quiz_id: quizId, position: index + 1, question_text: item.text,
+        options: item.options.map((text, optionIndex) => ({ id: letters[optionIndex] || String(optionIndex + 1), text })),
+        correct_option_id: Array.isArray(item.correct_answer) ? item.correct_answer.join(',') : String(item.correct_answer || item.accepted_answer || ''),
+        explanation: `[${item.type}] ${item.explanation || ''}${item.accepted_answer ? ` | Expected answer: ${item.accepted_answer}` : ''}`,
+        points: item.points, timer_seconds: item.time_limit
+      }));
+      if(rows.length) {
+        const { error } = await client.from('quiz_questions').insert(rows);
+        if(error) throw error;
+      }
+      currentDraftId = quiz.id;
+      currentDraftCreatedAt = quiz.created_at;
+      upsertLocalDraft({ ...quiz, cloud_quiz_id: quizId });
+      showNotice('Quiz and its latest questions are saved to your Mac&Talk teacher account.', 'success');
+      button.textContent = '✓ Update Quiz in Mac&Talk';
     } catch(e) {
       showNotice(e.message || 'Could not save the quiz to Mac&Talk.', 'error');
+      button.textContent = currentCloudQuizId ? '✓ Update Quiz in Mac&Talk' : '✓ Save Quiz to Mac&Talk';
+    } finally {
       button.disabled = false;
-      button.textContent = '✓ Save Quiz to Mac&Talk';
     }
   });
+
+  function upsertLocalDraft(quiz) {
+    const saved = JSON.parse(localStorage.getItem('mactalk_quiz_drafts') || '[]');
+    const index = saved.findIndex(item => item.id === quiz.id);
+    if(index >= 0) saved[index] = { ...saved[index], ...quiz };
+    else saved.unshift(quiz);
+    localStorage.setItem('mactalk_quiz_drafts', JSON.stringify(saved));
+    currentDraftId = quiz.id;
+    currentDraftCreatedAt = quiz.created_at || currentDraftCreatedAt || new Date().toISOString();
+  }
 
   $('btnSaveDraft').addEventListener('click', () => {
     const err = validateDraft();
     if(err) { showNotice(err, 'error'); return; }
-    const quiz = getQuizObject();
     try {
-      const saved = JSON.parse(localStorage.getItem('mactalk_quiz_drafts') || '[]');
-      saved.unshift(quiz);
-      localStorage.setItem('mactalk_quiz_drafts', JSON.stringify(saved));
-      showNotice('Quiz draft successfully saved to local browser storage!', 'success');
+      upsertLocalDraft(getQuizObject());
+      showNotice('Quiz saved. Open Saved Drafts anytime to continue editing this same quiz.', 'success');
     } catch(e) {
       showNotice('Could not save draft to local storage.', 'error');
     }
@@ -1504,9 +1620,9 @@ window.mactalkQuizReady = (async () => {
       container.innerHTML = saved.map((item, idx) => `
         <div class="saved-draft-card">
           <strong style="font-size:14px; color:var(--navy);">${escapeHTML(item.title)}</strong>
-          <div style="font-size:11px; color:var(--muted); margin:4px 0 10px;">${escapeHTML(item.subject || 'No Subject')} · ${item.questions.length} questions</div>
+          <div style="font-size:11px; color:var(--muted); margin:4px 0 10px;">${escapeHTML(item.subject || 'No Subject')} · ${(item.questions || []).length} questions${item.updated_at ? ' · Updated ' + new Date(item.updated_at).toLocaleDateString() : ''}</div>
           <div style="display:flex; gap:8px;">
-            <button class="btn btn-light btn-small" onclick="loadDraft(${idx})" type="button">Open Draft</button>
+            <button class="btn btn-light btn-small" onclick="loadDraft(${idx})" type="button">Open &amp; Edit</button>
             <button class="btn btn-danger btn-small" onclick="deleteDraft(${idx})" type="button">Delete</button>
           </div>
         </div>
@@ -1519,23 +1635,31 @@ window.mactalkQuizReady = (async () => {
     const saved = JSON.parse(localStorage.getItem('mactalk_quiz_drafts') || '[]');
     const draft = saved[idx];
     if(!draft) return;
+    currentDraftId = draft.id || null;
+    currentCloudQuizId = draft.cloud_quiz_id || null;
+    currentDraftCreatedAt = draft.created_at || null;
     $('quizTitle').value = draft.title || '';
     $('quizSubject').value = draft.subject || '';
     $('quizDescription').value = draft.description || '';
     $('quizDuration').value = String(draft.default_timer ?? 30);
     importedFileName = draft.source_file || '';
     questions = (draft.questions || []).map(q => ({
+      type: q.type || 'multiple_choice',
       text: q.text || '',
       options: q.options || ['', '', '', ''],
       correct: q.correct_answer || '',
+      acceptedAnswer: q.accepted_answer || '',
       points: q.points || 1,
       timer: q.time_limit ?? 30,
       explanation: q.explanation || '',
       collapsed: false
     }));
+    $('chkReviewConfirm').checked = false;
     renderQuestions();
     savedModal.classList.remove('open');
-    showNotice('Draft loaded into workspace.', 'success');
+    $('btnSaveToMacTalk').textContent = currentCloudQuizId ? '✓ Update Quiz in Mac&Talk' : '✓ Save Quiz to Mac&Talk';
+    switchView('view-details');
+    showNotice('Quiz opened. Edit existing questions or add new ones, then save to update this same quiz.', 'success');
   };
 
   window.deleteDraft = function(idx) {
@@ -1545,9 +1669,39 @@ window.mactalkQuizReady = (async () => {
     openSavedModal();
   };
 
+  $('btnNewQuiz').addEventListener('click', () => {
+    if((questions.length || $('quizTitle').value.trim()) &&
+       !confirm('Start a new quiz? Save your current changes first if you want to keep them.')) return;
+    currentDraftId = null;
+    currentCloudQuizId = null;
+    currentDraftCreatedAt = null;
+    importedFileName = '';
+    $('quizTitle').value = '';
+    $('quizSubject').value = '';
+    $('quizDescription').value = '';
+    $('quizDuration').value = '30';
+    $('chkReviewConfirm').checked = false;
+    questions = [];
+    addQuestion();
+    $('btnSaveToMacTalk').textContent = '✓ Save Quiz to Mac&Talk';
+    switchView('view-details');
+    showNotice('New quiz workspace is ready.', 'success');
+  });
+
   $('btnOpenSaved').addEventListener('click', openSavedModal);
   $('btnCloseSaved').addEventListener('click', () => savedModal.classList.remove('open'));
   $('btnCloseSaved2').addEventListener('click', () => savedModal.classList.remove('open'));
+
+  // Show the signed-in teacher's real profile name in the top-right account chip.
+  Promise.resolve(window.mactalkQuizReady).then(({ teacherName }) => {
+    const nameEl = $('teacherAccountName');
+    const avatar = document.querySelector('.teacher-chip .avatar');
+    if(nameEl) nameEl.textContent = teacherName;
+    if(avatar) avatar.textContent = (teacherName.trim()[0] || 'T').toUpperCase();
+  }).catch(() => {
+    const nameEl = $('teacherAccountName');
+    if(nameEl) nameEl.textContent = 'Teacher Account';
+  });
 
   // Initialize
   addQuestion();
