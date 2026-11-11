@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mac&Talk · Quiz Creator</title>
+<style>
+:root{
+  --navy:#10243e;--navy2:#1c3657;--yellow:#ffc629;--bg:#f3f6fb;
+  --white:#fff;--muted:#718096;--line:#e5eaf1;--red:#c53b4b;
+  --blue:#3867d6;--shadow:0 12px 35px rgba(16,36,62,.08)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.app{min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:246px;background:var(--navy);color:var(--white);padding:24px 16px;display:flex;flex-direction:column;z-index:5}
+.brand{display:flex;align-items:center;gap:12px;padding:0 10px 34px}
+.brand-mark{width:44px;height:44px;border-radius:14px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:22px}
+.brand-name{font-size:20px;font-weight:850;letter-spacing:-.5px}
+.brand-name span{color:var(--yellow)}
+.eyebrow{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#9eacc0;margin:8px 12px 12px}
+.nav{display:grid;gap:7px}
+.nav-item{border:0;background:transparent;color:#d8e0eb;text-align:left;padding:13px 14px;border-radius:11px;display:flex;gap:12px;align-items:center;font-size:13px;font-weight:700}
+.nav-item.active,.nav-item:hover{background:var(--yellow);color:var(--navy)}
+.nav-item .ico{width:22px;text-align:center;font-size:17px}
+.side-bottom{margin-top:auto;padding:14px 10px 0;color:#aab8ca;font-size:12px;line-height:1.6}
+.main{margin-left:246px;min-height:100vh}
+.topbar{min-height:78px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:14px 34px;gap:16px}
+.topbar h1{font-size:19px;margin:0 0 5px}
+.topbar p{margin:0;color:var(--muted);font-size:12px}
+.teacher-chip{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:800}
+.avatar{width:36px;height:36px;background:var(--navy);color:var(--yellow);border-radius:50%;display:grid;place-items:center;font-weight:900}
+.content{padding:30px 34px 55px;max-width:1440px;margin:auto}
+.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:23px}
+.welcome h2{font-size:25px;margin:0 0 8px;letter-spacing:-.5px}
+.welcome p{color:var(--muted);margin:0;line-height:1.6;font-size:13px;max-width:650px}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}
+.btn-primary{background:var(--navy);color:var(--white)}
+.btn-primary:hover{background:var(--navy2)}
+.btn-yellow{background:var(--yellow);color:var(--navy)}
+.btn-light{background:#eef2f8;color:var(--navy)}
+.btn-outline{background:var(--white);color:var(--navy);border:1px solid var(--line)}
+.btn-danger{background:var(--white);color:var(--red);border:1px solid var(--line)}
+.btn-small{padding:8px 10px;font-size:11px;border-radius:8px}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr);gap:18px;align-items:start}
+.stack{display:grid;gap:18px;min-width:0}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:18px 21px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-head h3{margin:0;font-size:15px}
+.panel-head p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.panel-body{padding:20px 21px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:grid;gap:7px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:850}
+.field input,.field select,.field textarea{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:11px 12px;outline:none;background:var(--white);color:var(--navy);font-size:12px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(56,103,214,.10)}
+.field textarea{min-height:78px;resize:vertical;line-height:1.5}
+.hint{font-size:10px;color:var(--muted);line-height:1.5}
+.upload-zone{border:1.5px dashed #bdc9d9;border-radius:13px;background:#fbfcfe;padding:23px 16px;text-align:center;transition:.18s}
+.upload-zone.drag{border-color:var(--blue);background:#f3f6fb}
+.upload-icon{width:43px;height:43px;margin:0 auto 10px;border-radius:13px;background:#fff2cf;display:grid;place-items:center;font-size:20px}
+.upload-zone strong{display:block;font-size:13px;margin-bottom:5px}
+.upload-zone p{font-size:11px;color:var(--muted);margin:0 0 13px}
+.upload-meta{margin-top:11px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.question-list{display:grid;gap:13px}
+.question-card{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--white)}
+.question-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#fbfcfe;border-bottom:1px solid var(--line)}
+.question-number{font-size:12px;font-weight:900}
+.question-tools{display:flex;align-items:center;gap:7px}
+.question-status{font-size:10px;font-weight:800;color:var(--muted)}
+.question-body{padding:15px}
+.question-text{width:100%;min-height:66px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:11px;color:var(--navy);outline:none;font-size:12px;line-height:1.5}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+.option{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;min-width:0}
+.option b{font-size:11px;color:var(--muted);width:15px}
+.option input[type=text]{border:0;outline:0;min-width:0;width:100%;font-size:11px;color:var(--navy);background:transparent}
+.option:focus-within{border-color:var(--blue)}
+.question-bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.mini-field{display:grid;gap:6px}
+.mini-field label{font-size:10px;font-weight:800;color:var(--muted)}
+.mini-field input,.mini-field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:11px;color:var(--navy);background:var(--white);outline:0}
+.empty-questions{padding:28px 16px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:12px}
+.review-list{display:grid;gap:9px}
+.review-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;background:#fbfcfe;border:1px solid var(--line);border-radius:9px;font-size:11px}
+.review-row strong{font-size:11px}
+.review-state{color:var(--muted);font-weight:800;font-size:10px}
+.review-state.good{color:var(--navy2)}
+.review-state.fix{color:var(--red)}
+.checkline{display:flex;align-items:flex-start;gap:9px;margin-top:14px;font-size:11px;line-height:1.5;color:var(--navy)}
+.checkline input{margin-top:2px;accent-color:var(--navy)}
+.summary-box{background:#fbfcfe;border:1px solid var(--line);border-radius:11px;padding:13px;margin-bottom:12px}
+.summary-box span{display:block;color:var(--muted);font-size:10px;font-weight:800;margin-bottom:5px}
+.summary-box strong{font-size:21px}
+.notice{display:none;padding:11px 13px;border-radius:9px;font-size:11px;line-height:1.5;margin-bottom:13px}
+.notice.show{display:block}
+.notice.success{background:#eef2f8;color:var(--navy2);border:1px solid var(--line)}
+.notice.error{background:#fff0f1;color:var(--red);border:1px solid #f0d8dc}
+.footer-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+.footer-actions .right{display:flex;gap:8px;flex-wrap:wrap}
+.modal-backdrop{position:fixed;inset:0;background:rgba(6,17,33,.62);z-index:30;display:none;align-items:center;justify-content:center;padding:18px}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--white);border-radius:16px;width:min(560px,100%);max-height:90vh;overflow:auto;box-shadow:var(--shadow)}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{margin:0;font-size:15px}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.saved-item{padding:12px;border:1px solid var(--line);border-radius:10px;margin-top:9px}
+.saved-item strong{font-size:12px}
+.saved-item small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.stack.side{grid-template-columns:1fr 1fr}.sidebar{width:215px}.main{margin-left:215px}.content{padding:25px 22px}}
+@media(max-width:700px){.sidebar{position:relative;width:auto;height:auto;padding:13px 14px}.brand{padding:0 5px 12px}.brand-mark{width:36px;height:36px}.brand-name{font-size:17px}.eyebrow,.side-bottom{display:none}.nav{display:flex;overflow:auto;padding-bottom:2px}.nav-item{white-space:nowrap;padding:9px 11px}.main{margin-left:0}.topbar{padding:13px 17px;min-height:68px}.content{padding:22px 14px 35px}.welcome{display:block}.welcome .btn{margin-top:14px}.welcome h2{font-size:22px}.stack.side{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.options-grid{grid-template-columns:1fr}.topbar p{max-width:220px}.teacher-chip span{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">M</div><div class="brand-name">Mac<span>&</span>Talk</div></div>
+    <div class="eyebrow">TEACHER WORKSPACE</div>
+    <nav class="nav">
+      <button class="nav-item" type="button" id="backTeacher"><span class="ico">⌂</span>Teacher Workspace</button>
+      <button class="nav-item active" type="button"><span class="ico">▤</span>Quiz Creator</button>
+    </nav>
+    <div class="side-bottom">Create. Review. Save.<br>Good conversations. Better learning.</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1>Quiz Creator</h1><p>Prepare a quiz before class and launch it when you're ready.</p></div>
+      <div class="teacher-chip"><div class="avatar">T</div><span>Teacher Workspace</span></div>
+    </header>
+
+    <section class="content">
+      <div class="welcome">
+        <div><h2>Create a new quiz</h2><p>Build your quiz manually or import a document. Check every question and correct answer before saving it as a draft.</p></div>
+        <button class="btn btn-light" id="savedQuizzesBtn" type="button">▣ Saved drafts</button>
+      </div>
+
+      <div id="notice" class="notice" role="status"></div>
+
+      <div class="layout">
+        <div class="stack">
+          <section class="panel">
+            <div class="panel-head"><div><h3>01 · Quiz information</h3><p>Start with the basic details of your quiz.</p></div></div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field full"><label for="quizTitle">Quiz title *</label><input id="quizTitle" placeholder="e.g. Introduction to Biology"></div>
+                <div class="field"><label for="quizSubject">Subject</label><input id="quizSubject" placeholder="e.g. Biology"></div>
+                <div class="field"><label for="quizDuration">Default question time</label><select id="quizDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option><option value="90">90 seconds</option><option value="0">No timer</option></select></div>
+                <div class="field full"><label for="quizDescription">Description</label><textarea id="quizDescription" placeholder="What will students practise in this quiz?"></textarea></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>02 · Import questions</h3><p>Upload a document and then review the extracted questions.</p></div><span class="hint">PDF · DOCX · TXT</span></div>
+            <div class="panel-body">
+              <div class="upload-zone" id="dropZone">
+                <div class="upload-icon">⇧</div>
+                <strong>Drop your quiz file here</strong>
+                <p>Or choose a file from your computer. Text-based PDFs work best.</p>
+                <input id="fileInput" type="file" accept=".pdf,.docx,.txt" hidden>
+                <button class="btn btn-outline" id="chooseFile" type="button">Choose a file</button>
+                <div class="upload-meta" id="fileMeta">No file selected</div>
+              </div>
+              <p class="hint" style="margin:11px 2px 0">Scanned PDFs (images of pages) need OCR and may not import correctly. Imported text is only a draft: check the wording, options and correct answers yourself.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div><h3>03 · Questions</h3><p>Add questions manually or edit the questions imported from your file.</p></div>
+              <button class="btn btn-yellow btn-small" id="addQuestion" type="button">＋ Add question</button>
+            </div>
+            <div class="panel-body">
+              <div class="question-list" id="questionList"></div>
+              <div class="footer-actions">
+                <span class="hint" id="questionCount">0 questions added</span>
+                <button class="btn btn-outline btn-small" id="addQuestionBottom" type="button">＋ Add another question</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="stack side">
+          <section class="panel">
+            <div class="panel-head"><div><h3>04 · Review your quiz</h3><p>Resolve missing information before saving.</p></div></div>
+            <div class="panel-body">
+              <div class="summary-box"><span>TOTAL QUESTIONS</span><strong id="totalQuestions">0</strong></div>
+              <div class="review-list" id="reviewList"><div class="empty-questions">Add at least one question to begin the review.</div></div>
+              <label class="checkline"><input type="checkbox" id="confirmReview"><span>I have checked the questions, options and correct answers, and I am happy with the quiz content.</span></label>
+              <p class="hint" style="margin:10px 0 0">This checklist checks that the fields are complete. It cannot verify whether the answers are factually correct.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><h3>05 · Save quiz</h3><p>Your quiz will be saved as a draft.</p></div></div>
+            <div class="panel-body">
+              <div class="summary-box"><span>QUIZ STATUS</span><strong style="font-size:15px">Draft</strong></div>
+              <p class="hint" style="margin:0 0 15px">You can return to your teacher workspace to publish or start the quiz later.</p>
+              <button class="btn btn-primary" id="saveQuiz" type="button" style="width:100%">Save quiz draft</button>
+              <button class="btn btn-light" id="exportQuiz" type="button" style="width:100%;margin-top:8px">Export quiz as JSON</button>
+              <p class="hint" style="margin:12px 0 0">This standalone page saves drafts in this browser. Connect it to your Supabase quiz tables to share drafts across devices and accounts.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="savedModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Saved quiz drafts</h3><button class="btn btn-light btn-small" id="closeSaved" type="button">Close</button></div>
+    <div class="modal-body"><div id="savedList"></div></div>
+    <div class="modal-foot"><button class="btn btn-primary" id="closeSaved2" type="button">Done</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const letters = ['A','B','C','D'];
+  let questions = [];
+  let importedFileName = '';
+
+  const makeQuestion = () => ({text:'', options:['','','',''], correct:'', points:1, timer:Number($('quizDuration').value || 0), explanation:''});
+  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const showNotice = (message, type='success') => {
+    $('notice').textContent = message;
+    $('notice').className = 'notice show ' + type;
+    $('notice').scrollIntoView({behavior:'smooth',block:'nearest'});
+  };
+
+  function renderQuestions(){
+    const list = $('questionList');
+    $('questionCount').textContent = `${questions.length} question${questions.length===1?'':'s'} added`;
+    $('totalQuestions').textContent = questions.length;
+    if(!questions.length){
+      list.innerHTML = '<div class="empty-questions">No questions yet. Select “Add question” or import a file above.</div>';
+      renderReview();
+      return;
+    }
+    list.innerHTML = questions.map((q,i) => `
+      <article class="question-card" data-index="${i}">
+        <div class="question-head">
+          <span class="question-number">QUESTION ${String(i+1).padStart(2,'0')}</span>
+          <div class="question-tools"><span class="question-status" id="qstatus-${i}">Not checked</span><button class="btn btn-danger btn-small remove-question" type="button" data-index="${i}">Remove</button></div>
+        </div>
+        <div class="question-body">
+          <textarea class="question-text q-text" data-index="${i}" placeholder="Write your question here...">${escapeHTML(q.text)}</textarea>
+          <div class="options-grid">
+            ${q.options.map((option,j)=>`<label class="option"><b>${letters[j]}</b><input class="q-option" data-index="${i}" data-option="${j}" type="text" value="${escapeHTML(option)}" placeholder="Answer option ${letters[j]}"></label>`).join('')}
+          </div>
+          <div class="question-bottom">
+            <div class="mini-field"><label>Correct answer</label><select class="q-correct" data-index="${i}"><option value="">Choose correct option</option>${letters.map((l,j)=>`<option value="${l}" ${q.correct===l?'selected':''}>${l}</option>`).join('')}</select></div>
+            <div class="mini-field"><label>Points</label><input class="q-points" data-index="${i}" type="number" min="1" max="100" value="${Number(q.points)||1}"></div>
+            <div class="mini-field"><label>Time limit (seconds)</label><input class="q-timer" data-index="${i}" type="number" min="0" max="600" value="${Number(q.timer)||0}"></div>
+            <div class="mini-field"><label>Explanation (optional)</label><input class="q-explanation" data-index="${i}" type="text" value="${escapeHTML(q.explanation||'')}" placeholder="Explain the answer"></div>
+          </div>
+        </div>
+      </article>`).join('');
+    renderReview();
+  }
+
+  function questionIssues(q){
+    const issues=[];
+    if(!q.text.trim()) issues.push('Question text missing');
+    if(q.options.some(x=>!String(x).trim())) issues.push('Complete all four options');
+    const normalized=q.options.map(x=>String(x).trim().toLowerCase()).filter(Boolean);
+    if(new Set(normalized).size!==normalized.length) issues.push('Duplicate options');
+    if(!letters.includes(q.correct)) issues.push('Choose the correct answer');
+    return issues;
+  }
+
+  function renderReview(){
+    const review=$('reviewList');
+    if(!questions.length){review.innerHTML='<div class="empty-questions">Add at least one question to begin the review.</div>';return;}
+    review.innerHTML=questions.map((q,i)=>{
+      const issues=questionIssues(q);
+      return `<div class="review-row"><strong>Question ${i+1}</strong><span class="review-state ${issues.length?'fix':'good'}">${issues.length?`${issues.length} item(s) to fix`:'Fields complete'}</span></div>`;
+    }).join('');
+    questions.forEach((q,i)=>{
+      const status=$(`qstatus-${i}`);
+      if(status){const issues=questionIssues(q);status.textContent=issues.length?'Needs attention':'Fields complete';status.style.color=issues.length?'var(--red)':'var(--navy2)';}
+    });
+  }
+
+  function addQuestion(){
+    questions.push(makeQuestion());
+    renderQuestions();
+    const cards=$('questionList').querySelectorAll('.question-card');
+    cards[cards.length-1]?.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  $('addQuestion').addEventListener('click',addQuestion);
+  $('addQuestionBottom').addEventListener('click',addQuestion);
+
+  $('questionList').addEventListener('input',e=>{
+    const i=Number(e.target.dataset.index);
+    if(!Number.isInteger(i)||!questions[i])return;
+    if(e.target.classList.contains('q-text'))questions[i].text=e.target.value;
+    if(e.target.classList.contains('q-option'))questions[i].options[Number(e.target.dataset.option)]=e.target.value;
+    if(e.target.classList.contains('q-points'))questions[i].points=Math.max(1,Number(e.target.value)||1);
+    if(e.target.classList.contains('q-timer'))questions[i].timer=Math.max(0,Number(e.target.value)||0);
+    if(e.target.classList.contains('q-explanation'))questions[i].explanation=e.target.value;
+    renderReview();
+  });
+  $('questionList').addEventListener('change',e=>{
+    if(e.target.classList.contains('q-correct')){
+      const i=Number(e.target.dataset.index);
+      if(questions[i])questions[i].correct=e.target.value;
+      renderReview();
+    }
+  });
+  $('questionList').addEventListener('click',e=>{
+    const btn=e.target.closest('.remove-question');
+    if(!btn)return;
+    questions.splice(Number(btn.dataset.index),1);
+    renderQuestions();
+  });
+  $('quizDuration').addEventListener('change',()=>{
+    questions.forEach(q=>q.timer=Number($('quizDuration').value)||0);
+    renderQuestions();
+  });
+
+  $('chooseFile').addEventListener('click',()=>$('fileInput').click());
+  $('fileInput').addEventListener('change',e=>{if(e.target.files[0])importFile(e.target.files[0]);});
+  const drop=$('dropZone');
+  ['dragenter','dragover'].forEach(name=>drop.addEventListener(name,e=>{e.preventDefault();drop.classList.add('drag');}));
+  ['dragleave','drop'].forEach(name=>drop.addEventListener(name,e=>{e.preventDefault();drop.classList.remove('drag');}));
+  drop.addEventListener('drop',e=>{const file=e.dataTransfer.files[0];if(file)importFile(file);});
+
+  async function extractText(file){
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(ext==='txt')return await file.text();
+    if(ext==='docx'){
+      if(!window.mammoth)throw new Error('The DOCX reader could not load. Check your internet connection and try again.');
+      const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+      return result.value;
+    }
+    if(ext==='pdf'){
+      if(!window.pdfjsLib)throw new Error('The PDF reader could not load. Check your internet connection and try again.');
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+      let text='';
+      for(let p=1;p<=pdf.numPages;p++){
+        const page=await pdf.getPage(p);
+        const content=await page.getTextContent();
+        text+=content.items.map(item=>item.str).join(' ')+'\n';
+      }
+      return text;
+    }
+    throw new Error('Please choose a PDF, DOCX or TXT file.');
+  }
+
+  function parseQuestions(text){
+    const lines=text.replace(/\r/g,'').split('\n').map(s=>s.trim()).filter(Boolean);
+    const blocks=[];
+    let current=null;
+    const startQuestion=/^(?:question\s*)?\d+\s*[.)\-:]\s*(.*)$/i;
+    for(const line of lines){
+      const match=line.match(startQuestion);
+      if(match){
+        if(current)blocks.push(current);
+        current={text:match[1]||'',options:['','','',''],correct:'',explanation:''};
+      }else if(current){
+        const option=line.match(/^([A-D])\s*[).:\-]\s*(.*)$/i);
+        const answer=line.match(/^(?:correct\s*)?answer\s*[:\-]\s*([A-D])\b/i);
+        const explanation=line.match(/^(?:explanation|why)\s*[:\-]\s*(.*)$/i);
+        if(option)current.options[option[1].toUpperCase().charCodeAt(0)-65]=option[2];
+        else if(answer)current.correct=answer[1].toUpperCase();
+        else if(explanation)current.explanation=explanation[1];
+        else current.text+=(current.text?' ':'')+line;
+      }
+    }
+    if(current)blocks.push(current);
+    return blocks.filter(q=>q.text||q.options.some(Boolean)).map(q=>({...q,points:1,timer:Number($('quizDuration').value)||0}));
+  }
+
+  async function importFile(file){
+    $('fileMeta').textContent=`Reading ${file.name}…`;
+    try{
+      const text=await extractText(file);
+      const imported=parseQuestions(text);
+      if(!imported.length)throw new Error('No numbered questions were detected. Use a format such as “1. Question”, followed by A), B), C), D) options.');
+      questions=imported;
+      importedFileName=file.name;
+      $('fileMeta').textContent=`Imported ${imported.length} question(s) from ${file.name}`;
+      renderQuestions();
+      showNotice(`${imported.length} question(s) imported. Review and edit every question and select any missing correct answers.`,'success');
+    }catch(err){
+      $('fileMeta').textContent=file.name;
+      showNotice(err.message||'Could not read this file.','error');
+    }
+  }
+
+  function buildQuiz(){
+    return {
+      id: (crypto.randomUUID?crypto.randomUUID():String(Date.now())),
+      title:$('quizTitle').value.trim(),
+      subject:$('quizSubject').value.trim(),
+      description:$('quizDescription').value.trim(),
+      default_timer:Number($('quizDuration').value)||0,
+      status:'draft',
+      source_file:importedFileName||null,
+      questions:questions.map((q,i)=>({number:i+1,text:q.text.trim(),options:q.options.map(x=>x.trim()),correct_answer:q.correct,points:Number(q.points)||1,time_limit:Number(q.timer)||0,explanation:q.explanation.trim()})),
+      created_at:new Date().toISOString()
+    };
+  }
+  function validate(){
+    if(!$('quizTitle').value.trim())return 'Please enter a quiz title.';
+    if(!questions.length)return 'Add or import at least one question.';
+    for(let i=0;i<questions.length;i++){
+      const issues=questionIssues(questions[i]);
+      if(issues.length)return `Question ${i+1}: ${issues.join(', ')}.`;
+    }
+    if(!$('confirmReview').checked)return 'Please confirm that you have reviewed the quiz.';
+    return '';
+  }
+  $('saveQuiz').addEventListener('click',()=>{
+    const error=validate();
+    if(error){showNotice(error,'error');return;}
+    const quiz=buildQuiz();
+    try{
+      const saved=JSON.parse(localStorage.getItem('mactalk_quiz_drafts')||'[]');
+      saved.unshift(quiz);
+      localStorage.setItem('mactalk_quiz_drafts',JSON.stringify(saved));
+      showNotice('Your quiz draft has been saved in this browser. You can find it under Saved drafts.','success');
+    }catch(e){showNotice('Could not save the draft in this browser. Try exporting it as JSON.','error');}
+  });
+  $('exportQuiz').addEventListener('click',()=>{
+    const error=validate();
+    if(error){showNotice(error,'error');return;}
+    const blob=new Blob([JSON.stringify(buildQuiz(),null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='mactalk-quiz-draft.json';a.click();
+    URL.revokeObjectURL(url);
+    showNotice('Quiz JSON exported.','success');
+  });
+
+  function showSaved(){
+    const saved=JSON.parse(localStorage.getItem('mactalk_quiz_drafts')||'[]');
+    $('savedList').innerHTML=saved.length?saved.map((q,i)=>`<div class="saved-item"><strong>${escapeHTML(q.title)}</strong><small>${escapeHTML(q.subject||'No subject')} · ${q.questions.length} questions · ${new Date(q.created_at).toLocaleString()}</small><div style="display:flex;gap:7px;margin-top:10px"><button class="btn btn-light btn-small load-draft" data-index="${i}" type="button">Open draft</button><button class="btn btn-danger btn-small delete-draft" data-index="${i}" type="button">Delete</button></div></div>`).join(''):'<div class="empty-questions">No saved drafts in this browser yet.</div>';
+    $('savedModal').classList.add('open');
+  }
+  $('savedQuizzesBtn').addEventListener('click',showSaved);
+  function closeSaved(){$('savedModal').classList.remove('open');}
+  $('closeSaved').addEventListener('click',closeSaved);
+  $('closeSaved2').addEventListener('click',closeSaved);
+  $('savedModal').addEventListener('click',e=>{if(e.target===$('savedModal'))closeSaved();});
+  $('savedList').addEventListener('click',e=>{
+    const load=e.target.closest('.load-draft');
+    const del=e.target.closest('.delete-draft');
+    const saved=JSON.parse(localStorage.getItem('mactalk_quiz_drafts')||'[]');
+    if(del){
+      saved.splice(Number(del.dataset.index),1);
+      localStorage.setItem('mactalk_quiz_drafts',JSON.stringify(saved));
+      showSaved();
+    }
+    if(load){
+      const q=saved[Number(load.dataset.index)];
+      if(!q)return;
+      $('quizTitle').value=q.title||'';$('quizSubject').value=q.subject||'';$('quizDescription').value=q.description||'';
+      $('quizDuration').value=String(q.default_timer??30);
+      importedFileName=q.source_file||'';
+      questions=(q.questions||[]).map(item=>({text:item.text||'',options:item.options||['','','',''],correct:item.correct_answer||'',points:item.points||1,timer:item.time_limit??30,explanation:item.explanation||''}));
+      $('confirmReview').checked=false;
+      renderQuestions();closeSaved();showNotice('Draft opened. Review it again before saving.','success');
+    }
+  });
+
+  $('backTeacher').addEventListener('click',()=>{
+    if(history.length>1)history.back();
+    else window.location.href='teacher.html';
+  });
+
+  addQuestion();
+})();
+</script>
+</body>
+</html>
