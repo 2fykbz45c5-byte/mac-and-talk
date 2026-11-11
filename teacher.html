@@ -19,6 +19,25 @@
 @media(max-width:900px){.student-list{grid-template-columns:repeat(2,minmax(0,1fr))}.session-cards{grid-template-columns:1fr}}
 @media(max-width:560px){.student-list{grid-template-columns:1fr}.room-frame{min-height:340px;height:65vh}.topbar h1{font-size:18px}}
 
+/* Separate Quiz Studio launch card */
+.quiz-launch-panel{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;overflow:hidden;padding:30px 34px;border:1px solid #e7ebf2;border-radius:20px;background:linear-gradient(115deg,#10243e 0%,#1c3657 72%,#263f60 100%);color:#fff;box-shadow:0 14px 34px rgba(16,36,62,.14)}
+.quiz-launch-copy{position:relative;z-index:1;max-width:680px}
+.quiz-launch-kicker{display:inline-flex;align-items:center;gap:8px;color:#ffc629;font-size:10px;font-weight:900;letter-spacing:1.3px}
+.quiz-launch-copy h2{margin:12px 0 7px;font-size:clamp(23px,3vw,30px);font-weight:900;letter-spacing:-.7px}
+.quiz-launch-copy p{max-width:590px;margin:0;color:#d2dbe7;font-size:13px;line-height:1.65}
+.quiz-studio-launch{display:inline-flex;align-items:center;gap:13px;margin-top:22px;padding:12px 17px;border-radius:13px;background:#ffc629;color:#10243e;text-decoration:none;box-shadow:0 7px 20px rgba(255,198,41,.2);transition:transform .18s ease,box-shadow .18s ease}
+.quiz-studio-launch:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(255,198,41,.28)}
+.quiz-launch-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:10px;background:#10243e;color:#ffc629;font-size:25px;font-weight:700}
+.quiz-studio-launch strong,.quiz-studio-launch small{display:block}
+.quiz-studio-launch strong{font-size:13px;font-weight:900}
+.quiz-studio-launch small{margin-top:2px;font-size:10px;font-weight:700;opacity:.72}
+.quiz-launch-arrow{margin-left:12px;font-size:21px;font-weight:900}
+.quiz-launch-art{position:relative;display:grid;place-items:center;flex:0 0 150px;width:150px;height:150px;margin-right:5%;border:1px solid rgba(255,198,41,.24);border-radius:38px;background:rgba(255,255,255,.07);transform:rotate(-8deg)}
+.quiz-launch-art span{font-size:83px;font-weight:950;color:#ffc629}
+.quiz-launch-art i,.quiz-launch-art b{position:absolute;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#fff;color:#10243e;font-style:normal;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.15)}
+.quiz-launch-art i{right:-12px;top:12px;color:#b27c00}
+.quiz-launch-art b{left:-12px;bottom:12px;color:#1c5235}
+@media(max-width:650px){.quiz-launch-panel{padding:24px 20px}.quiz-launch-art{display:none}.quiz-studio-launch{width:100%}.quiz-launch-arrow{margin-left:auto}}
 /* Mac&Talk Quiz Center — refreshed, compact and responsive */
 #page-quizzes .welcome{align-items:center;margin-bottom:20px}
 #page-quizzes .welcome h2{letter-spacing:-.5px}
@@ -79,35 +98,26 @@
 <section class="page" id="page-sessions"><div class="welcome"><div><h2>My live sessions</h2><p>Create sessions for admin approval, update your own sessions, and launch approved rooms.</p></div><button class="btn btn-primary" id="newSessionBtn2">＋ Create session</button></div><div class="panel"><div class="panel-head"><div><h3>Session library</h3><p>Pending sessions are not visible to students until approved.</p></div><button class="btn btn-light btn-small" id="refreshSessionsBtn">↻ Refresh</button></div><div id="mySessions" class="session-cards"><p class="empty">Loading…</p></div></div></section>
 
 <section class="page" id="page-quizzes">
- <div class="welcome"><div><h2>My Quiz Center</h2><p>Create your own quizzes, prepare exams, and start a live classroom quiz.</p></div><button class="btn btn-light" id="teacherQuizRefresh">↻ Refresh</button></div>
- <div class="panel quiz-import">
-  <h3>📄 Import a quiz from a file</h3>
-  <p class="import-help">Upload a PDF, DOCX or TXT file. The importer reads questions, options A–D, correct answers and explanations when they are clearly labelled. You can edit every question before saving.</p>
-  <div class="form-grid">
-   <div class="form-field"><label for="teacherImportFile">Quiz file</label><input class="field-control" id="teacherImportFile" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"></div>
-   <div class="form-field"><label for="teacherImportTitle">Quiz title *</label><input class="field-control" id="teacherImportTitle" maxlength="140" placeholder="Imported quiz title"></div>
-   <div class="form-field"><label for="teacherImportSubject">Subject</label><input class="field-control" id="teacherImportSubject" placeholder="Subject"></div>
+ <div class="quiz-launch-panel">
+  <div class="quiz-launch-copy">
+   <span class="quiz-launch-kicker">MAC&TALK · QUIZ STUDIO</span>
+   <h2>Prepare your next quiz</h2>
+   <p>Create a new quiz, import questions, organize the question list and review everything in a dedicated workspace.</p>
+   <a class="quiz-studio-launch" href="quiz-create.html">
+    <span class="quiz-launch-icon">＋</span>
+    <span><strong>Create a New Quiz</strong><small>Open the separate Quiz Studio</small></span>
+    <span class="quiz-launch-arrow">→</span>
+   </a>
   </div>
-  <div class="import-actions"><button class="btn btn-primary" id="teacherImportRead">Read file & preview</button><button class="btn btn-light" id="teacherImportClear" type="button">Clear</button></div>
-  <div class="import-status" id="teacherImportStatus">Nothing uploaded yet.</div>
-  <div id="teacherImportPreview" class="import-preview"></div>
-  <div class="import-actions" id="teacherImportSaveRow" style="display:none"><label style="font-size:12px;display:flex;align-items:center;gap:8px"><input type="checkbox" id="teacherImportReviewed"> I reviewed the questions and verified the correct answers.</label><button class="btn btn-yellow" id="teacherImportSave">Save imported quiz</button></div>
+  <div class="quiz-launch-art" aria-hidden="true"><span>Q</span><i>✦</i><b>✓</b></div>
  </div>
- <div class="quiz-grid">
-  <div class="panel quiz-form"><h3>＋ Create a quiz</h3>
-   <div class="form-field"><label for="teacherQuizTitle">Quiz title *</label><input class="field-control" id="teacherQuizTitle" maxlength="140" placeholder="e.g. Grammar revision"></div>
-   <div class="form-grid"><div class="form-field"><label for="teacherQuizSubject">Subject</label><input class="field-control" id="teacherQuizSubject"></div><div class="form-field"><label for="teacherQuizStatus">Status</label><select class="field-control" id="teacherQuizStatus"><option value="draft">Draft</option><option value="published">Published</option></select></div></div>
-   <div class="form-field"><label for="teacherQuizDescription">Description</label><textarea class="field-control" id="teacherQuizDescription"></textarea></div><button class="btn btn-primary" id="teacherQuizCreate">Create quiz</button>
+ <div class="panel" style="margin-top:20px">
+  <div class="panel-head">
+   <div><h3>My quizzes</h3><p>Manage, publish or launch quizzes saved to your teacher account.</p></div>
+   <button class="btn btn-light btn-small" id="teacherQuizRefresh">↻ Refresh</button>
   </div>
-  <div class="panel quiz-form"><h3>＋ Add a question</h3>
-   <div class="form-field"><label for="teacherQuestionQuiz">Choose quiz</label><select class="field-control" id="teacherQuestionQuiz"></select></div>
-   <div class="form-field"><label for="teacherQuestionText">Question *</label><textarea class="field-control" id="teacherQuestionText"></textarea></div>
-   <div class="form-grid"><div class="form-field"><label>Option A</label><input class="field-control" id="teacherOptA"></div><div class="form-field"><label>Option B</label><input class="field-control" id="teacherOptB"></div><div class="form-field"><label>Option C</label><input class="field-control" id="teacherOptC"></div><div class="form-field"><label>Option D</label><input class="field-control" id="teacherOptD"></div></div>
-   <div class="form-grid"><div class="form-field"><label for="teacherCorrect">Correct option</label><select class="field-control" id="teacherCorrect"><option>A</option><option>B</option><option>C</option><option>D</option></select></div><div class="form-field"><label for="teacherPoints">Points</label><input class="field-control" id="teacherPoints" type="number" min="1" value="1"></div><div class="form-field"><label for="teacherTimer">Timer (seconds)</label><input class="field-control" id="teacherTimer" type="number" min="5" max="600" value="30"></div></div>
-   <div class="form-field"><label for="teacherExplanation">Explanation (after reveal)</label><textarea class="field-control" id="teacherExplanation"></textarea></div><button class="btn btn-yellow" id="teacherQuestionAdd">Add question</button>
-  </div>
+  <div id="teacherQuizList" class="quiz-list"><p class="empty">Loading quizzes…</p></div>
  </div>
- <div class="panel" style="margin-top:18px"><div class="panel-head"><div><h3>My quizzes</h3><p>Only you and administrators can manage your quizzes.</p></div></div><div id="teacherQuizList" class="quiz-list"><p class="empty">Loading quizzes…</p></div></div>
  <details class="quiz-wifi-settings">
   <summary><span>📶</span> Classroom Wi-Fi settings <span class="tag">Optional</span></summary>
   <div class="wifi-fields"><p class="quiz-help">If students need classroom Wi-Fi, enter its details here. The Wi-Fi QR code will appear on the separate Join Quiz page after you start the quiz. These details are kept in this browser tab and are not added to the quiz URL.</p>
@@ -140,7 +150,7 @@ let teacherQuizzes=[];
 async function loadTeacherQuizzes(){
  const {data,error}=await supabase.from("quizzes").select("id,title,description,subject,status,created_at,quiz_questions(id)").order("created_at",{ascending:false});
  if(error)throw error;teacherQuizzes=data||[];
- $("teacherQuestionQuiz").innerHTML=teacherQuizzes.map(q=>`<option value="${esc(q.id)}">${esc(q.title)} · ${q.quiz_questions?.length||0} questions</option>`).join("")||'<option value="">Create a quiz first</option>';
+ if($("teacherQuestionQuiz"))$("teacherQuestionQuiz").innerHTML=teacherQuizzes.map(q=>`<option value="${esc(q.id)}">${esc(q.title)} · ${q.quiz_questions?.length||0} questions</option>`).join("")||'<option value="">Create a quiz first</option>';
  $("teacherQuizList").innerHTML=teacherQuizzes.length?teacherQuizzes.map(q=>`<article class="quiz-item"><div class="quiz-item-head"><div><h3>${esc(q.title)}</h3><div class="quiz-meta">${esc(q.subject||"No subject")} · ${q.quiz_questions?.length||0} questions</div></div><span class="pill ${q.status==="published"?"pill-approved":"pill-pending"}">${esc(q.status)}</span></div><div class="quiz-actions"><button class="btn btn-primary btn-small" data-teacher-quiz-launch="${esc(q.id)}">Start this quiz</button><button class="btn btn-light btn-small" data-teacher-quiz-publish="${esc(q.id)}">Publish</button><button class="btn btn-danger btn-small" data-teacher-quiz-delete="${esc(q.id)}">Delete</button></div></article>`).join(""):'<p class="empty">You have not created any quizzes yet.</p>';
 }
 async function createTeacherQuiz(){
@@ -172,7 +182,7 @@ async function teacherQuizAction(action,id){
  if(action==="launch")await startTeacherQuiz(id);
 }
 
-function switchPage(name){if(name==="quizzes"){location.href="quiz-create.html";return;}document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id==="page-"+name));document.querySelectorAll(".nav button[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===name));const names={overview:"Teacher overview",sessions:"My live sessions",students:"My permitted students",room:"Live video room",messages:"Messages",settings:"Account & settings",quizzes:"Quiz Center"};$("pageHeading").textContent=names[name]||"Teacher workspace";if(name==="students")loadStudents();if(name==="sessions"||name==="overview")loadSessions();if(name==="quizzes")loadTeacherQuizzes().catch(e=>notice("Quiz Center: "+e.message,"error"));}
+function switchPage(name){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id==="page-"+name));document.querySelectorAll(".nav button[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===name));const names={overview:"Teacher overview",sessions:"My live sessions",students:"My permitted students",room:"Live video room",messages:"Messages",settings:"Account & settings",quizzes:"Quiz Center"};$("pageHeading").textContent=names[name]||"Teacher workspace";if(name==="students")loadStudents();if(name==="sessions"||name==="overview")loadSessions();if(name==="quizzes")loadTeacherQuizzes().catch(e=>notice("Quiz Center: "+e.message,"error"));}
 function pill(s){return s.approved?'<span class="tag approved">Approved</span>':'<span class="tag">Pending approval</span>'}
 function sessionCard(s){const when=s.scheduled_at?new Date(s.scheduled_at).toLocaleString():"Time not set";return `<article class="session-card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><h3>${esc(s.emoji||"🎙️")} ${esc(s.title)}</h3>${pill(s)}</div><p>${esc(s.description||"No description added.")}</p><p>📅 ${esc(when)} · <span class="pill pill-${esc(s.status||"scheduled")}">${esc(s.status||"scheduled")}</span></p><div class="session-actions">${s.approved?`<button class="btn btn-primary btn-small" data-room="${esc(s.id)}">📹 Open room</button><span class="muted-note">Ask admin to change approved details</span>`:`<button class="btn btn-light btn-small" data-edit="${esc(s.id)}">✎ Edit details</button>`}<button class="btn btn-danger btn-small" data-delete="${esc(s.id)}">Delete</button></div></article>`}
 function renderSessions(){const cards=sessions.length?sessions.map(sessionCard).join(""):'<p class="empty">You have not created any sessions yet. Click “Create session” to start.</p>';$("mySessions").innerHTML=cards;const next=[...sessions].sort((a,b)=>new Date(a.scheduled_at||a.created_at)-new Date(b.scheduled_at||b.created_at)).slice(0,4);$("upcomingSessions").innerHTML=next.length?next.map(sessionCard).join(""):'<p class="empty">No sessions yet. Create your first session.</p>';$("statTotal").textContent=sessions.length;$("statPending").textContent=sessions.filter(s=>!s.approved).length;$("statApproved").textContent=sessions.filter(s=>s.approved).length;const sel=$("roomSessionSelect"),old=sel.value;sel.innerHTML='<option value="">Choose approved session…</option>'+sessions.filter(s=>s.approved&&s.status!=="ended").map(s=>`<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("");if([...sel.options].some(o=>o.value===old))sel.value=old}
