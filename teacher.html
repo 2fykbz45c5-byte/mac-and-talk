@@ -56,7 +56,7 @@
 .quiz-wifi-settings summary:after{content:'＋';margin-left:auto;color:var(--muted);font-size:18px}
 .quiz-wifi-settings[open] summary:after{content:'−'}
 .quiz-wifi-settings .wifi-fields{padding-top:15px}
-.quiz-start-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}
+.quiz-start-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}.quiz-wifi-settings .form-field input{min-height:46px;font-size:14px}.quiz-wifi-settings .wifi-fields>p{margin:0 0 15px}.quiz-wifi-settings .tag{margin-left:auto}
 @media(max-width:650px){#page-quizzes .quiz-import,#page-quizzes .quiz-form{padding:16px}#page-quizzes .quiz-item{padding:14px}.quiz-wifi-settings{padding:15px}}
 .quiz-toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
 .quiz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
@@ -121,7 +121,7 @@
  <details class="quiz-wifi-settings">
   <summary><span>📶</span> Classroom Wi-Fi settings <span class="tag">Optional</span></summary>
   <div class="wifi-fields"><p class="quiz-help">If students need classroom Wi-Fi, enter its details here. The Wi-Fi QR code will appear on the separate Join Quiz page after you start the quiz. These details are kept in this browser tab and are not added to the quiz URL.</p>
-   <div class="form-grid"><div class="form-field"><label for="quizWifiName">Wi-Fi network name (SSID)</label><input class="field-control" id="quizWifiName" autocomplete="off" placeholder="Classroom Wi-Fi"></div><div class="form-field"><label for="quizWifiPassword">Wi-Fi password</label><input class="field-control" id="quizWifiPassword" type="password" autocomplete="new-password" placeholder="Wi-Fi password"></div></div>
+   <div class="form-grid"><div class="form-field"><label for="quizWifiName">Wi-Fi network name (SSID)</label><input class="field-control" id="quizWifiName" autocomplete="off" name="classroom-wifi-ssid" placeholder="Classroom Wi-Fi"></div><div class="form-field"><label for="quizWifiPassword">Wi-Fi password</label><input class="field-control" id="quizWifiPassword" type="password" autocomplete="new-password" name="classroom-wifi-password" placeholder="Wi-Fi password"></div></div>
   </div>
  </details>
  <p class="quiz-start-note">When you select <strong>Start this quiz</strong>, Mac&Talk opens a separate Join Quiz screen with the quiz QR code, PIN and optional Wi-Fi QR code.</p>
