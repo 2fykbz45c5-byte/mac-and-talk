@@ -173,7 +173,7 @@ async function startTeacherQuiz(id){
  const wifi={ssid:$("quizWifiName").value.trim(),password:$("quizWifiPassword").value};
  sessionStorage.setItem("mactalk_quiz_wifi_"+data.session_id,JSON.stringify(wifi));
  const joinUrl=new URL("join.html",location.href);joinUrl.searchParams.set("pin",data.pin);joinUrl.searchParams.set("session",data.session_id);joinUrl.searchParams.set("host","1");
- location.href=joinUrl.href;
+ location.href=`quiz-live.html?session=${encodeURIComponent(data.session_id)}&pin=${encodeURIComponent(data.pin)}&host=1`;
 }
 async function teacherQuizAction(action,id){
  if(action==="delete"&&!confirm("Delete this quiz and all its questions?"))return;
