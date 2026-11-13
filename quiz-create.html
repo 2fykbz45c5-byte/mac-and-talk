@@ -824,7 +824,20 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .answer-inline input, .answer-panel textarea { border:1px solid var(--line); border-radius:9px; padding:10px 12px; background:#fff; color:var(--navy); width:100%; }
 .answer-panel textarea { min-height:72px; resize:vertical; }
 .q-type-tag { display:inline-flex; align-items:center; background:#fff2cf; color:var(--navy); border-radius:99px; padding:4px 9px; font-size:10px; font-weight:900; }
+/* Matching question builder */
+.matching-instructions,.matching-tip{font-size:11px;color:var(--muted);line-height:1.5;margin:5px 0 12px}
+.matching-pair-head{display:grid;grid-template-columns:1fr 1fr 34px;gap:10px;margin:0 0 7px 38px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.matching-pair-row{display:grid;grid-template-columns:28px minmax(0,1fr) 24px minmax(0,1fr) 34px;gap:8px;align-items:center;margin-bottom:8px}
+.matching-pair-number{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--navy);color:#fff;font-size:11px;font-weight:900}
+.matching-pair-row input{width:100%;min-width:0;box-sizing:border-box;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:12px}
+.matching-link{text-align:center;color:var(--accent,#d39b20);font-weight:900}
+.matching-pair-row .q-remove-pair{min-width:32px;padding:7px}
+.matching-pair-row .q-remove-pair:disabled{opacity:.35;cursor:not-allowed}
+.matching-tip{margin:10px 0 0}
+@media(max-width:560px){.matching-pair-head{margin-left:0}.matching-pair-row{grid-template-columns:24px minmax(0,1fr) 18px minmax(0,1fr) 30px;gap:5px}.matching-pair-number{width:23px;height:23px}.matching-pair-row input{padding:9px 7px;font-size:11px}}
+
 @media(max-width:650px){
+
   .q-type-row{grid-template-columns:1fr;}
   .q-meta-row{grid-template-columns:1fr 1fr;}
   .topbar { padding:0 12px; gap:8px; }
@@ -1172,6 +1185,7 @@ window.mactalkQuizReady = (async () => {
     options: ['', '', '', ''],
     correct: '',
     acceptedAnswer: '',
+    matchingPairs: [{ left: '', right: '' }, { left: '', right: '' }],
     points: 1,
     timer: Number($('quizDuration').value || 30),
     explanation: '',
@@ -1196,7 +1210,7 @@ window.mactalkQuizReady = (async () => {
       short_answer: 'Students type a short response. Add the expected answer for answer-key guidance.',
       long_answer: 'Students write a longer response. The teacher reviews it manually.',
       fill_blank: 'Write the sentence with a blank and enter the expected missing word.',
-      matching: 'Write the correct matching answer or pairs in the answer field.'
+      matching: 'Add one item on the left and its correct match on the right. Add as many pairs as you need.'
     })[type] || '';
   }
 
@@ -1222,7 +1236,11 @@ window.mactalkQuizReady = (async () => {
     } else if(q.type === 'multiple_select') {
       if(q.options.filter(x => String(x).trim()).length < 2) issues.push('Add at least 2 choices');
       if(!Array.isArray(q.correct) || !q.correct.length) issues.push('Select at least one correct choice');
-    } else if(['short_answer','long_answer','fill_blank','matching'].includes(q.type)) {
+    } else if(q.type === 'matching') {
+      const pairs = Array.isArray(q.matchingPairs) ? q.matchingPairs : [];
+      if(pairs.length < 2) issues.push('Add at least 2 matching pairs');
+      if(pairs.some(pair => !String(pair.left || '').trim() || !String(pair.right || '').trim())) issues.push('Complete both sides of every pair');
+    } else if(['short_answer','long_answer','fill_blank'].includes(q.type)) {
       if(!String(q.acceptedAnswer || '').trim() && q.type !== 'long_answer') issues.push('Add the expected answer');
     }
     return issues;
@@ -1274,6 +1292,26 @@ window.mactalkQuizReady = (async () => {
             <label class="answer-choice"><input class="q-answer" data-index="${i}" type="radio" name="correct-${i}" value="true" ${q.correct === 'true' ? 'checked' : ''}> True</label>
             <label class="answer-choice"><input class="q-answer" data-index="${i}" type="radio" name="correct-${i}" value="false" ${q.correct === 'false' ? 'checked' : ''}> False</label>
           </div></div>`;
+      } else if(q.type === 'matching') {
+        const pairs = Array.isArray(q.matchingPairs) && q.matchingPairs.length ? q.matchingPairs : [{left:'',right:''},{left:'',right:''}];
+        answerEditor = `
+          <div class="answer-panel matching-builder">
+            <div class="answer-panel-title">Build the matching pairs</div>
+            <div class="matching-instructions">Enter each correct pair on the same row. Students will match the left items with the right items.</div>
+            <div class="matching-pair-head"><span>Column A</span><span>Column B — correct match</span><span></span></div>
+            <div class="matching-pair-list">
+              ${pairs.map((pair,j) => `
+                <div class="matching-pair-row">
+                  <span class="matching-pair-number">${j+1}</span>
+                  <input class="q-match-left" data-index="${i}" data-pair="${j}" value="${escapeHTML(pair.left || '')}" placeholder="Item ${j+1}">
+                  <span class="matching-link">↔</span>
+                  <input class="q-match-right" data-index="${i}" data-pair="${j}" value="${escapeHTML(pair.right || '')}" placeholder="Match ${j+1}">
+                  <button class="btn btn-danger btn-small q-remove-pair" data-index="${i}" data-pair="${j}" type="button" ${pairs.length<=2?'disabled':''} aria-label="Remove pair">×</button>
+                </div>`).join('')}
+            </div>
+            <button class="btn btn-secondary btn-small q-add-pair" data-index="${i}" type="button">＋ Add another pair</button>
+            <div class="matching-tip">Tip: Keep each correct pair on the same row. You can add 2 or more pairs.</div>
+          </div>`;
       } else {
         answerEditor = `<div class="answer-panel">
           <div class="answer-panel-title">${q.type === 'long_answer' ? 'Teacher marking guidance (optional)' : 'Expected answer'}</div>
@@ -1376,8 +1414,29 @@ window.mactalkQuizReady = (async () => {
     if(e.target.classList.contains('q-timer')) questions[idx].timer = Math.max(0, Number(e.target.value) || 0);
     if(e.target.classList.contains('q-exp')) questions[idx].explanation = e.target.value;
     if(e.target.classList.contains('q-accepted')) questions[idx].acceptedAnswer = e.target.value;
+    if(e.target.classList.contains('q-match-left')) questions[idx].matchingPairs[Number(e.target.dataset.pair)].left = e.target.value;
+    if(e.target.classList.contains('q-match-right')) questions[idx].matchingPairs[Number(e.target.dataset.pair)].right = e.target.value;
 
     renderReview();
+  });
+
+  $('questionAccordion').addEventListener('click', e => {
+    const add = e.target.closest('.q-add-pair');
+    const remove = e.target.closest('.q-remove-pair');
+    if(add) {
+      const idx = Number(add.dataset.index);
+      if(!questions[idx]) return;
+      questions[idx].matchingPairs = questions[idx].matchingPairs || [];
+      questions[idx].matchingPairs.push({left:'',right:''});
+      renderQuestions();
+      return;
+    }
+    if(remove) {
+      const idx = Number(remove.dataset.index), pairIndex = Number(remove.dataset.pair);
+      if(!questions[idx] || questions[idx].matchingPairs.length <= 2) return;
+      questions[idx].matchingPairs.splice(pairIndex,1);
+      renderQuestions();
+    }
   });
 
   $('questionAccordion').addEventListener('change', e => {
@@ -1388,6 +1447,7 @@ window.mactalkQuizReady = (async () => {
       q.type = e.target.value;
       q.correct = q.type === 'multiple_select' ? [] : '';
       q.options = q.type === 'true_false' ? ['True','False'] : ['', '', '', ''];
+      q.matchingPairs = q.matchingPairs || [{left:'',right:''},{left:'',right:''}];
       q.acceptedAnswer = '';
       renderQuestions();
     } else if(e.target.classList.contains('q-answer')) {
@@ -1518,8 +1578,8 @@ window.mactalkQuizReady = (async () => {
         type: q.type || 'multiple_choice',
         text: q.text.trim(),
         options: q.type === 'multiple_choice' || q.type === 'multiple_select' ? q.options.map(o => o.trim()) :
-          (q.type === 'true_false' ? ['True','False'] : []),
-        correct_answer: q.correct,
+          (q.type === 'true_false' ? ['True','False'] : (q.type === 'matching' ? q.matchingPairs.map(pair => ({left:pair.left.trim(),right:pair.right.trim()})) : [])),
+        correct_answer: q.type === 'matching' ? q.matchingPairs.map((pair,index) => ({id:String(index+1),left:pair.left.trim(),right:pair.right.trim()})) : q.correct,
         accepted_answer: q.acceptedAnswer || '',
         points: Number(q.points) || 1,
         time_limit: Number(q.timer) || 0,
@@ -1559,8 +1619,12 @@ window.mactalkQuizReady = (async () => {
       }
       const rows = quiz.questions.map((item, index) => ({
         quiz_id: quizId, position: index + 1, question_text: item.text,
-        options: item.options.map((text, optionIndex) => ({ id: letters[optionIndex] || String(optionIndex + 1), text })),
-        correct_option_id: Array.isArray(item.correct_answer) ? item.correct_answer.join(',') : String(item.correct_answer || item.accepted_answer || ''),
+        options: item.type === 'matching'
+          ? item.options.map((pair, pairIndex) => ({ id: String(pairIndex + 1), text: pair.left, match_text: pair.right }))
+          : item.options.map((text, optionIndex) => ({ id: letters[optionIndex] || String(optionIndex + 1), text })),
+        correct_option_id: item.type === 'matching'
+          ? JSON.stringify(item.correct_answer)
+          : (Array.isArray(item.correct_answer) ? item.correct_answer.join(',') : String(item.correct_answer || item.accepted_answer || '')),
         explanation: `[${item.type}] ${item.explanation || ''}${item.accepted_answer ? ` | Expected answer: ${item.accepted_answer}` : ''}`,
         points: item.points, timer_seconds: item.time_limit
       }));
@@ -1655,6 +1719,7 @@ window.mactalkQuizReady = (async () => {
       options: q.options || ['', '', '', ''],
       correct: q.correct_answer || '',
       acceptedAnswer: q.accepted_answer || '',
+      matchingPairs: Array.isArray(q.options) && q.type === 'matching' ? q.options.map(pair => ({left:pair.left || '',right:pair.right || ''})) : [{left:'',right:''},{left:'',right:''}],
       points: q.points || 1,
       timer: q.time_limit ?? 30,
       explanation: q.explanation || '',
