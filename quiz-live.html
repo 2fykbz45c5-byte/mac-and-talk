@@ -3,27 +3,37 @@
 
 .qr-layout{display:grid;grid-template-columns:minmax(220px,280px) 1fr;gap:22px;align-items:center;margin-top:14px}.qr-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;place-items:center;min-height:260px}.qr-box img,.qr-box canvas{max-width:100%;height:auto!important}.join-url{display:block;overflow-wrap:anywhere;background:#f7f9fc;border:1px solid var(--line);border-radius:9px;padding:11px;font-size:12px;color:var(--navy);margin:10px 0}.qr-caption{font-size:13px;line-height:1.6;color:var(--muted)}.qr-pin{font-size:28px;letter-spacing:5px;font-weight:900;color:var(--navy);background:#fff2cf;border-radius:12px;padding:10px 16px;display:inline-block;margin:8px 0 12px}@media(max-width:650px){.qr-layout{grid-template-columns:1fr}.qr-box{max-width:300px;margin:auto;width:100%}}
 
-#joinQrPanel.lobby-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;padding:clamp(18px,4vw,48px);border:0;border-radius:0;box-shadow:none;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;overflow:auto}
-#joinQrPanel.lobby-fullscreen[hidden]{display:none}
-.lobby-content{width:min(1100px,100%);display:grid;grid-template-columns:minmax(280px,1fr) minmax(280px,1fr);gap:clamp(24px,5vw,64px);align-items:center}
-.lobby-copy{text-align:center}
-.lobby-heading{font-size:clamp(28px,4vw,48px);font-weight:900;margin:0 0 12px;color:#fff}
-.lobby-subtitle{font-size:clamp(15px,2vw,20px);color:#d7e2f0;line-height:1.5}
-.lobby-qr-card{background:#fff;color:var(--navy);border-radius:24px;padding:clamp(18px,3vw,32px);display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 18px 55px #0003}
-.lobby-qr-card #joinQr{display:grid;place-items:center;min-height:320px;min-width:320px}
-.lobby-qr-card #joinQr img,.lobby-qr-card #joinQr canvas{width:min( min(72vw, 520px), 100%)!important;height:auto!important;max-width:100%}
-.lobby-pin{font-size:clamp(30px,4vw,46px);letter-spacing:7px;font-weight:900;color:var(--navy);background:#fff2cf;border-radius:14px;padding:10px 22px}
-.lobby-count{font-size:clamp(18px,2.5vw,25px);font-weight:800;color:#fff;margin:24px 0}
-.lobby-count strong{color:var(--yellow);font-size:1.35em}
-.lobby-start{font-size:20px;padding:16px 34px;min-width:220px}
-.lobby-link{max-width:100%;overflow-wrap:anywhere;color:#d7e2f0;font-size:12px;margin-top:12px}
+
+#joinQrPanel.lobby-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;padding:clamp(18px,3vw,44px);border:0;border-radius:0;box-shadow:none;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;overflow:auto}
+#joinQrPanel.lobby-fullscreen[hidden]{display:none}#wifiQrCard[hidden]{display:none!important}
+.lobby-content{width:min(1500px,100%);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(18px,2.5vw,36px);align-items:stretch}
+.lobby-copy{grid-column:1/-1;text-align:center}
+.lobby-heading{font-size:clamp(32px,4vw,58px);font-weight:950;margin:0 0 8px;color:#fff}
+.lobby-subtitle{font-size:clamp(17px,1.7vw,23px);color:#d7e2f0;line-height:1.45;margin:0}
+.lobby-count{font-size:clamp(22px,2.4vw,32px);font-weight:850;color:#fff;margin:14px 0}
+.lobby-count strong{color:var(--yellow);font-size:1.4em}
+.lobby-start{font-size:clamp(19px,2vw,25px);padding:17px 40px;min-width:250px}
+.lobby-card{background:#fff;color:var(--navy);border-radius:22px;padding:clamp(14px,2vw,26px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-shadow:0 18px 55px #0003;min-width:0}
+.lobby-card h2{font-size:clamp(20px,2.2vw,30px);margin:0;text-align:center}
+.lobby-card .qr-surface{display:grid;place-items:center;width:100%;min-height:300px}
+.lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min(34vw,440px)!important;height:auto!important;max-width:100%}
+.lobby-pin{font-size:clamp(35px,4.2vw,58px);letter-spacing:8px;font-weight:950;color:var(--navy);background:#fff2cf;border-radius:14px;padding:10px 22px}
+.wifi-network-label{font-size:clamp(16px,1.6vw,22px);font-weight:800;overflow-wrap:anywhere;text-align:center}
+.lobby-link{max-width:100%;overflow-wrap:anywhere;color:#d7e2f0;font-size:14px;margin-top:10px}
 .lobby-link a{color:var(--yellow)}
-@media(max-width:700px){.lobby-content{grid-template-columns:1fr;gap:18px}.lobby-qr-card{padding:14px}.lobby-qr-card #joinQr{min-height:260px;min-width:260px}.lobby-qr-card #joinQr img,.lobby-qr-card #joinQr canvas{width:min(76vw,380px)!important}.lobby-copy{order:-1}.lobby-count{margin:12px 0}}
-</style><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script></head><body><header><b>Mac<span>&</span>Talk · Live Quiz</b><span id="pin" class="pin"></span></header><main><div id="notice" class="notice"></div><section class="panel"><h1 id="title">Connecting…</h1><p class="muted" id="status">Connecting to the quiz room.</p><div id="hostControls" hidden><h3>Teacher controls</h3><div id="questionControls" class="row"></div><div class="row" style="margin-top:12px"><button class="btn yellow" id="reveal">Reveal answer</button><button class="btn" id="finish">Finish exam</button><a class="btn" id="results" href="#">Results</a></div></div><p id="playerInfo" class="muted"></p></section><section class="panel lobby-fullscreen" id="joinQrPanel" hidden><div class="lobby-content"><div class="lobby-copy"><p class="lobby-heading">Join the live quiz</p><p class="lobby-subtitle">Scan the QR code with your phone camera to enter the quiz room.</p><div class="lobby-count"><strong id="lobbyPlayerCount">0</strong> players joined</div><button class="btn yellow lobby-start" id="startQuiz" type="button">Start quiz</button><p class="lobby-link">Or join with this link: <a id="joinUrl" href="#" target="_blank" rel="noopener"></a></p><button class="btn" id="copyJoinLink" type="button" style="margin-top:12px">Copy student link</button></div><div class="lobby-qr-card"><div id="joinQr"></div><div class="lobby-pin" id="joinPin">------</div><b>Scan to join</b></div></div></section><section class="panel"><div class="row" style="justify-content:space-between"><h2 id="questionTitle">Waiting room</h2><span class="timer" id="timer"></span></div><div id="questionArea" class="muted">Waiting for your teacher…</div></section><section class="panel"><h2>Players in the room</h2><div id="players" class="muted">Waiting for players…</div></section></main>
+#questionArea{font-size:clamp(24px,3vw,42px);line-height:1.45}
+#questionTitle{font-size:clamp(27px,3.3vw,46px);line-height:1.2}
+.options{grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px)}
+.option{font-size:clamp(20px,2.2vw,32px);padding:clamp(18px,2.3vw,30px);min-height:90px;border-radius:16px}
+.question-image{max-height:42vh;object-fit:contain}
+#players{font-size:18px}
+@media(max-width:760px){.lobby-content{grid-template-columns:1fr;gap:14px}.lobby-copy{grid-column:auto}.lobby-card{padding:14px}.lobby-card .qr-surface{min-height:230px}.lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min(70vw,330px)!important}.lobby-pin{font-size:34px}.options{grid-template-columns:1fr}#questionArea{font-size:22px}.option{font-size:20px;min-height:68px}}
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script></head><body><header><b>Mac<span>&</span>Talk · Live Quiz</b><span id="pin" class="pin"></span></header><main><div id="notice" class="notice"></div><section class="panel"><h1 id="title">Connecting…</h1><p class="muted" id="status">Connecting to the quiz room.</p><div id="hostControls" hidden><h3>Teacher controls</h3><div id="questionControls" class="row"></div><div class="row" style="margin-top:12px"><button class="btn yellow" id="reveal">Reveal answer</button><button class="btn" id="nextQuestion" type="button">Next question</button><button class="btn" id="autoAdvance" type="button" aria-pressed="true">Auto next: ON</button><span id="autoCountdown" class="muted" style="font-weight:800"></span><button class="btn" id="finish">Finish exam</button><a class="btn" id="results" href="#">Results</a></div></div><p id="playerInfo" class="muted"></p></section><section class="panel lobby-fullscreen" id="joinQrPanel" hidden><div class="lobby-content"><div class="lobby-copy"><p class="lobby-heading">Join the live quiz</p><p class="lobby-subtitle">Scan the Join QR code to enter the quiz. Scan the Wi-Fi QR code to connect to the classroom network.</p><div class="lobby-count"><strong id="lobbyPlayerCount">0</strong> players joined</div><button class="btn yellow lobby-start" id="startQuiz" type="button">Start quiz</button><p class="lobby-link">Student link: <a id="joinUrl" href="#" target="_blank" rel="noopener"></a></p><button class="btn" id="copyJoinLink" type="button" style="margin-top:8px">Copy student link</button></div><div class="lobby-card"><h2>JOIN QR CODE</h2><div class="qr-surface" id="joinQr"></div><div class="lobby-pin" id="joinPin">------</div><b>Enter this PIN if needed</b></div><div class="lobby-card" id="wifiQrCard" hidden><h2>WI-FI QR CODE</h2><div class="qr-surface" id="wifiQr"></div><div class="wifi-network-label" id="wifiNetworkLabel"></div><b>Scan to connect to Wi-Fi</b></div></div></section><section class="panel"><div class="row" style="justify-content:space-between"><h2 id="questionTitle">Waiting room</h2><span class="timer" id="timer"></span></div><div id="questionArea" class="muted">Waiting for your teacher…</div></section><section class="panel"><h2>Players in the room</h2><div id="players" class="muted">Waiting for players…</div></section></main>
 <script type="module">
 import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
 const supabase=createClient("https://gprdmwjqgyrvqrgjkycc.supabase.co","sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id),p=new URLSearchParams(location.search),sid=p.get("session"),host=p.get("host")==="1",token=sessionStorage.getItem("quiz_token_"+sid);let questions=[],polling=false,answerSent=false;
+let autoAdvanceEnabled=true,autoAdvanceTimer=null,autoAdvanceInterval=null,autoAdvanceKey="",activeQuestionId=null,activeQuestionRevealed=false;
 function notice(t){$("notice").textContent=t;$("notice").classList.add("show")}
 let studentJoinUrl="";
 function renderJoinQr(pin){
@@ -35,13 +45,57 @@ function renderJoinQr(pin){
  new QRCode($("joinQr"),{text:studentJoinUrl,width:420,height:420,colorDark:"#10243e",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
 }
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-async function hostInit(){const{data:{user}}=await supabase.auth.getUser();if(!user)throw Error("Open the teacher/admin workspace first so your existing sign-in is used.");const{data:s,error}=await supabase.from("quiz_sessions").select("id,owner_id,pin,quiz_id,quizzes(title,quiz_questions(id,position,question_text,options,correct_option_id,explanation,points,timer_seconds))").eq("id",sid).single();if(error)throw error;const{data:profile}=await supabase.from("profiles").select("role").eq("id",user.id).single();if(!profile||!["admin","teacher"].includes(profile.role)||(s.owner_id!==user.id&&profile.role!=="admin"))throw Error("You do not have permission to control this quiz.");questions=(s.quizzes.quiz_questions||[]).sort((a,b)=>a.position-b.position);$("title").textContent=s.quizzes.title;$("pin").textContent="PIN "+s.pin;renderJoinQr(s.pin);$("hostControls").hidden=false;$("results").href="quiz-results.html?session="+sid;$("questionControls").innerHTML=questions.map((q,i)=>`<button class="btn yellow" data-open="${q.id}">Question ${i+1}</button>`).join("");}
-async function openQuestion(id){const{error}=await supabase.rpc("quiz_open_question",{p_session_id:sid,p_question_id:id});if(error)throw error;answerSent=false;await poll()}
+
+function renderWifiQr(){
+ const card=$("wifiQrCard"),root=$("wifiQr"),label=$("wifiNetworkLabel");
+ let wifi=null;
+ try{wifi=JSON.parse(sessionStorage.getItem("mactalk_quiz_wifi_"+sid)||"null");}catch{}
+ root.innerHTML="";
+ if(!wifi||!wifi.ssid){card.hidden=true;return;}
+ card.hidden=false;label.textContent=wifi.ssid;
+ if(typeof QRCode==="undefined"){label.textContent=wifi.ssid+" · QR generator unavailable";return;}
+ const ssid=String(wifi.ssid).replace(/([\\;,:"])/g,"\\$1");
+ const password=String(wifi.password||"").replace(/([\\;,:"])/g,"\\$1");
+ const wifiPayload=`WIFI:T:${password?"WPA":"nopass"};S:${ssid};${password?"P:"+password+";":""};`;
+ new QRCode(root,{text:wifiPayload,width:420,height:420,colorDark:"#10243e",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+}
+
+async function hostInit(){const{data:{user}}=await supabase.auth.getUser();if(!user)throw Error("Open the teacher/admin workspace first so your existing sign-in is used.");const{data:s,error}=await supabase.from("quiz_sessions").select("id,owner_id,pin,quiz_id,quizzes(title,quiz_questions(id,position,question_text,options,correct_option_id,explanation,points,timer_seconds))").eq("id",sid).single();if(error)throw error;const{data:profile}=await supabase.from("profiles").select("role").eq("id",user.id).single();if(!profile||!["admin","teacher"].includes(profile.role)||(s.owner_id!==user.id&&profile.role!=="admin"))throw Error("You do not have permission to control this quiz.");questions=(s.quizzes.quiz_questions||[]).sort((a,b)=>a.position-b.position);$("title").textContent=s.quizzes.title;$("pin").textContent="PIN "+s.pin;renderJoinQr(s.pin);renderWifiQr();$("hostControls").hidden=false;$("results").href="quiz-results.html?session="+sid;$("questionControls").innerHTML=questions.map((q,i)=>`<button class="btn yellow" data-open="${q.id}">Question ${i+1}</button>`).join("");}
+function clearAutoAdvance(){if(autoAdvanceTimer){clearTimeout(autoAdvanceTimer);autoAdvanceTimer=null;}if(autoAdvanceInterval){clearInterval(autoAdvanceInterval);autoAdvanceInterval=null;}$("autoCountdown").textContent="";autoAdvanceKey="";}
+function scheduleAutoAdvance(q){
+ if(!host||!autoAdvanceEnabled||!q||!activeQuestionRevealed)return;
+ const key=String(q.id);
+ if(autoAdvanceKey===key||autoAdvanceTimer)return;
+ const index=questions.findIndex(item=>String(item.id)===key);
+ const next=questions[index+1];
+ if(!next)return;
+ autoAdvanceKey=key;
+ let seconds=5;
+ $("autoCountdown").textContent="Next question in "+seconds+"s";
+ autoAdvanceInterval=setInterval(()=>{seconds--;if(seconds>0)$("autoCountdown").textContent="Next question in "+seconds+"s";},1000);
+ autoAdvanceTimer=setTimeout(async()=>{
+  if(autoAdvanceInterval){clearInterval(autoAdvanceInterval);autoAdvanceInterval=null;}autoAdvanceTimer=null;$("autoCountdown").textContent="";
+  if(!autoAdvanceEnabled||String(activeQuestionId)!==key||!activeQuestionRevealed)return;
+  try{await openQuestion(next.id);}catch(e){notice("Could not open next question: "+e.message);}
+ },5000);
+}
+async function openQuestion(id){
+ clearAutoAdvance();activeQuestionId=id;activeQuestionRevealed=false;
+ const{error}=await supabase.rpc("quiz_open_question",{p_session_id:sid,p_question_id:id});
+ if(error)throw error;answerSent=false;await poll()
+}
 async function poll(){if(polling)return;polling=true;try{if(host){const{data:s,error}=await supabase.from("quiz_sessions").select("id,pin,status,current_question_id,answer_revealed,question_started_at,quiz_id,quizzes(title,quiz_questions(id,position,question_text,options,correct_option_id,explanation,points,timer_seconds))").eq("id",sid).single();if(error)throw error;$("title").textContent=s.quizzes.title;$("status").textContent="Exam status: "+s.status;$("pin").textContent="PIN "+s.pin;
  questions=(s.quizzes.quiz_questions||[]).sort((a,b)=>a.position-b.position);
  if(s.status==="lobby"){if($("joinQrPanel").hidden)renderJoinQr(s.pin);}
  else{$("joinQrPanel").hidden=true;}
- questions=s.quizzes.quiz_questions||[];const{data:ps}=await supabase.from("quiz_players").select("nickname,score").eq("session_id",sid).order("joined_at");$("lobbyPlayerCount").textContent=(ps||[]).length;$("players").innerHTML=(ps||[]).map(x=>`<div class="player">${esc(x.nickname)} · ${x.score} points</div>`).join("")||"No students have joined yet.";const q=questions.find(x=>x.id===s.current_question_id);render(q,s.answer_revealed,s.question_started_at);if(s.status==="finished")location.href="quiz-results.html?session="+sid;}
+ questions=s.quizzes.quiz_questions||[];const{data:ps}=await supabase.from("quiz_players").select("nickname,score").eq("session_id",sid).order("joined_at");$("lobbyPlayerCount").textContent=(ps||[]).length;$("players").innerHTML=(ps||[]).map(x=>`<div class="player">${esc(x.nickname)} · ${x.score} points</div>`).join("")||"No students have joined yet.";const q=questions.find(x=>x.id===s.current_question_id);render(q,s.answer_revealed,s.question_started_at);
+ if(q){
+  const changed=String(activeQuestionId)!==String(q.id);
+  if(changed){clearAutoAdvance();activeQuestionId=q.id;activeQuestionRevealed=!!s.answer_revealed;}
+  else if(s.answer_revealed&&!activeQuestionRevealed){activeQuestionRevealed=true;scheduleAutoAdvance(q);}
+  else if(!s.answer_revealed&&activeQuestionRevealed){activeQuestionRevealed=false;clearAutoAdvance();}
+ }
+ if(s.status==="finished")location.href="quiz-results.html?session="+sid;}
 else{if(!token)throw Error("No participant session found. Return to join.html and enter the PIN.");const{data,error}=await supabase.rpc("quiz_guest_state",{p_session_id:sid,p_player_token:token});if(error)throw error;$("title").textContent=data.quiz_title;$("pin").textContent="PIN "+data.pin;$("status").textContent=data.status==="lobby"?"Waiting for your teacher to start…":"Exam "+data.status;$("playerInfo").textContent=data.nickname+" · "+data.score+" points";render(data.question,data.answer_revealed,data.question_started_at);if(data.status==="finished")$("questionArea").textContent="Exam finished. Your final score: "+data.score+" points.";}}
 finally{polling=false}}
 function render(q,revealed,started){if(!q){$("questionTitle").textContent="Waiting room";$("questionArea").textContent="Your teacher will start the first question soon.";return}$("questionTitle").textContent=q.question_text;$("timer").textContent="";let h=q.image_url?`<img class="question-image" src="${esc(q.image_url)}" alt="Question image">`:"";h+='<div class="options">';for(const o of q.options||[])h+=`<button class="option" ${host||answerSent?"disabled":""} data-answer="${esc(o.id)}" data-qid="${esc(q.id)}">${esc(o.id)} · ${esc(o.text)}</button>`;h+='</div>';if(revealed)h+=`<div class="notice show">Correct answer: ${esc(q.correct_option_id)}. ${esc(q.explanation||"")}</div>`;$("questionArea").innerHTML=h;if(started&&q.timer_seconds){const left=Math.max(0,q.timer_seconds-Math.floor((Date.now()-new Date(started).getTime())/1000));$("timer").textContent=left+"s";}}
@@ -66,7 +120,21 @@ $("startQuiz").addEventListener("click",async()=>{
 });
 $("copyJoinLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(studentJoinUrl);notice("Student join link copied.")}catch{notice("Copy is unavailable in this browser. Copy the link displayed above.")}});
 $("questionControls").addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b)openQuestion(b.dataset.open).catch(x=>notice(x.message))});
+$("nextQuestion").addEventListener("click",async()=>{
+ const index=questions.findIndex(q=>String(q.id)===String(activeQuestionId));
+ const next=questions[index+1];
+ if(!next){notice("This is the last question.");return;}
+ try{await openQuestion(next.id);}catch(e){notice(e.message);}
+});
+$("autoAdvance").addEventListener("click",()=>{
+ autoAdvanceEnabled=!autoAdvanceEnabled;
+ $("autoAdvance").textContent="Auto next: "+(autoAdvanceEnabled?"ON":"OFF");
+ $("autoAdvance").classList.toggle("yellow",autoAdvanceEnabled);
+ if(!autoAdvanceEnabled)clearAutoAdvance();
+ else if(activeQuestionRevealed){const q=questions.find(item=>String(item.id)===String(activeQuestionId));scheduleAutoAdvance(q);}
+});
 $("questionArea").addEventListener("click",e=>{const b=e.target.closest("[data-answer]");if(b&&!host)submitAnswer(b.dataset.qid,b.dataset.answer)});
+$("autoAdvance").classList.add("yellow");
 $("reveal").onclick=async()=>{const{error}=await supabase.rpc("quiz_reveal_answer",{p_session_id:sid});if(error)notice(error.message);else poll()};
 $("finish").onclick=async()=>{const{error}=await supabase.rpc("quiz_finish_session",{p_session_id:sid});if(error)notice(error.message);else location.href="quiz-results.html?session="+sid};
 async function start(){if(!sid)throw Error("Missing quiz session.");if(host)await hostInit();else $("joinQrPanel").hidden=true;await poll();setInterval(()=>poll().catch(e=>notice(e.message)),1800)}
