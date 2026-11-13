@@ -233,7 +233,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
-  padding: 28px clamp(16px, 3vw, 40px) 80px;
+  padding: 16px clamp(16px, 3vw, 40px) 60px;
   flex: 1;
 }
 
@@ -243,6 +243,12 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   animation: viewSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .view-panel.active { display: block; }
+.quiz-details-first .view-banner { padding: 20px 26px; margin-bottom: 14px; }
+.quiz-details-first .card-header { padding: 14px 22px; }
+.quiz-details-first .card-body { padding: 16px 22px; }
+.quiz-details-first .form-grid { gap: 14px 18px; }
+.quiz-details-first .field input, .quiz-details-first .field select { min-height: 42px; }
+.quiz-details-first .field textarea { min-height: 68px; }
 @keyframes viewSlide {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -366,7 +372,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   color: var(--muted);
   margin: 2px 0 0;
 }
-.card-body { padding: 26px; }
+.card-body { padding: 18px 22px; }
 
 /* Form Grids */
 .form-grid {
@@ -405,7 +411,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   box-shadow: 0 0 0 3px rgba(56, 103, 214, 0.12);
   background: var(--white);
 }
-.field textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+.field textarea { min-height: 76px; resize: vertical; line-height: 1.5; }
 
 /* Drag & Drop Upload Zone */
 .upload-card {
@@ -893,7 +899,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     </div>
 
     <!-- VIEW 01: QUIZ DETAILS SETUP -->
-    <section id="view-details" class="view-panel active">
+    <section id="view-details" class="view-panel active quiz-details-first">
       <div class="view-banner">
         <div class="banner-title">
           <h1>Build one quiz with multiple questions</h1>
