@@ -194,6 +194,22 @@ body.player-mode .correction-actions{display:none}
  .explanation-block{max-height:35vh}
  .correction-actions{gap:7px}
 }
+
+/* Player answer controls for text and matching questions */
+.answer-entry{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0;padding:16px;border:1px solid var(--line);border-radius:15px;background:#f8faff}
+.answer-entry input{flex:1 1 260px;min-width:0;padding:16px 18px;border:2px solid #dbe3ee;border-radius:12px;font:inherit;font-size:clamp(18px,2vw,26px);color:var(--navy);background:#fff}
+.answer-entry .btn{font-size:17px;padding:14px 22px}
+.matching-answer-list{display:grid;gap:12px;margin:18px 0}
+.matching-answer-row{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:13px;background:#f8faff}
+.matching-answer-row label{font-size:clamp(15px,1.5vw,21px);font-weight:800;overflow-wrap:anywhere}
+.matching-answer-row select{width:100%;min-width:0;padding:13px;border:2px solid #dbe3ee;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:clamp(14px,1.4vw,19px)}
+.matching-arrow{text-align:center;font-weight:900;color:#c18d00}
+.player-feedback{margin-top:18px;padding:18px;border-radius:14px;font-size:clamp(17px,1.5vw,23px);line-height:1.45}
+.player-feedback.correct{background:#e9f8ef;color:#17643a;border:1px solid #b7e4c7}
+.player-feedback.incorrect{background:#fff0ef;color:#9e2922;border:1px solid #f1c2be}
+.player-feedback strong{display:block;font-size:1.15em;margin-bottom:5px}
+@media(max-width:600px){.matching-answer-row{grid-template-columns:1fr;gap:7px}.matching-arrow{display:none}.answer-entry{align-items:stretch}.answer-entry .btn{width:100%}}
+
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script></head><body><header class="live-header"><b class="live-brand">Mac<span>&</span>Talk · Live Quiz</b><span id="liveQuizName" class="live-quiz-name">Loading quiz…</span><span id="pin" class="pin"></span></header><main><div id="notice" class="notice"></div><section class="panel"><h1 id="title">Connecting…</h1><p class="muted" id="status">Connecting to the quiz room.</p><div id="hostControls" hidden><h3>Teacher controls</h3><div id="questionControls" class="row"></div><div class="row" style="margin-top:12px"><button class="btn yellow" id="reveal">Reveal answer</button><span class="muted" style="font-weight:800">Teacher-controlled question flow</span><button class="btn" id="finish">Finish exam</button><a class="btn" id="results" href="#">Results</a></div></div><p id="playerInfo" class="muted"></p></section><section class="panel lobby-fullscreen" id="joinQrPanel" hidden><div class="lobby-content"><div class="lobby-copy"><p class="lobby-heading">Join the live quiz</p><p class="lobby-subtitle">Scan the Join QR code to enter the quiz. Scan the Wi-Fi QR code to connect to the classroom network.</p><div class="lobby-count"><strong id="lobbyPlayerCount">0</strong> players joined</div><button class="btn yellow lobby-start" id="startQuiz" type="button">Start quiz</button><p class="lobby-link">Student link: <a id="joinUrl" href="#" target="_blank" rel="noopener"></a></p><button class="btn" id="copyJoinLink" type="button" style="margin-top:8px">Copy student link</button></div><div class="lobby-card"><h2>JOIN QR CODE</h2><div class="qr-surface" id="joinQr"></div><div class="lobby-pin" id="joinPin">------</div><b>Enter this PIN if needed</b></div><div class="lobby-card" id="wifiQrCard" hidden><h2>WI-FI QR CODE</h2><div class="qr-surface" id="wifiQr"></div><div class="wifi-network-label" id="wifiNetworkLabel"></div><b>Scan to connect to Wi-Fi</b></div></div></section><section class="panel"><div class="row" style="justify-content:space-between"><h2 id="questionTitle">Waiting room</h2><span class="timer" id="timer"></span></div><div id="questionArea" class="muted">Waiting for your teacher…</div></section><section class="panel"><h2>Players in the room</h2><div id="players" class="muted">Waiting for players…</div></section></main>
 <div id="quizBriefingOverlay" class="quiz-briefing-overlay" aria-live="polite" hidden>
   <div class="quiz-briefing-card">
@@ -245,6 +261,12 @@ function renderWifiQr(){
 async function hostInit(){const{data:{user}}=await supabase.auth.getUser();if(!user)throw Error("Open the teacher/admin workspace first so your existing sign-in is used.");const{data:s,error}=await supabase.from("quiz_sessions").select("id,owner_id,pin,quiz_id,quizzes(title,subject,description,quiz_questions(id,position,question_text,options,correct_option_id,explanation,points,timer_seconds))").eq("id",sid).single();if(error)throw error;const{data:profile}=await supabase.from("profiles").select("role").eq("id",user.id).single();if(!profile||!["admin","teacher"].includes(profile.role)||(s.owner_id!==user.id&&profile.role!=="admin"))throw Error("You do not have permission to control this quiz.");questions=(s.quizzes.quiz_questions||[]).sort((a,b)=>a.position-b.position);
 window.quizBriefingData={title:s.quizzes.title||"Untitled quiz",subject:s.quizzes.subject||"Not specified",description:s.quizzes.description||"No additional instructions.",timer:(questions[0]?.timer_seconds||30)};
 $("title").textContent=s.quizzes.title;$("liveQuizName").textContent=s.quizzes.title;$("pin").textContent="PIN "+s.pin;renderJoinQr(s.pin);renderWifiQr();$("hostControls").hidden=false;$("results").href="quiz-results.html?session="+sid;$("questionControls").innerHTML=questions.map((q,i)=>`<button class="btn yellow" data-open="${q.id}">Question ${i+1}</button>`).join("");}
+function updateLeaderboard(){
+ const root=$("leaderboardList");
+ if(!root)return;
+ const ranked=(latestPlayers||[]).slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+ root.innerHTML=ranked.map((player,index)=>`<div class="leaderboard-row"><span class="leaderboard-rank">#${index+1}</span><span class="leaderboard-name">${esc(player.nickname||"Player")}</span><strong class="leaderboard-points">${Number(player.score)||0} pts</strong></div>`).join("")||'<div class="empty-players">No players have joined yet.</div>';
+}
 function hideLeaderboard(){
  leaderboardVisible=false;
  $("leaderboardOverlay").classList.remove("show");
@@ -280,15 +302,9 @@ function renderCorrectionActions(q){
  if(!host){area.remove();return;}
  const index=questions.findIndex(item=>String(item.id)===String(q.id));
  const isLast=index===questions.length-1;
- area.innerHTML=`<button class="btn correction-action" data-flow="ranking">Show classement</button>
- <button class="btn correction-action" data-flow="next">${isLast?"View results":"Next question"}</button>
- <button class="btn yellow correction-action" data-flow="both">Both</button>`;
- area.querySelectorAll("[data-flow]").forEach(button=>button.addEventListener("click",()=>{
-  const action=button.dataset.flow;
-  if(action==="ranking")showLeaderboardForAction(false,false);
-  if(action==="next")advanceToNextQuestion();
-  if(action==="both")showLeaderboardForAction(!isLast,isLast);
- }));
+ area.innerHTML=`<button type="button" class="btn correction-action" data-flow="ranking">Show classement</button>
+ <button type="button" class="btn correction-action" data-flow="next">${isLast?"View results":"Next question"}</button>
+ <button type="button" class="btn yellow correction-action" data-flow="both">Both</button>`;
 }
 async function finishQuiz(){
  if(!host)return;
@@ -321,18 +337,78 @@ async function poll(){if(polling)return;polling=true;try{if(host){const{data:s,e
   else if(!s.answer_revealed&&activeQuestionRevealed){activeQuestionRevealed=false;resetQuestionPhases();}
  }
  if(s.status==="finished")location.href="quiz-results.html?session="+sid;}
-else{if(!token)throw Error("No participant session found. Return to join.html and enter the PIN.");const{data,error}=await supabase.rpc("quiz_guest_state",{p_session_id:sid,p_player_token:token});if(error)throw error;$("title").textContent=data.quiz_title;$("liveQuizName").textContent=data.quiz_title;$("pin").textContent="PIN "+data.pin;$("status").textContent=data.status==="lobby"?"Waiting for your teacher to start…":"Exam "+data.status;$("playerInfo").textContent=data.nickname+" · "+data.score+" points";const{data:guestPlayers}=await supabase.from("quiz_players").select("nickname,score").eq("session_id",sid).order("score",{ascending:false});latestPlayers=guestPlayers||[];if(leaderboardVisible)updateLeaderboard();render(data.question,data.answer_revealed,data.question_started_at);if(data.status==="finished")location.href="quiz-results.html?session="+encodeURIComponent(sid);}}
-finally{polling=false}}
-function render(q,revealed,started){
+else{
+ if(!token)throw Error("No participant session found. Return to join.html and enter the PIN.");
+ const{data,error}=await supabase.rpc("quiz_guest_state",{p_session_id:sid,p_player_token:token});
+ if(error)throw error;
+ $("title").textContent=data.quiz_title;$("liveQuizName").textContent=data.quiz_title;
+ $("pin").textContent="PIN "+data.pin;
+ $("status").textContent=data.status==="lobby"?"Waiting for your teacher to start…":"Exam "+data.status;
+ $("playerInfo").textContent=data.nickname+" · "+data.score+" points";
+ latestPlayers=data.leaderboard||[];
+ if(leaderboardVisible)updateLeaderboard();
+ answerSent=!!data.my_answer;
+ render(data.question,data.answer_revealed,data.question_started_at,data.my_answer);
+ if(data.status==="finished")location.href="quiz-results.html?session="+encodeURIComponent(sid);
+ }
+}finally{polling=false}}
+function questionType(q){
+ if(q?.question_type)return String(q.question_type).toLowerCase();
+ const m=String(q?.explanation||"").match(/^\[([^\]]+)\]/);
+ return m?m[1].toLowerCase():"multiple_choice";
+}
+function cleanExplanation(value){
+ return String(value||"").replace(/^\[[^\]]+\]\s*/,"").replace(/\s*\|\s*Expected answer:[\s\S]*$/i,"").trim()||"No explanation was added for this question.";
+}
+function expectedTextAnswer(q){
+ const m=String(q?.explanation||"").match(/Expected answer:\s*([^|]+)/i);
+ return (m?m[1]:q?.correct_option_id||"").trim();
+}
+function correctAnswerMarkup(q,type){
+ if(type==="matching"){
+  let pairs=[];try{pairs=JSON.parse(q.correct_option_id||"[]")}catch{}
+  return pairs.map(pair=>`<div>${esc(pair.left)} <strong>↔</strong> ${esc(pair.right)}</div>`).join("")||"Matching pairs";
+ }
+ if(type==="fill_blank"||type==="short_answer")return esc(expectedTextAnswer(q));
+ return esc(q.correct_option_id||"—");
+}
+function render(q,revealed,started,myAnswer=null){
  if(questionClock){clearInterval(questionClock);questionClock=null;}
- if(!q){$("questionTitle").textContent="Waiting for the first question";$("questionArea").innerHTML="<div class=\\\"waiting-question\\\">The question will appear here automatically when your teacher starts the quiz.</div>";$("timer").textContent="";return;}
+ if(!q){$("questionTitle").textContent="Waiting for the first question";$("questionArea").innerHTML='<div class="waiting-question">The question will appear here automatically when your teacher starts the quiz.</div>';$("timer").textContent="";return;}
+ const type=questionType(q);
+ const previousTextAnswer=$("textAnswer")?.value||"";
+ const previousMatches={};
+ $("questionArea")?.querySelectorAll("[data-match-left]").forEach(el=>{previousMatches[el.dataset.matchLeft]=el.value;});
  $("questionTitle").textContent=q.question_text;
  let h=q.image_url?`<img class="question-image" src="${esc(q.image_url)}" alt="Question image">`:"";
- h+='<div class="options">';for(const o of q.options||[])h+=`<button class="option" ${host||answerSent?"disabled":""} data-answer="${esc(o.id)}" data-qid="${esc(q.id)}"><span class="option-letter">${esc(o.id)}</span><span>${esc(o.text)}</span></button>`;h+='</div>';
+ if(type==="fill_blank"||type==="short_answer"){
+  h+=`<div class="answer-entry"><input id="textAnswer" type="text" autocomplete="off" placeholder="Write your answer…" ${host||answerSent||revealed?"disabled":""}><button class="btn yellow" type="button" data-submit-text data-qid="${esc(q.id)}" ${host||answerSent||revealed?"disabled":""}>Submit answer</button></div>`;
+ }else if(type==="matching"){
+  const pairs=q.options||[];
+  const right=pairs.slice().sort(()=>Math.random()-.5);
+  h+='<div class="matching-answer-list">';
+  for(const pair of pairs){
+   h+=`<div class="matching-answer-row"><label>${esc(pair.text)}</label><span class="matching-arrow">↔</span><select data-match-left="${esc(pair.id)}" ${host||answerSent||revealed?"disabled":""}><option value="">Choose a match…</option>${right.map(option=>`<option value="${esc(option.id)}">${esc(option.match_text||option.text)}</option>`).join("")}</select></div>`;
+  }
+  h+='</div>';
+  h+=`<div class="answer-entry"><button class="btn yellow" type="button" data-submit-matching data-qid="${esc(q.id)}" ${host||answerSent||revealed?"disabled":""}>Submit matches</button></div>`;
+ }else{
+  h+='<div class="options">';
+  for(const o of q.options||[])h+=`<button class="option" ${host||answerSent||revealed?"disabled":""} data-answer="${esc(o.id)}" data-qid="${esc(q.id)}"><span class="option-letter">${esc(o.id)}</span><span>${esc(o.text)}</span></button>`;
+  h+='</div>';
+ }
  if(revealed){
-  h+=`<div class="answer-reveal"><div><div class="correct-label">✓ Correct answer</div><div class="correct-answer">${esc(q.correct_option_id)}</div></div><div class="explanation-block"><span class="explanation-title">Explanation</span><div class="explanation-text">${esc(q.explanation||"No explanation was added for this question.")}</div></div><div id="correctionActions" class="correction-actions"></div></div>`; activeQuestionRevealed=true;
+  const answerCorrect=!!myAnswer?.is_correct;
+  const noAnswer=!myAnswer||myAnswer.selected_option_id==="__NO_ANSWER__";
+  h+=`<div class="answer-reveal"><div><div class="correct-label">✓ Correct answer</div><div class="correct-answer">${correctAnswerMarkup(q,type)}</div></div><div class="explanation-block"><span class="explanation-title">Explanation</span><div class="explanation-text">${esc(cleanExplanation(q.explanation))}</div></div>`;
+  if(!host){
+   h+=`<div class="player-feedback ${answerCorrect?"correct":"incorrect"}"><strong>${answerCorrect?"✓ Correct answer":"✕ Incorrect answer"}</strong>${noAnswer?"No answer was submitted before the time ended. This question is marked incorrect.":answerCorrect?`You earned ${Number(myAnswer.points_awarded)||0} points.`:"Your submitted answer was not correct. Review the correct answer and explanation above."}</div>`;
+  }
+  h+='<div id="correctionActions" class="correction-actions"></div></div>';
  }
  $("questionArea").innerHTML=h;
+ const restoredText=$("textAnswer");if(restoredText&&previousTextAnswer&&!answerSent)restoredText.value=previousTextAnswer;
+ $("questionArea").querySelectorAll("[data-match-left]").forEach(el=>{if(previousMatches[el.dataset.matchLeft]&&!answerSent)el.value=previousMatches[el.dataset.matchLeft];});
  if(revealed)renderCorrectionActions(q);
  const updateClock=async()=>{
   if(!started||!q.timer_seconds){$("timer").textContent="";return;}
@@ -346,7 +422,12 @@ function render(q,revealed,started){
  };
  updateClock();if(started&&q.timer_seconds)questionClock=setInterval(updateClock,250);
 }
-async function submitAnswer(qid,opt){if(answerSent)return;answerSent=true;const{data,error}=await supabase.rpc("quiz_submit_answer",{p_session_id:sid,p_player_token:token,p_question_id:qid,p_option_id:opt});if(error){answerSent=false;notice(error.message)}else notice("Answer submitted. Wait for your teacher to reveal the answer.");}
+async function submitAnswer(qid,opt){
+ if(answerSent)return;answerSent=true;
+ const{data,error}=await supabase.rpc("quiz_submit_answer",{p_session_id:sid,p_player_token:token,p_question_id:qid,p_option_id:opt});
+ if(error){answerSent=false;notice(error.message)}else notice(data?.is_correct?"Answer submitted — correct!":"Answer submitted. Wait for the correction.");
+}
+
 function showQuizBriefing(){
  const info=window.quizBriefingData||{};
  $("briefingQuizTitle").textContent=info.title||"Untitled quiz";
@@ -391,7 +472,28 @@ if(nextQuestionButton)nextQuestionButton.addEventListener("click",async()=>{
  if(!next){notice("This is the last question.");return;}
  try{await openQuestion(next.id);}catch(e){notice(e.message);}
 });
-$("questionArea").addEventListener("click",e=>{const b=e.target.closest("[data-answer]");if(b&&!host)submitAnswer(b.dataset.qid,b.dataset.answer)});
+$("questionArea").addEventListener("click",e=>{
+ const flow=e.target.closest("[data-flow]");
+ if(flow&&host){
+  e.preventDefault();
+  if(flow.disabled)return;
+  const action=flow.dataset.flow;
+  if(action==="ranking")showLeaderboardForAction(false,false);
+  else if(action==="next")advanceToNextQuestion();
+  else if(action==="both"){
+   const index=questions.findIndex(item=>String(item.id)===String(activeQuestionId));
+   const isLast=index===questions.length-1;
+   showLeaderboardForAction(!isLast,isLast);
+  }
+  return;
+ }
+ const textSubmit=e.target.closest("[data-submit-text]");
+ if(textSubmit&&!host){const input=$("textAnswer");const value=input?.value?.trim();if(!value){notice("Write your answer before submitting.");return;}submitAnswer(textSubmit.dataset.qid,value);return;}
+ const matchingSubmit=e.target.closest("[data-submit-matching]");
+ if(matchingSubmit&&!host){const selects=[...$("questionArea").querySelectorAll("[data-match-left]")];const mapping={};for(const select of selects){if(!select.value){notice("Choose a match for every item before submitting.");return;}mapping[select.dataset.matchLeft]=select.value;}submitAnswer(matchingSubmit.dataset.qid,JSON.stringify(mapping));return;}
+ const answer=e.target.closest("[data-answer]");
+ if(answer&&!host)submitAnswer(answer.dataset.qid,answer.dataset.answer);
+});
 $("reveal").onclick=async()=>{const{error}=await supabase.rpc("quiz_reveal_answer",{p_session_id:sid});if(error)notice(error.message);else poll()};
 $("finish").onclick=async()=>{const{error}=await supabase.rpc("quiz_finish_session",{p_session_id:sid});if(error)notice(error.message);else location.href="quiz-results.html?session="+sid};
 async function detectTeacherAccess(){
