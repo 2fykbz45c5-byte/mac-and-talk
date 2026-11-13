@@ -382,7 +382,10 @@ $("startQuiz").addEventListener("click",async()=>{
 });
 $("copyJoinLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(studentJoinUrl);notice("Student join link copied.")}catch{notice("Copy is unavailable in this browser. Copy the link displayed above.")}});
 $("questionControls").addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b)openQuestion(b.dataset.open).catch(x=>notice(x.message))});
-$("nextQuestion").addEventListener("click",async()=>{
+// The old standalone Next question button is no longer part of this layout.
+// Keep this handler optional so older/newer page layouts cannot crash on a missing element.
+const nextQuestionButton=$("nextQuestion");
+if(nextQuestionButton)nextQuestionButton.addEventListener("click",async()=>{
  const index=questions.findIndex(q=>String(q.id)===String(activeQuestionId));
  const next=questions[index+1];
  if(!next){notice("This is the last question.");return;}
