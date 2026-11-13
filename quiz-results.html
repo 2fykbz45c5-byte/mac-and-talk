@@ -1,301 +1,79 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mac&Talk Live Quiz</title><style>
-:root{--navy:#10243e;--navy2:#1c3657;--yellow:#ffc629;--bg:#f3f6fb;--line:#e5eaf1;--muted:#718096}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font:15px Inter,Arial,sans-serif}header{background:var(--navy);color:#fff;padding:16px 22px;display:flex;justify-content:space-between;gap:12px}header b span{color:var(--yellow)}main{max-width:920px;margin:24px auto;padding:0 16px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 12px 35px #10243e0d}h1{margin:0 0 8px;font-size:25px}.muted{color:var(--muted)}.notice{display:none;padding:12px;border-radius:10px;background:#fff2cf;color:#8a6100;margin:10px 0}.notice.show{display:block}.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.option{background:#f7f9fc;border:1px solid var(--line);border-radius:11px;padding:16px;text-align:left;color:var(--navy);font:inherit;font-weight:700;cursor:pointer}.option:disabled{opacity:.7;cursor:default}.option:hover{border-color:var(--yellow);background:#fff9e8}.btn{border:0;border-radius:9px;padding:10px 14px;background:var(--navy);color:white;font-weight:800;cursor:pointer}.btn.yellow{background:var(--yellow);color:var(--navy)}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pin{background:#fff2cf;padding:6px 12px;border-radius:9px;font-weight:900;letter-spacing:3px}.player{padding:9px 12px;border-bottom:1px solid var(--line)}.question-image{max-width:100%;border-radius:12px;margin:12px 0}.timer{font-size:25px;font-weight:900;color:#8a6100}@media(max-width:600px){.options{grid-template-columns:1fr}}
-
-.qr-layout{display:grid;grid-template-columns:minmax(220px,280px) 1fr;gap:22px;align-items:center;margin-top:14px}.qr-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;place-items:center;min-height:260px}.qr-box img,.qr-box canvas{max-width:100%;height:auto!important}.join-url{display:block;overflow-wrap:anywhere;background:#f7f9fc;border:1px solid var(--line);border-radius:9px;padding:11px;font-size:12px;color:var(--navy);margin:10px 0}.qr-caption{font-size:13px;line-height:1.6;color:var(--muted)}.qr-pin{font-size:28px;letter-spacing:5px;font-weight:900;color:var(--navy);background:#fff2cf;border-radius:12px;padding:10px 16px;display:inline-block;margin:8px 0 12px}@media(max-width:650px){.qr-layout{grid-template-columns:1fr}.qr-box{max-width:300px;margin:auto;width:100%}}
-
-
-#joinQrPanel.lobby-fullscreen{position:fixed;inset:0;z-index:1000;margin:0;padding:clamp(18px,3vw,44px);border:0;border-radius:0;box-shadow:none;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;overflow:auto}
-#joinQrPanel.lobby-fullscreen[hidden]{display:none}#wifiQrCard[hidden]{display:none!important}
-.lobby-content{width:min(1500px,100%);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(18px,2.5vw,36px);align-items:stretch}
-.lobby-copy{grid-column:1/-1;text-align:center}
-.lobby-heading{font-size:clamp(32px,4vw,58px);font-weight:950;margin:0 0 8px;color:#fff}
-.lobby-subtitle{font-size:clamp(17px,1.7vw,23px);color:#d7e2f0;line-height:1.45;margin:0}
-.lobby-count{font-size:clamp(22px,2.4vw,32px);font-weight:850;color:#fff;margin:14px 0}
-.lobby-count strong{color:var(--yellow);font-size:1.4em}
-.lobby-start{font-size:clamp(19px,2vw,25px);padding:17px 40px;min-width:250px}
-.lobby-card{background:#fff;color:var(--navy);border-radius:22px;padding:clamp(14px,2vw,26px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-shadow:0 18px 55px #0003;min-width:0}
-.lobby-card h2{font-size:clamp(20px,2.2vw,30px);margin:0;text-align:center}
-.lobby-card .qr-surface{display:grid;place-items:center;width:100%;min-height:300px}
-.lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min(34vw,440px)!important;height:auto!important;max-width:100%}
-.lobby-pin{font-size:clamp(35px,4.2vw,58px);letter-spacing:8px;font-weight:950;color:var(--navy);background:#fff2cf;border-radius:14px;padding:10px 22px}
-.wifi-network-label{font-size:clamp(16px,1.6vw,22px);font-weight:800;overflow-wrap:anywhere;text-align:center}
-.lobby-link{max-width:100%;overflow-wrap:anywhere;color:#d7e2f0;font-size:14px;margin-top:10px}
-.lobby-link a{color:var(--yellow)}
-#questionArea{font-size:clamp(24px,3vw,42px);line-height:1.45}
-#questionTitle{font-size:clamp(27px,3.3vw,46px);line-height:1.2}
-.options{grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px)}
-.option{font-size:clamp(20px,2.2vw,32px);padding:clamp(18px,2.3vw,30px);min-height:90px;border-radius:16px}
-.question-image{max-height:42vh;object-fit:contain}
-#players{font-size:18px}
-@media(max-width:760px){.lobby-content{grid-template-columns:1fr;gap:14px}.lobby-copy{grid-column:auto}.lobby-card{padding:14px}.lobby-card .qr-surface{min-height:230px}.lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min(70vw,330px)!important}.lobby-pin{font-size:34px}.options{grid-template-columns:1fr}#questionArea{font-size:22px}.option{font-size:20px;min-height:68px}}
-
-/* Modern projector layout: no desktop scrolling, one wide question and a slim scoreboard */
-html,body{height:100%;min-height:100%;}
-body{overflow:hidden;background:#eef2f8;}
-header{height:64px;min-height:64px;align-items:center;padding:10px clamp(16px,2.4vw,34px);box-shadow:0 5px 18px #07182b20;position:relative;z-index:5;font-size:17px;}
-main{width:100%;max-width:none;height:calc(100dvh - 64px);margin:0;padding:clamp(10px,1.4vw,20px);display:grid;grid-template-columns:minmax(0,1fr) clamp(230px,22vw,310px);grid-template-rows:auto minmax(0,1fr);gap:clamp(10px,1.2vw,16px);overflow:hidden;}
-main>.notice{grid-column:1/-1;margin:0;}
-main>section.panel{margin:0;min-width:0;min-height:0;border-radius:18px;padding:clamp(13px,1.4vw,21px);box-shadow:0 8px 28px #10243e0b;}
-main>section.panel:nth-of-type(1){grid-column:1/-1;padding:12px 18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
-main>section.panel:nth-of-type(1)>h1{font-size:clamp(18px,1.8vw,26px);margin:0;max-width:26%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-main>section.panel:nth-of-type(1)>p#status{margin:0;font-size:13px;}
-#hostControls{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-#hostControls h3{font-size:13px;margin:0 4px 0 0;white-space:nowrap;}
-#questionControls{gap:5px;max-width:42%;overflow-x:auto;flex-wrap:nowrap;padding:2px;}
-#questionControls .btn{font-size:11px;padding:7px 9px;white-space:nowrap;}
-#hostControls>.row{margin:0!important;gap:6px;}
-#hostControls .btn{font-size:12px;padding:8px 11px;white-space:nowrap;}
-#autoCountdown{font-size:11px!important;}
-#playerInfo{margin:0 0 0 auto;font-size:12px;}
-main>section.panel:nth-of-type(3){grid-column:1;grid-row:2;display:flex;flex-direction:column;overflow:hidden;padding:clamp(18px,2.2vw,34px);}
-main>section.panel:nth-of-type(3)>.row{flex:0 0 auto;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:clamp(14px,2vw,26px);}
-#questionTitle{font-size:clamp(30px,3.4vw,58px);font-weight:900;line-height:1.18;margin:0;max-width:78%;}
-#timer{font-size:clamp(24px,2.6vw,42px);padding:8px 15px;border-radius:13px;background:#fff2cf;white-space:nowrap;}
-#timer.time-ended{background:#ffe1df;color:#b42318;}
-#questionArea{flex:1;min-height:0;overflow:auto;font-size:clamp(25px,2.8vw,44px);line-height:1.35;color:var(--navy);}
-.options{margin-top:clamp(16px,2vw,28px);gap:clamp(10px,1.3vw,18px);}
-.option{display:flex;align-items:center;gap:15px;text-align:left;font-size:clamp(21px,2.2vw,34px);line-height:1.25;min-height:clamp(68px,10vh,112px);padding:clamp(13px,1.7vw,24px);border:2px solid #e3e9f2;background:#f8faff;border-radius:15px;}
-.option-letter{flex:0 0 42px;width:42px;height:42px;display:grid;place-items:center;background:var(--navy);color:#fff;border-radius:11px;font-size:22px;font-weight:900;}
-.option:disabled{opacity:1;}
-.option:disabled:not(:hover){color:var(--navy);}
-.option:disabled[data-answer]{cursor:default;}
-.question-image{max-height:28vh;display:block;margin:0 auto 12px;}
-.answer-reveal{display:block!important;margin-top:16px;font-size:clamp(17px,1.5vw,23px);}
-main>section.panel:nth-of-type(4){grid-column:2;grid-row:2;display:flex;flex-direction:column;overflow:hidden;padding:15px 12px;}
-main>section.panel:nth-of-type(4)>h2{font-size:clamp(17px,1.4vw,22px);margin:2px 4px 12px;padding-bottom:12px;border-bottom:1px solid var(--line);}
-#players{overflow:auto;min-height:0;font-size:14px;}
-.score-player{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:8px;padding:11px 5px;border-bottom:1px solid #edf0f5;}
-.rank{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:#edf2f8;font-weight:900;font-size:12px;}
-.score-player:nth-child(1) .rank{background:#fff0bd;color:#805b00;}
-.player-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:750;}
-.player-score{font-size:17px;white-space:nowrap;color:var(--navy);}
-.player-score small{font-size:10px;color:var(--muted);}
-.empty-players,.waiting-question{padding:22px;border-radius:14px;background:#f7f9fc;color:var(--muted);font-size:clamp(18px,1.8vw,26px);}
-/* Lobby QR codes sit in the centre and fit the screen */
-#joinQrPanel.lobby-fullscreen{overflow:hidden;padding:clamp(12px,2vh,24px) clamp(12px,3vw,44px);}
-.lobby-content{width:min(1500px,100%);height:100%;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr);gap:clamp(12px,2vh,22px);align-items:center;}
-.lobby-copy{grid-column:1/-1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;column-gap:20px;row-gap:5px;}
-.lobby-heading{width:100%;font-size:clamp(28px,3.4vw,48px);margin:0;}
-.lobby-subtitle{font-size:clamp(13px,1.2vw,18px);}
-.lobby-count{font-size:clamp(16px,1.5vw,22px);margin:5px 0;}
-.lobby-start{font-size:clamp(17px,1.5vw,22px);padding:13px 34px;min-width:210px;border-radius:13px;box-shadow:0 7px 0 #c18d00;transition:transform .15s,box-shadow .15s;}
-.lobby-start:hover{transform:translateY(-2px);box-shadow:0 9px 0 #c18d00;}
-.lobby-link{font-size:11px;margin:0;max-width:250px;}
-#copyJoinLink{font-size:11px;padding:8px 12px;margin:0!important;}
-.lobby-card{height:100%;max-height:calc(100dvh - 230px);padding:clamp(10px,1.5vh,18px);gap:clamp(6px,1vh,12px);border-radius:20px;}
-.lobby-card h2{font-size:clamp(18px,1.8vw,25px);}
-.lobby-card .qr-surface{min-height:0;flex:1;}
-.lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min( min(35vw, 48vh), 500px)!important;height:auto!important;max-width:100%;}
-.lobby-pin{font-size:clamp(30px,3vw,48px);padding:7px 18px;}
-.lobby-card>b{font-size:12px;}
-@media(max-width:800px){
- html,body{height:auto;min-height:100%;}body{overflow:auto;}
- main{height:auto;min-height:calc(100dvh - 58px);grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;overflow:visible;padding:10px;}
- main>section.panel:nth-of-type(1){grid-column:1;display:block;}
- main>section.panel:nth-of-type(1)>h1{max-width:100%;white-space:normal;margin-bottom:5px;}
- #hostControls{display:block;}#questionControls{max-width:100%;margin:8px 0;}
- main>section.panel:nth-of-type(3){grid-column:1;grid-row:auto;min-height:48vh;}
- main>section.panel:nth-of-type(4){grid-column:1;grid-row:auto;max-height:32vh;}
- #questionTitle{font-size:clamp(25px,6vw,38px);max-width:100%;}
- #questionArea{font-size:22px;overflow:visible;}
- .options{grid-template-columns:1fr;}
- #joinQrPanel.lobby-fullscreen{position:fixed;overflow:auto;}
- .lobby-content{height:auto;grid-template-columns:1fr;grid-template-rows:auto auto auto;}
- .lobby-copy{grid-column:1;}
- .lobby-card{height:auto;max-height:none;min-height:280px;}
- .lobby-card .qr-surface{min-height:210px;}
- .lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min(68vw,300px)!important;}
-}
-@media(max-height:700px) and (min-width:801px){
- header{height:54px;min-height:54px;}main{height:calc(100dvh - 54px);padding:8px;gap:8px;}
- main>section.panel{padding:10px 13px;}
- .lobby-card{max-height:calc(100dvh - 170px);}
- .lobby-card .qr-surface img,.lobby-card .qr-surface canvas{width:min( min(29vw, 39vh), 390px)!important;}
-}
-
-/* Modern answer reveal and timed classement */
-.answer-reveal{display:flex!important;flex-direction:column;gap:12px;padding:clamp(20px,2.6vw,36px)!important;border:2px solid #b8e4c7;border-radius:20px;background:linear-gradient(135deg,#effcf4,#fff)!important;color:#173d2a!important;box-shadow:0 14px 34px #123d2512;margin-top:clamp(18px,2.4vh,30px)!important}
-.correct-label{font-size:clamp(15px,1.2vw,20px);font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#25804c}
-.correct-answer{font-size:clamp(42px,5.5vw,82px);line-height:1.05;font-weight:1000;letter-spacing:2px;color:#146c3b}
-.explanation-block{border-top:1px solid #cfe8d7;padding-top:13px;margin-top:2px}
-.explanation-title{display:block;font-size:clamp(18px,1.6vw,25px);font-weight:950;color:#173d2a;margin-bottom:7px}
-.explanation-text{font-size:clamp(18px,1.7vw,26px);line-height:1.45;color:#315b43}
-.leaderboard-overlay{position:fixed;inset:0;z-index:2000;background:#0b1d33ed;display:none;align-items:center;justify-content:center;padding:24px}
-.leaderboard-overlay.show{display:flex}
-.leaderboard-card{width:min(850px,94vw);max-height:88dvh;overflow:hidden;background:#fff;border-radius:26px;padding:clamp(22px,3vw,42px);box-shadow:0 30px 90px #0005;text-align:center}
-.leaderboard-kicker{font-size:14px;letter-spacing:3px;font-weight:950;color:#9a7100;text-transform:uppercase}
-.leaderboard-title{font-size:clamp(34px,5vw,64px);font-weight:1000;margin:8px 0 20px;color:var(--navy)}
-.leaderboard-list{display:grid;gap:9px;text-align:left;max-height:52dvh;overflow:auto}
-.leaderboard-row{display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:14px;padding:13px 16px;background:#f5f8fc;border:1px solid #e6ebf2;border-radius:14px;font-size:clamp(17px,1.8vw,23px)}
-.leaderboard-row:first-child{background:#fff7dc;border-color:#f4d77d}
-.leaderboard-rank{font-weight:1000;color:#8a6500}.leaderboard-name{font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.leaderboard-points{font-weight:950;color:var(--navy)}.leaderboard-countdown{margin-top:17px;font-weight:850;color:#68788b;font-size:14px}
-@media(max-width:760px){.leaderboard-overlay{padding:12px}.leaderboard-card{padding:20px 14px}.leaderboard-row{grid-template-columns:38px minmax(0,1fr) auto;gap:8px;padding:11px}.correct-answer{font-size:44px}}
-</style><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script></head><body><header><b>Mac<span>&</span>Talk · Live Quiz</b><span id="pin" class="pin"></span></header><main><div id="notice" class="notice"></div><section class="panel"><h1 id="title">Connecting…</h1><p class="muted" id="status">Connecting to the quiz room.</p><div id="hostControls" hidden><h3>Teacher controls</h3><div id="questionControls" class="row"></div><div class="row" style="margin-top:12px"><button class="btn yellow" id="reveal">Reveal answer</button><button class="btn" id="nextQuestion" type="button">Next question</button><button class="btn" id="autoAdvance" type="button" aria-pressed="true">Auto next: ON</button><span id="autoCountdown" class="muted" style="font-weight:800"></span><button class="btn" id="skipCorrection" type="button" hidden>Skip correction</button>
-<button class="btn" id="showLeaderboard" type="button" hidden>Show classement</button>
-<button class="btn" id="skipLeaderboard" type="button" hidden>Skip classement</button>
-<button class="btn" id="finish">Finish exam</button><a class="btn" id="results" href="#">Results</a></div></div><p id="playerInfo" class="muted"></p></section><section class="panel lobby-fullscreen" id="joinQrPanel" hidden><div class="lobby-content"><div class="lobby-copy"><p class="lobby-heading">Join the live quiz</p><p class="lobby-subtitle">Scan the Join QR code to enter the quiz. Scan the Wi-Fi QR code to connect to the classroom network.</p><div class="lobby-count"><strong id="lobbyPlayerCount">0</strong> players joined</div><button class="btn yellow lobby-start" id="startQuiz" type="button">Start quiz</button><p class="lobby-link">Student link: <a id="joinUrl" href="#" target="_blank" rel="noopener"></a></p><button class="btn" id="copyJoinLink" type="button" style="margin-top:8px">Copy student link</button></div><div class="lobby-card"><h2>JOIN QR CODE</h2><div class="qr-surface" id="joinQr"></div><div class="lobby-pin" id="joinPin">------</div><b>Enter this PIN if needed</b></div><div class="lobby-card" id="wifiQrCard" hidden><h2>WI-FI QR CODE</h2><div class="qr-surface" id="wifiQr"></div><div class="wifi-network-label" id="wifiNetworkLabel"></div><b>Scan to connect to Wi-Fi</b></div></div></section><section class="panel"><div class="row" style="justify-content:space-between"><h2 id="questionTitle">Waiting room</h2><span class="timer" id="timer"></span></div><div id="questionArea" class="muted">Waiting for your teacher…</div></section><section class="panel"><h2>Players in the room</h2><div id="players" class="muted">Waiting for players…</div></section></main>
-<div id="leaderboardOverlay" class="leaderboard-overlay" aria-live="polite"><div class="leaderboard-card"><div class="leaderboard-kicker">Live quiz · Rankings</div><div class="leaderboard-title">New classement</div><div id="leaderboardList" class="leaderboard-list"></div><div id="leaderboardCountdown" class="leaderboard-countdown">Next question shortly…</div></div></div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mac&Talk Quiz Results</title>
+<style>
+:root{--navy:#10243e;--yellow:#ffc629;--bg:#f3f6fb;--line:#e5eaf1;--muted:#718096;--gold:#f5c542;--silver:#b9c5d3;--bronze:#c98a55}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#e4edf9 0,#f3f6fb 48%,#edf2f8 100%);font:15px Inter,Arial,sans-serif;color:var(--navy)}
+header{background:var(--navy);color:white;padding:18px 24px;font-weight:900;letter-spacing:.2px}
+header span{color:var(--yellow)}
+main{max-width:1050px;margin:32px auto;padding:0 18px 42px}
+.panel{background:white;border:1px solid var(--line);border-radius:22px;padding:clamp(20px,3vw,34px);box-shadow:0 16px 45px #10243e0d}
+.top{text-align:center;margin-bottom:26px}
+.kicker{font-size:12px;font-weight:950;letter-spacing:3px;color:#9b7512;text-transform:uppercase}
+h1{font-size:clamp(30px,4vw,48px);margin:9px 0 8px;font-weight:1000}
+.muted{color:var(--muted);line-height:1.5}
+.podium{display:grid;grid-template-columns:1fr 1.16fr 1fr;gap:clamp(9px,2vw,22px);align-items:end;max-width:820px;margin:25px auto 34px}
+.winner{border:1px solid var(--line);border-radius:20px 20px 14px 14px;padding:18px 10px 17px;text-align:center;background:linear-gradient(180deg,#fff,#f7f9fc);min-width:0}
+.winner.first{padding:27px 12px 25px;transform:translateY(-12px);border:2px solid #f0cf63;background:linear-gradient(180deg,#fff9e5,#fff);box-shadow:0 16px 34px #c99c2a24}
+.medal{font-size:clamp(30px,4vw,46px);line-height:1.1;margin-bottom:8px}
+.winner.first .medal{font-size:clamp(43px,5.2vw,64px)}
+.place{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:950;color:var(--muted)}
+.winner.first .place{color:#9b7512}
+.winner-name{font-size:clamp(15px,2vw,20px);font-weight:950;margin:9px 0 7px;overflow-wrap:anywhere}
+.winner.first .winner-name{font-size:clamp(20px,2.7vw,29px)}
+.winner-score{font-size:clamp(14px,1.7vw,18px);font-weight:900;color:#52647a}
+.winner.first .winner-score{font-size:clamp(17px,2vw,22px);color:var(--navy)}
+.podium-base{height:8px;border-radius:0 0 12px 12px;margin:0 8px;background:#dce4ee}
+.first .podium-base{background:var(--gold);height:12px}
+.second .podium-base{background:var(--silver)}
+.third .podium-base{background:var(--bronze)}
+.all-title{font-size:20px;font-weight:950;margin:28px 0 8px}
+.results-list{border:1px solid var(--line);border-radius:15px;overflow:hidden}
+.item{display:grid;grid-template-columns:55px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:white}
+.item:last-child{border-bottom:0}
+.rank{font-weight:950;color:#8a6500}
+.name{font-weight:850;overflow-wrap:anywhere}
+.score{background:#fff2cf;padding:7px 11px;border-radius:9px;font-weight:950;white-space:nowrap}
+@media(max-width:560px){main{margin:18px auto;padding:0 11px 28px}.panel{padding:17px 12px}.podium{gap:7px}.winner{padding:14px 5px 12px}.winner.first{padding:20px 6px 17px;transform:translateY(-7px)}.item{grid-template-columns:38px minmax(0,1fr) auto;padding:12px 10px;gap:7px}.score{padding:6px 7px;font-size:12px}}
+</style>
+</head>
+<body>
+<header>Mac<span>&</span>Talk · Quiz Results</header>
+<main>
+<section class="panel">
+<div class="top">
+<div class="kicker">Quiz completed</div>
+<h1 id="title">Final Winners</h1>
+<p class="muted" id="meta">Loading the final classement…</p>
+</div>
+<div class="podium" id="podium" aria-live="polite"></div>
+<div class="all-title">Full classement</div>
+<div class="results-list" id="results"></div>
+</section>
+</main>
 <script type="module">
 import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
-const supabase=createClient("https://gprdmwjqgyrvqrgjkycc.supabase.co","sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=id=>document.getElementById(id),p=new URLSearchParams(location.search),sid=p.get("session"),host=p.get("host")==="1",token=sessionStorage.getItem("quiz_token_"+sid);let questions=[],polling=false,answerSent=false;
-let autoAdvanceEnabled=true,autoAdvanceTimer=null,autoAdvanceInterval=null,autoAdvanceKey="",activeQuestionId=null,activeQuestionRevealed=false,questionClock=null;
-let revealRequestedFor="",correctionStartedAt=0,phaseInterval=null,leaderboardVisible=false,leaderboardEndsAt=0,latestPlayers=[];
-function notice(t){$("notice").textContent=t;$("notice").classList.add("show")}
-let studentJoinUrl="";
-function renderJoinQr(pin){
- const join=new URL("join.html",location.href);join.searchParams.set("pin",pin);join.searchParams.set("session",sid);studentJoinUrl=join.href;
- $("joinPin").textContent=pin;$("joinUrl").href=studentJoinUrl;$("joinUrl").textContent=studentJoinUrl;$("joinQr").innerHTML="";
- $("joinQrPanel").hidden=false;
- if(typeof QRCode==="undefined"){notice("QR generator did not load. Reload the page or use the student link and PIN.");return;}
- $("joinQrPanel").hidden=false;
- new QRCode($("joinQr"),{text:studentJoinUrl,width:420,height:420,colorDark:"#10243e",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
-}
+const sb=createClient("https://gprdmwjqgyrvqrgjkycc.supabase.co","sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4");
+const $=id=>document.getElementById(id),sid=new URLSearchParams(location.search).get("session");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
-function renderWifiQr(){
- const card=$("wifiQrCard"),root=$("wifiQr"),label=$("wifiNetworkLabel");
- let wifi=null;
- try{wifi=JSON.parse(sessionStorage.getItem("mactalk_quiz_wifi_"+sid)||"null");}catch{}
- root.innerHTML="";
- if(!wifi||!wifi.ssid){card.hidden=true;return;}
- card.hidden=false;label.textContent=wifi.ssid;
- if(typeof QRCode==="undefined"){label.textContent=wifi.ssid+" · QR generator unavailable";return;}
- const ssid=String(wifi.ssid).replace(/([\\;,:"])/g,"\\$1");
- const password=String(wifi.password||"").replace(/([\\;,:"])/g,"\\$1");
- const wifiPayload=`WIFI:T:${password?"WPA":"nopass"};S:${ssid};${password?"P:"+password+";":""};`;
- new QRCode(root,{text:wifiPayload,width:420,height:420,colorDark:"#10243e",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+async function load(){
+ if(!sid)throw Error("Missing session ID.");
+ const{data:s,error}=await sb.from("quiz_sessions").select("id,pin,status,created_at,quizzes(title)").eq("id",sid).single();
+ if(error)throw error;
+ $("title").textContent=s.quizzes?.title||"Final Winners";
+ $("meta").textContent="PIN "+s.pin+" · "+s.status+" · "+new Date(s.created_at).toLocaleString();
+ const{data:players,error:e}=await sb.from("quiz_players").select("nickname,score").eq("session_id",sid).order("score",{ascending:false});
+ if(e)throw e;
+ const ranked=(players||[]).slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+ const podiumOrder=[{p:ranked[1],rank:2,cls:"second",medal:"🥈"},{p:ranked[0],rank:1,cls:"first",medal:"🥇"},{p:ranked[2],rank:3,cls:"third",medal:"🥉"}];
+ $("podium").innerHTML=podiumOrder.filter(x=>x.p).map(x=>`<div class="winner ${x.cls}"><div class="medal">${x.medal}</div><div class="place">${x.rank===1?"Champion":"Place "+x.rank}</div><div class="winner-name">${esc(x.p.nickname)}</div><div class="winner-score">${Number(x.p.score)||0} points</div><div class="podium-base"></div></div>`).join("");
+ $("results").innerHTML=ranked.map((p,i)=>`<div class="item"><span class="rank">#${i+1}</span><span class="name">${esc(p.nickname)}</span><span class="score">${Number(p.score)||0} points</span></div>`).join("")||'<p class="muted" style="padding:16px">No players yet.</p>';
 }
-
-async function hostInit(){const{data:{user}}=await supabase.auth.getUser();if(!user)throw Error("Open the teacher/admin workspace first so your existing sign-in is used.");const{data:s,error}=await supabase.from("quiz_sessions").select("id,owner_id,pin,quiz_id,quizzes(title,quiz_questions(id,position,question_text,options,correct_option_id,explanation,points,timer_seconds))").eq("id",sid).single();if(error)throw error;const{data:profile}=await supabase.from("profiles").select("role").eq("id",user.id).single();if(!profile||!["admin","teacher"].includes(profile.role)||(s.owner_id!==user.id&&profile.role!=="admin"))throw Error("You do not have permission to control this quiz.");questions=(s.quizzes.quiz_questions||[]).sort((a,b)=>a.position-b.position);$("title").textContent=s.quizzes.title;$("pin").textContent="PIN "+s.pin;renderJoinQr(s.pin);renderWifiQr();$("hostControls").hidden=false;$("results").href="quiz-results.html?session="+sid;$("questionControls").innerHTML=questions.map((q,i)=>`<button class="btn yellow" data-open="${q.id}">Question ${i+1}</button>`).join("");}
-function clearAutoAdvance(){if(autoAdvanceTimer){clearTimeout(autoAdvanceTimer);autoAdvanceTimer=null;}if(autoAdvanceInterval){clearInterval(autoAdvanceInterval);autoAdvanceInterval=null;}$("autoCountdown").textContent="";autoAdvanceKey="";}
-function stopPhaseClock(){if(phaseInterval){clearInterval(phaseInterval);phaseInterval=null;}}
-function updateLeaderboard(){
- $("leaderboardList").innerHTML=latestPlayers.slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0)).map((p,i)=>`<div class="leaderboard-row"><span class="leaderboard-rank">#${i+1}</span><span class="leaderboard-name">${esc(p.nickname)}</span><strong class="leaderboard-points">${Number(p.score)||0} pts</strong></div>`).join("")||'<div class="empty-players">No players yet.</div>';
-}
-function showLeaderboard(){leaderboardVisible=true;leaderboardEndsAt=Date.now()+7000;updateLeaderboard();$("leaderboardOverlay").classList.add("show");}
-function hideLeaderboard(){leaderboardVisible=false;$("leaderboardOverlay").classList.remove("show");}
-function resetQuestionPhases(){stopPhaseClock();hideLeaderboard();correctionStartedAt=0;revealRequestedFor="";$("skipCorrection").hidden=true;$("showLeaderboard").hidden=true;$("skipLeaderboard").hidden=true;}
-function startRevealSequence(q){
- if(!q||!activeQuestionRevealed)return;
- if(!correctionStartedAt)correctionStartedAt=Date.now();
- if(host){$("skipCorrection").hidden=false;$("showLeaderboard").hidden=false;}
- if(phaseInterval)return;
- phaseInterval=setInterval(async()=>{
-  if(!activeQuestionRevealed){stopPhaseClock();hideLeaderboard();return;}
-  if(Date.now()-correctionStartedAt>=10000&&!leaderboardVisible){
-   $("skipCorrection").hidden=true;$("showLeaderboard").hidden=true;showLeaderboard();
-   if(host)$("skipLeaderboard").hidden=false;
-  }
-  if(leaderboardVisible){
-   const remain=Math.max(0,Math.ceil((leaderboardEndsAt-Date.now())/1000));
-   $("leaderboardCountdown").textContent=`Next step in ${remain}s`;
-   if(Date.now()>=leaderboardEndsAt){
-    hideLeaderboard();stopPhaseClock();$("skipLeaderboard").hidden=true;
-    if(host&&autoAdvanceEnabled)advanceToNextQuestion();
-   }
-  }
- },200);
-}
-async function advanceToNextQuestion(){
- const index=questions.findIndex(item=>String(item.id)===String(activeQuestionId));
- const next=questions[index+1];
- if(!next){
-  if(host){
-   $("leaderboardCountdown").textContent="Quiz complete · Opening final results…";
-   const {error}=await supabase.rpc("quiz_finish_session",{p_session_id:sid});
-   if(error){notice("Could not finish quiz: "+error.message);return;}
-   location.href="quiz-results.html?session="+encodeURIComponent(sid);
-  }
-  return;
- }
- try{await openQuestion(next.id);}catch(e){notice("Could not open next question: "+e.message);}
-}
-async function openQuestion(id){
- clearAutoAdvance();resetQuestionPhases();activeQuestionId=id;activeQuestionRevealed=false;
- const{error}=await supabase.rpc("quiz_open_question",{p_session_id:sid,p_question_id:id});
- if(error)throw error;answerSent=false;await poll()
-}
-async function poll(){if(polling)return;polling=true;try{if(host){const{data:s,error}=await supabase.from("quiz_sessions").select("id,pin,status,current_question_id,answer_revealed,question_started_at,quiz_id,quizzes(title,quiz_questions(id,position,question_text,options,correct_option_id,explanation,points,timer_seconds))").eq("id",sid).single();if(error)throw error;$("title").textContent=s.quizzes.title;$("status").textContent="Exam status: "+s.status;$("pin").textContent="PIN "+s.pin;
- questions=(s.quizzes.quiz_questions||[]).sort((a,b)=>a.position-b.position);
- if(s.status==="lobby"){if($("joinQrPanel").hidden)renderJoinQr(s.pin);}
- else{$("joinQrPanel").hidden=true;}
- questions=s.quizzes.quiz_questions||[];const{data:ps}=await supabase.from("quiz_players").select("nickname,score").eq("session_id",sid).order("joined_at");latestPlayers=ps||[];$("lobbyPlayerCount").textContent=latestPlayers.length;$("players").innerHTML=latestPlayers.slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0)).map((x,i)=>`<div class="player score-player"><span class="rank">${i+1}</span><span class="player-name">${esc(x.nickname)}</span><strong class="player-score">${Number(x.score)||0}<small> pts</small></strong></div>`).join("")||'<div class="empty-players">No students have joined yet.</div>';if(leaderboardVisible)updateLeaderboard();const q=questions.find(x=>x.id===s.current_question_id);render(q,s.answer_revealed,s.question_started_at);
- if(q){
-  const changed=String(activeQuestionId)!==String(q.id);
-  if(changed){clearAutoAdvance();resetQuestionPhases();activeQuestionId=q.id;activeQuestionRevealed=!!s.answer_revealed;}
-  else if(s.answer_revealed&&!activeQuestionRevealed){activeQuestionRevealed=true;correctionStartedAt=Date.now();startRevealSequence(q);}
-  else if(s.answer_revealed&&activeQuestionRevealed){startRevealSequence(q);}
-  else if(!s.answer_revealed&&activeQuestionRevealed){activeQuestionRevealed=false;resetQuestionPhases();}
- }
- if(s.status==="finished")location.href="quiz-results.html?session="+sid;}
-else{if(!token)throw Error("No participant session found. Return to join.html and enter the PIN.");const{data,error}=await supabase.rpc("quiz_guest_state",{p_session_id:sid,p_player_token:token});if(error)throw error;$("title").textContent=data.quiz_title;$("pin").textContent="PIN "+data.pin;$("status").textContent=data.status==="lobby"?"Waiting for your teacher to start…":"Exam "+data.status;$("playerInfo").textContent=data.nickname+" · "+data.score+" points";const{data:guestPlayers}=await supabase.from("quiz_players").select("nickname,score").eq("session_id",sid).order("score",{ascending:false});latestPlayers=guestPlayers||[];if(leaderboardVisible)updateLeaderboard();render(data.question,data.answer_revealed,data.question_started_at);if(data.status==="finished")location.href="quiz-results.html?session="+encodeURIComponent(sid);}}
-finally{polling=false}}
-function render(q,revealed,started){
- if(questionClock){clearInterval(questionClock);questionClock=null;}
- if(!q){$("questionTitle").textContent="Waiting for the first question";$("questionArea").innerHTML="<div class=\\\"waiting-question\\\">The question will appear here automatically when your teacher starts the quiz.</div>";$("timer").textContent="";return;}
- $("questionTitle").textContent=q.question_text;
- let h=q.image_url?`<img class="question-image" src="${esc(q.image_url)}" alt="Question image">`:"";
- h+='<div class="options">';for(const o of q.options||[])h+=`<button class="option" ${host||answerSent?"disabled":""} data-answer="${esc(o.id)}" data-qid="${esc(q.id)}"><span class="option-letter">${esc(o.id)}</span><span>${esc(o.text)}</span></button>`;h+='</div>';
- if(revealed){
-  h+=`<div class="answer-reveal"><div><div class="correct-label">✓ Correct answer</div><div class="correct-answer">${esc(q.correct_option_id)}</div></div><div class="explanation-block"><span class="explanation-title">Explanation</span><div class="explanation-text">${esc(q.explanation||"No explanation was added for this question.")}</div></div></div>`;
-  if(!correctionStartedAt)correctionStartedAt=Date.now();activeQuestionRevealed=true;startRevealSequence(q);
- }
- $("questionArea").innerHTML=h;
- const updateClock=async()=>{
-  if(!started||!q.timer_seconds){$("timer").textContent="";return;}
-  const left=Math.max(0,q.timer_seconds-Math.floor((Date.now()-new Date(started).getTime())/1000));
-  const mm=String(Math.floor(left/60)).padStart(2,"0"),ss=String(left%60).padStart(2,"0");
-  $("timer").textContent=left===0?"TIME ENDED":"TIME  "+mm+":"+ss;$("timer").classList.toggle("time-ended",left===0);
-  if(left===0&&host&&!revealed&&revealRequestedFor!==String(q.id)){
-   revealRequestedFor=String(q.id);const{error}=await supabase.rpc("quiz_reveal_answer",{p_session_id:sid});
-   if(error){revealRequestedFor="";notice("Could not reveal the correction: "+error.message);}
-  }
- };
- updateClock();if(started&&q.timer_seconds)questionClock=setInterval(updateClock,250);
-}
-async function submitAnswer(qid,opt){if(answerSent)return;answerSent=true;const{data,error}=await supabase.rpc("quiz_submit_answer",{p_session_id:sid,p_player_token:token,p_question_id:qid,p_option_id:opt});if(error){answerSent=false;notice(error.message)}else notice("Answer submitted. Wait for your teacher to reveal the answer.");}
-$("startQuiz").addEventListener("click",async()=>{
-  if(!host){notice("Only the teacher who opened this session can start the quiz.");return;}
-  const firstQuestion=questions.slice().sort((a,b)=>a.position-b.position)[0];
-  if(!firstQuestion){notice("This quiz has no questions. Add questions before starting.");return;}
-  const button=$("startQuiz");
-  if(button.disabled)return;
-  button.disabled=true;button.textContent="Starting…";
-  $("status").textContent="Starting quiz…";
-  try{
-    await openQuestion(firstQuestion.id);
-    $("joinQrPanel").hidden=true;
-  }catch(e){
-    button.disabled=false;button.textContent="Start quiz";
-    $("joinQrPanel").hidden=false;
-    $("status").textContent="The quiz has not started.";
-    notice("Could not start quiz: "+(e?.message||String(e)));
-  }
-});
-$("copyJoinLink").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(studentJoinUrl);notice("Student join link copied.")}catch{notice("Copy is unavailable in this browser. Copy the link displayed above.")}});
-$("questionControls").addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b)openQuestion(b.dataset.open).catch(x=>notice(x.message))});
-$("nextQuestion").addEventListener("click",async()=>{
- const index=questions.findIndex(q=>String(q.id)===String(activeQuestionId));
- const next=questions[index+1];
- if(!next){notice("This is the last question.");return;}
- try{await openQuestion(next.id);}catch(e){notice(e.message);}
-});
-$("autoAdvance").addEventListener("click",()=>{
- autoAdvanceEnabled=!autoAdvanceEnabled;
- $("autoAdvance").textContent="Auto next: "+(autoAdvanceEnabled?"ON":"OFF");
- $("autoAdvance").classList.toggle("yellow",autoAdvanceEnabled);
- if(!autoAdvanceEnabled)clearAutoAdvance();
- else if(activeQuestionRevealed){const q=questions.find(item=>String(item.id)===String(activeQuestionId));startRevealSequence(q);}
-});
-$("questionArea").addEventListener("click",e=>{const b=e.target.closest("[data-answer]");if(b&&!host)submitAnswer(b.dataset.qid,b.dataset.answer)});
-$("skipCorrection").onclick=()=>{if(!activeQuestionRevealed)return;correctionStartedAt=Date.now()-10000;showLeaderboard();$("skipCorrection").hidden=true;$("showLeaderboard").hidden=true;$("skipLeaderboard").hidden=false;};
-$("showLeaderboard").onclick=()=>{if(!activeQuestionRevealed)return;showLeaderboard();$("skipCorrection").hidden=true;$("showLeaderboard").hidden=true;$("skipLeaderboard").hidden=false;};
-$("skipLeaderboard").onclick=()=>{hideLeaderboard();stopPhaseClock();$("skipLeaderboard").hidden=true;if(host)advanceToNextQuestion();};
-$("autoAdvance").classList.add("yellow");
-$("reveal").onclick=async()=>{const{error}=await supabase.rpc("quiz_reveal_answer",{p_session_id:sid});if(error)notice(error.message);else poll()};
-$("finish").onclick=async()=>{const{error}=await supabase.rpc("quiz_finish_session",{p_session_id:sid});if(error)notice(error.message);else location.href="quiz-results.html?session="+sid};
-async function start(){if(!sid)throw Error("Missing quiz session.");if(host)await hostInit();else $("joinQrPanel").hidden=true;await poll();setInterval(()=>poll().catch(e=>notice(e.message)),1800)}
-start().catch(e=>notice(e.message));
-</script></body></html>
+load().catch(e=>$("meta").textContent=e.message);
+</script>
+</body>
+</html>
