@@ -213,7 +213,7 @@ body.player-mode .correction-actions{display:none}
 <script type="module">
 import{createClient}from"https://esm.sh/@supabase/supabase-js@2";
 const supabase=createClient("https://gprdmwjqgyrvqrgjkycc.supabase.co","sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=id=>document.getElementById(id),p=new URLSearchParams(location.search),sid=p.get("session"),host=p.get("host")==="1",token=sessionStorage.getItem("quiz_token_"+sid);let questions=[],polling=false,answerSent=false;
+const $=id=>document.getElementById(id),p=new URLSearchParams(location.search),sid=p.get("session"),token=sessionStorage.getItem("quiz_token_"+sid);let host=false,questions=[],polling=false,answerSent=false;
 let activeQuestionId=null,activeQuestionRevealed=false,questionClock=null,leaderboardActionTimer=null;
 let revealRequestedFor="",leaderboardVisible=false,latestPlayers=[];
 function notice(t){$("notice").textContent=t;$("notice").classList.add("show")}
@@ -391,6 +391,23 @@ $("nextQuestion").addEventListener("click",async()=>{
 $("questionArea").addEventListener("click",e=>{const b=e.target.closest("[data-answer]");if(b&&!host)submitAnswer(b.dataset.qid,b.dataset.answer)});
 $("reveal").onclick=async()=>{const{error}=await supabase.rpc("quiz_reveal_answer",{p_session_id:sid});if(error)notice(error.message);else poll()};
 $("finish").onclick=async()=>{const{error}=await supabase.rpc("quiz_finish_session",{p_session_id:sid});if(error)notice(error.message);else location.href="quiz-results.html?session="+sid};
-async function start(){if(!sid)throw Error("Missing quiz session.");document.body.classList.toggle("player-mode",!host);if(host)await hostInit();else $("joinQrPanel").hidden=true;await poll();setInterval(()=>poll().catch(e=>notice(e.message)),1800)}
+async function detectTeacherAccess(){
+ const{data:{user}}=await supabase.auth.getUser();
+ if(!user)return false;
+ const[{data:session,error:sessionError},{data:profile,error:profileError}]=await Promise.all([
+  supabase.from("quiz_sessions").select("owner_id").eq("id",sid).single(),
+  supabase.from("profiles").select("role").eq("id",user.id).single()
+ ]);
+ if(sessionError)throw sessionError;
+ if(profileError)throw profileError;
+ return !!profile&&["admin","teacher"].includes(profile.role)&&(session.owner_id===user.id||profile.role==="admin");
+}
+async function start(){
+ if(!sid)throw Error("Missing quiz session.");
+ host=await detectTeacherAccess();
+ document.body.classList.toggle("player-mode",!host);
+ if(host)await hostInit();else $("joinQrPanel").hidden=true;
+ await poll();setInterval(()=>poll().catch(e=>notice(e.message)),1800)
+}
 start().catch(e=>notice(e.message));
 </script></body></html>
