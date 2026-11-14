@@ -204,10 +204,15 @@ body.player-mode .correction-actions{display:none}
 .matching-answer-row label{font-size:clamp(15px,1.5vw,21px);font-weight:800;overflow-wrap:anywhere}
 .matching-answer-row select{width:100%;min-width:0;padding:13px;border:2px solid #dbe3ee;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:clamp(14px,1.4vw,19px)}
 .matching-arrow{text-align:center;font-weight:900;color:#c18d00}
-.player-feedback{margin-top:18px;padding:18px;border-radius:14px;font-size:clamp(17px,1.5vw,23px);line-height:1.45}
-.player-feedback.correct{background:#e9f8ef;color:#17643a;border:1px solid #b7e4c7}
-.player-feedback.incorrect{background:#fff0ef;color:#9e2922;border:1px solid #f1c2be}
-.player-feedback strong{display:block;font-size:1.15em;margin-bottom:5px}
+.matching-correction-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(1050px,100%);max-height:43vh;overflow:auto;padding:4px;margin:8px auto 0}
+.matching-correction-row{display:grid;grid-template-columns:34px minmax(0,1fr) 24px minmax(0,1fr);align-items:center;gap:10px;min-height:66px;padding:13px 15px;border:1px solid #d9e4f1;border-radius:15px;background:#fff;box-shadow:0 5px 16px #10243e0b;color:#17324f}
+.matching-correction-index{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#fff1c2;color:#8a6500;font-size:13px;font-weight:950}
+.matching-correction-left,.matching-correction-right{font-size:clamp(14px,1.35vw,19px);font-weight:850;line-height:1.3;overflow-wrap:anywhere}
+.matching-correction-connector{text-align:center;color:#bd8b08;font-weight:1000;font-size:19px}
+.answer-reveal:has(.matching-correction-list){gap:10px;padding-top:clamp(18px,3vh,36px)!important;padding-bottom:clamp(18px,3vh,36px)!important}
+.answer-reveal:has(.matching-correction-list) .correct-label{text-align:center}
+.answer-reveal:has(.matching-correction-list) .explanation-block{margin-top:0;max-height:24vh}
+@media(max-width:760px){.matching-correction-list{grid-template-columns:1fr;gap:8px;max-height:40vh}.matching-correction-row{min-height:56px;padding:10px 12px}.matching-correction-left,.matching-correction-right{font-size:14px}}
 @media(max-width:600px){.matching-answer-row{grid-template-columns:1fr;gap:7px}.matching-arrow{display:none}.answer-entry{align-items:stretch}.answer-entry .btn{width:100%}}
 
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script></head><body><header class="live-header"><b class="live-brand">Mac<span>&</span>Talk · Live Quiz</b><span id="liveQuizName" class="live-quiz-name">Loading quiz…</span><span id="pin" class="pin"></span></header><main><div id="notice" class="notice"></div><section class="panel"><h1 id="title">Connecting…</h1><p class="muted" id="status">Connecting to the quiz room.</p><div id="hostControls" hidden><h3>Teacher controls</h3><div id="questionControls" class="row"></div><div class="row" style="margin-top:12px"><button class="btn yellow" id="reveal">Reveal answer</button><span class="muted" style="font-weight:800">Teacher-controlled question flow</span><button class="btn" id="finish">Finish exam</button><a class="btn" id="results" href="#">Results</a></div></div><p id="playerInfo" class="muted"></p></section><section class="panel lobby-fullscreen" id="joinQrPanel" hidden><div class="lobby-content"><div class="lobby-copy"><p class="lobby-heading">Join the live quiz</p><p class="lobby-subtitle">Scan the Join QR code to enter the quiz. Scan the Wi-Fi QR code to connect to the classroom network.</p><div class="lobby-count"><strong id="lobbyPlayerCount">0</strong> players joined</div><button class="btn yellow lobby-start" id="startQuiz" type="button">Start quiz</button><p class="lobby-link">Student link: <a id="joinUrl" href="#" target="_blank" rel="noopener"></a></p><button class="btn" id="copyJoinLink" type="button" style="margin-top:8px">Copy student link</button></div><div class="lobby-card"><h2>JOIN QR CODE</h2><div class="qr-surface" id="joinQr"></div><div class="lobby-pin" id="joinPin">------</div><b>Enter this PIN if needed</b></div><div class="lobby-card" id="wifiQrCard" hidden><h2>WI-FI QR CODE</h2><div class="qr-surface" id="wifiQr"></div><div class="wifi-network-label" id="wifiNetworkLabel"></div><b>Scan to connect to Wi-Fi</b></div></div></section><section class="panel"><div class="row" style="justify-content:space-between"><h2 id="questionTitle">Waiting room</h2><span class="timer" id="timer"></span></div><div id="questionArea" class="muted">Waiting for your teacher…</div></section><section class="panel"><h2>Players in the room</h2><div id="players" class="muted">Waiting for players…</div></section></main>
@@ -367,7 +372,8 @@ function expectedTextAnswer(q){
 function correctAnswerMarkup(q,type){
  if(type==="matching"){
   let pairs=[];try{pairs=JSON.parse(q.correct_option_id||"[]")}catch{}
-  return pairs.map(pair=>`<div>${esc(pair.left)} <strong>↔</strong> ${esc(pair.right)}</div>`).join("")||"Matching pairs";
+  if(!pairs.length)return "Matching pairs";
+  return `<div class="matching-correction-list">${pairs.map((pair,index)=>`<div class="matching-correction-row"><span class="matching-correction-index">${index+1}</span><span class="matching-correction-left">${esc(pair.left)}</span><span class="matching-correction-connector">↔</span><span class="matching-correction-right">${esc(pair.right)}</span></div>`).join("")}</div>`;
  }
  if(type==="fill_blank"||type==="short_answer")return esc(expectedTextAnswer(q));
  return esc(q.correct_option_id||"—");
@@ -398,12 +404,7 @@ function render(q,revealed,started,myAnswer=null){
   h+='</div>';
  }
  if(revealed){
-  const answerCorrect=!!myAnswer?.is_correct;
-  const noAnswer=!myAnswer||myAnswer.selected_option_id==="__NO_ANSWER__";
   h+=`<div class="answer-reveal"><div><div class="correct-label">✓ Correct answer</div><div class="correct-answer">${correctAnswerMarkup(q,type)}</div></div><div class="explanation-block"><span class="explanation-title">Explanation</span><div class="explanation-text">${esc(cleanExplanation(q.explanation))}</div></div>`;
-  if(!host){
-   h+=`<div class="player-feedback ${answerCorrect?"correct":"incorrect"}"><strong>${answerCorrect?"✓ Correct answer":"✕ Incorrect answer"}</strong>${noAnswer?"No answer was submitted before the time ended. This question is marked incorrect.":answerCorrect?`You earned ${Number(myAnswer.points_awarded)||0} points.`:"Your submitted answer was not correct. Review the correct answer and explanation above."}</div>`;
-  }
   h+='<div id="correctionActions" class="correction-actions"></div></div>';
  }
  $("questionArea").innerHTML=h;
@@ -423,9 +424,13 @@ function render(q,revealed,started,myAnswer=null){
  updateClock();if(started&&q.timer_seconds)questionClock=setInterval(updateClock,250);
 }
 async function submitAnswer(qid,opt){
- if(answerSent)return;answerSent=true;
- const{data,error}=await supabase.rpc("quiz_submit_answer",{p_session_id:sid,p_player_token:token,p_question_id:qid,p_option_id:opt});
- if(error){answerSent=false;notice(error.message)}else notice(data?.is_correct?"Answer submitted — correct!":"Answer submitted. Wait for the correction.");
+ if(answerSent)return;
+ answerSent=true;
+ // Lock every answer control immediately; the player gets one submission per question.
+ $("questionArea").querySelectorAll("button.option, [data-submit-text], [data-submit-matching], #textAnswer, [data-match-left]").forEach(control=>{control.disabled=true;});
+ notice("Answer submitted. You cannot change it. Wait for the correction when the timer ends.");
+ const{error}=await supabase.rpc("quiz_submit_answer",{p_session_id:sid,p_player_token:token,p_question_id:qid,p_option_id:opt});
+ if(error){answerSent=false;notice("Your answer could not be submitted: "+error.message);poll().catch(()=>{});}
 }
 
 function showQuizBriefing(){
