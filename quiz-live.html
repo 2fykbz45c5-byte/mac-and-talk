@@ -430,7 +430,18 @@ async function submitAnswer(qid,opt){
  $("questionArea").querySelectorAll("button.option, [data-submit-text], [data-submit-matching], #textAnswer, [data-match-left]").forEach(control=>{control.disabled=true;});
  notice("Answer submitted. You cannot change it. Wait for the correction when the timer ends.");
  const{error}=await supabase.rpc("quiz_submit_answer",{p_session_id:sid,p_player_token:token,p_question_id:qid,p_option_id:opt});
- if(error){answerSent=false;notice("Your answer could not be submitted: "+error.message);poll().catch(()=>{});}
+ if(error){
+  // A repeated request can happen if the player taps twice or the network retries.
+  // Treat the server's one-answer rule as an already-completed submission, not an error to show.
+  if(/already submitted an answer|already submitted|answer already exists/i.test(String(error.message||""))){
+   answerSent=true;
+   poll().catch(()=>{});
+   return;
+  }
+  answerSent=false;
+  notice("Your answer could not be submitted: "+error.message);
+  poll().catch(()=>{});
+ }
 }
 
 function showQuizBriefing(){
