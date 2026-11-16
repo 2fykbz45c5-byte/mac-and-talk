@@ -34,6 +34,23 @@
 .access-students-list .access-student-copy strong{font-size:13px;overflow-wrap:anywhere}
 .access-students-list .access-student-copy small{font-size:12px;opacity:.7;overflow-wrap:anywhere}
 
+
+/* Teacher and class access manager */
+.class-admin-grid{display:grid;grid-template-columns:minmax(230px,.8fr) minmax(0,1.6fr);gap:16px;margin-top:16px}
+.class-admin-list{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:7px}
+.class-admin-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:10px;cursor:pointer}
+.class-admin-item:hover,.class-admin-item.active{background:#fff2c7}
+.class-admin-item strong,.class-admin-item small{display:block;overflow-wrap:anywhere}
+.class-admin-item small{font-size:11px;color:var(--muted);margin-top:4px}
+.class-admin-student{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border-bottom:1px solid #edf0f5}
+.class-admin-student:last-child{border-bottom:0}
+.class-admin-student strong,.class-admin-student small{display:block;overflow-wrap:anywhere}
+.class-admin-student small{font-size:11px;color:var(--muted);margin-top:3px}
+.class-admin-tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.class-admin-tools .field-control{flex:1;min-width:180px}
+.class-admin-count{font-size:11px;color:var(--muted);font-weight:700}
+@media(max-width:900px){.class-admin-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -60,21 +77,33 @@
 <section class="page" id="page-sessions"><div class="welcome"><div><h2>Live session management</h2><p>Create, update, approve, and delete sessions.</p></div><button class="btn btn-primary" id="newSessionBtn2">＋ Create session</button></div>
 <div class="panel"><div class="panel-head"><div><h3>All sessions</h3><p>Approved live or scheduled sessions can be shown to members.</p></div><div class="filters"><input class="field-control" id="searchInput" placeholder="Search sessions…" aria-label="Search sessions"><select class="field-control" id="statusFilter" aria-label="Filter status"><option value="all">All statuses</option><option value="live">Live</option><option value="scheduled">Scheduled</option><option value="ended">Ended</option><option value="cancelled">Cancelled</option></select><select class="field-control" id="approvalFilter" aria-label="Filter approval"><option value="all">All approvals</option><option value="approved">Approved</option><option value="pending">Pending</option></select></div></div><div class="table-wrap"><table><thead><tr><th>Session</th><th>Host</th><th>Status</th><th>Approval</th><th>Actions</th></tr></thead><tbody id="sessionRows"><tr><td colspan="5" class="empty">Loading sessions…</td></tr></tbody></table></div><div class="panel-head"><p id="resultCount">Loading…</p><button class="btn btn-light btn-small" id="refreshBtn">↻ Refresh</button></div></div></section>
 <section class="page" id="page-accounts"><div class="welcome"><div><h2>Account Management</h2><p>Send one invitation or invite a list of people. Email is required; full name is optional.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>✉️ Send Registration Invitations</h3><p>Choose how to add recipients. Each valid email receives its own registration link.</p><div class="invite-mode-switch" role="group" aria-label="Invitation input method"><button type="button" class="btn btn-yellow invite-mode active" data-invite-mode="text">✍️ Write emails</button><button type="button" class="btn btn-light invite-mode" data-invite-mode="pdf">📄 Upload PDF</button></div><form id="inviteAccountForm"><div id="inviteTextMode"><div class="form-field full"><label for="inviteList">Emails and optional full names</label><textarea id="inviteList" rows="7" placeholder="student1@example.com&#10;Yassine Jemaa, yassine@example.com&#10;student3@example.com, Lina Ben Ali"></textarea><small>One person per line. Use <code>email@example.com</code>, <code>Full Name, email@example.com</code>, or <code>email@example.com, Full Name</code>.</small></div></div><div id="invitePdfMode" hidden><div class="form-field full"><label for="invitePdf">Upload a PDF containing emails and optional names</label><input id="invitePdf" type="file" accept="application/pdf,.pdf"><small>List one person per line. Names are optional; email addresses are required.</small></div><p id="invitePdfStatus" class="invite-status" aria-live="polite"></p></div><div id="invitePreview" class="invite-preview" hidden></div><button class="btn btn-yellow" id="sendInviteBtn" type="submit" style="margin-top:18px;width:100%">Send All Invitations</button></form></div><div class="panel info-card"><h3>🔐 Account security</h3><p>EmailJS sends each registration email. Recipients create their own account through Supabase Auth. Missing names stay blank on the acceptance page.</p><p>New accounts start as <strong>pending</strong>. Review them in Users Management, choose Student, Teacher, or Admin, then approve to assign a unique Mac&amp;Talk ID. Database RLS and protected-page checks must also enforce approval; this admin page alone is not the security boundary. Invitations use the existing <code>create_student_invitation</code> RPC.</p></div></div></section>
-<section class="page" id="page-users"><div class="welcome"><div><h2>Users Management</h2><p>View registered members, manage application roles, and block or remove profiles.</p></div><button class="btn btn-light" id="refreshUsersBtn">↻ Refresh users</button></div>
+<section class="page" id="page-users"><div class="welcome"><div><h2>Users Management</h2><p>Manage student accounts. Block disables app access; Delete permanently removes the Auth account; class removal only changes class membership.</p></div><button class="btn btn-light" id="refreshUsersBtn">↻ Refresh users</button></div>
 <div class="stats"><div class="stat"><div class="stat-top">Registered users <span class="stat-icon">👥</span></div><strong id="usersTotal">—</strong><small>Supabase Auth accounts</small></div><div class="stat"><div class="stat-top">Students <span class="stat-icon">🎓</span></div><strong id="usersStudents">—</strong><small>Student profiles</small></div><div class="stat"><div class="stat-top">Administrators <span class="stat-icon">🔐</span></div><strong id="usersAdmins">—</strong><small>Admin profiles</small></div><div class="stat"><div class="stat-top">Blocked profiles <span class="stat-icon">🚫</span></div><strong id="usersBlocked">—</strong><small>Application access flag</small></div></div>
 <div class="panel"><div class="panel-head"><div><h3>Account approvals & users</h3><p>Choose a role, then approve to assign a unique Mac&amp;Talk ID in the database. Pending accounts must not access dashboards.</p></div><div class="filters"><input class="field-control" id="usersSearch" placeholder="Search name, email or ID…" aria-label="Search users"><select class="field-control" id="usersRoleFilter" aria-label="Filter user role"><option value="all">All roles</option><option value="student">Students</option><option value="teacher">Teachers</option><option value="admin">Admins</option></select><select class="field-control" id="usersApprovalFilter" aria-label="Filter approval status"><option value="all">All approval statuses</option><option value="pending">Pending approval</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select><select class="field-control" id="usersStatusFilter" aria-label="Filter access status"><option value="all">All access statuses</option><option value="active">Not blocked</option><option value="blocked">Blocked</option></select></div></div><div class="table-wrap"><table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Mac&amp;Talk ID</th><th>Approval</th><th>Access</th><th>Registered</th><th>Actions</th></tr></thead><tbody id="managedUsersRows"><tr><td colspan="8" class="empty">Open Users Management to load users.</td></tr></tbody></table></div><div class="panel-head"><p id="managedUsersCount">No users loaded.</p></div></div></section>
 <section class="page" id="page-student-access">
-<div class="welcome"><div><h2>Teacher Student Access</h2><p>Choose exactly which students each teacher is allowed to see in teacher.html.</p></div><button class="btn btn-light" id="refreshStudentAccessBtn">↻ Refresh</button></div>
-<div class="grid-two">
-<div class="panel info-card"><h3>🔑 Grant access</h3><p>Only the selected teacher will be allowed to see the selected student's profile details in the teacher dashboard.</p><form id="studentAccessForm"><div class="form-field"><label for="accessTeacher">Teacher *</label><select class="field-control" id="accessTeacher" required><option value="">Loading teachers…</option></select></div><div class="form-field" style="margin-top:14px"><label for="accessStudentSearch">Find students</label><input class="field-control" id="accessStudentSearch" type="search" placeholder="Search name or email…" autocomplete="off"></div>
-<div class="access-list-toolbar" style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin:12px 0 8px;flex-wrap:wrap"><span id="accessSelectedCount" class="muted">0 students selected</span><div style="display:flex;gap:8px"><button class="btn btn-light btn-small" type="button" id="selectFilteredStudentsBtn">Select filtered</button><button class="btn btn-light btn-small" type="button" id="clearStudentsBtn">Clear</button></div></div>
-<div id="accessStudentsList" class="access-students-list" style="max-height:270px;overflow:auto;border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:8px"><p class="empty">Loading students…</p></div>
-<button class="btn btn-yellow" type="submit" id="grantStudentAccessBtn" style="width:100%;margin-top:18px">Grant access to selected students</button></form></div>
-<div class="panel info-card"><h3>🛡️ Permission rules</h3><p>Teachers cannot grant themselves access, view the full student directory, or change these permissions. Only administrators can grant and revoke access.</p><p>Existing students are <strong>not automatically shared</strong>. Add a permission below for each teacher/student pair.</p></div>
+<div class="welcome"><div><h2>Teacher & Class Management</h2><p>Choose a teacher, view their Lear Academy classes, and manage the students in each class.</p></div><button class="btn btn-light" id="refreshStudentAccessBtn">↻ Refresh</button></div>
+<div class="panel info-card">
+ <div class="form-field"><label for="accessTeacher">Select teacher</label><select class="field-control" id="accessTeacher"><option value="">Loading teachers…</option></select></div>
+ <p class="multi-help" style="margin-top:9px">Only approved teacher accounts are shown. This uses your existing <code>teacher_classes</code> and <code>class_students</code> tables.</p>
 </div>
-<div class="panel" style="margin-top:18px"><div class="panel-head"><div><h3>Current permissions</h3><p>Revoke access at any time. Changes apply the next time the teacher list refreshes.</p></div></div><div class="table-wrap"><table><thead><tr><th>Teacher</th><th>Student</th><th>Granted on</th><th>Action</th></tr></thead><tbody id="studentAccessRows"><tr><td colspan="4" class="empty">Loading permissions…</td></tr></tbody></table></div></div>
+<div class="class-admin-grid">
+ <div class="panel"><div class="panel-head"><div><h3>Teacher's classes</h3><p id="accessClassCount">Choose a teacher to load classes.</p></div></div><div id="accessClassesList" class="class-admin-list"><p class="empty">Select a teacher first.</p></div></div>
+ <div class="panel">
+  <div class="panel-head"><div><h3 id="accessActiveClassTitle">Class students</h3><p id="accessClassSubtitle">Select a class to see its students.</p></div><span class="class-admin-count" id="accessClassStudentCount"></span></div>
+  <div style="padding:16px">
+   <div class="class-admin-tools"><input class="field-control" id="accessStudentSearch" type="search" placeholder="Search by name, email or Mac&Talk ID…" autocomplete="off"><button class="btn btn-light btn-small" type="button" id="selectFilteredStudentsBtn">Select filtered</button><button class="btn btn-light btn-small" type="button" id="clearStudentsBtn">Clear</button></div>
+   <p class="multi-help" id="accessSelectedCount" style="margin:10px 0">0 students selected</p>
+   <div id="accessStudentsList" class="access-students-list" style="max-height:250px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:8px;margin-top:10px"><p class="empty">Select a class first.</p></div>
+   <button class="btn btn-yellow" type="button" id="addStudentsToClassBtn" style="width:100%;margin-top:14px" disabled>＋ Add selected students to this class</button>
+   <p class="multi-help" style="margin-top:10px">Search accepts the name, email, full Mac&Talk ID, or its numeric part (3–6 digits).</p>
+  </div>
+  <div class="panel-head"><div><h3>Students in this class</h3><p>Removing a student here only removes class membership, not their account.</p></div></div>
+  <div id="accessClassStudentsList"><p class="empty">Select a class first.</p></div>
+ </div>
+</div>
+<div class="panel" style="margin-top:18px"><div class="panel-head"><div><h3>Account actions</h3><p>Block or permanently delete the whole account separately in Users Management.</p></div><button class="btn btn-light btn-small" type="button" data-goto="users">Open Users Management →</button></div></div>
 </section>
-<section class="page" id="page-guide"><div class="welcome"><div><h2>Setup & security</h2><p>Required configuration before production.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Supabase</h3><p>Open this page through <code>http://localhost</code> or HTTPS, not <code>file://</code>. This page checks the admin role in <code>public.profiles.role</code>, where <code>profiles.id</code> remains the internal Auth UUID and <code>mac_talk_id</code> is the official user-facing ID.</p></div><div class="panel info-card"><h3>Registered users</h3><p>The host and invitee lists use <code>admin_list_live_users()</code>. Users Management uses <code>admin_list_managed_users()</code>. Both functions must check the admin role internally.</p></div><div class="panel info-card"><h3>Session schema</h3><p>Uses <code>owner_id</code>, <code>title</code>, <code>description</code>, <code>scheduled_at</code>, <code>join_url</code>, <code>cover_image_url</code>, <code>status</code>, and <code>approved</code> in <code>public.live_sessions</code>.</p></div><div class="panel info-card"><h3>Account controls</h3><p>Blocking updates <code>profiles.is_blocked</code> and must be enforced by your app's login flow and data-access policies. Deleting a profile does not delete its Supabase Auth account. Auth account bans/deletion require a trusted server-side component.</p></div></div></section>
+<section class="page" id="page-guide"><div class="welcome"><div><h2>Setup & security</h2><p>Required configuration before production.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Supabase</h3><p>Open this page through <code>http://localhost</code> or HTTPS, not <code>file://</code>. This page checks the admin role in <code>public.profiles.role</code>, where <code>profiles.id</code> remains the internal Auth UUID and <code>mac_talk_id</code> is the official user-facing ID.</p></div><div class="panel info-card"><h3>Registered users</h3><p>The host and invitee lists use <code>admin_list_live_users()</code>. Users Management uses <code>admin_list_managed_users()</code>. Both functions must check the admin role internally.</p></div><div class="panel info-card"><h3>Session schema</h3><p>Uses <code>owner_id</code>, <code>title</code>, <code>description</code>, <code>scheduled_at</code>, <code>join_url</code>, <code>cover_image_url</code>, <code>status</code>, and <code>approved</code> in <code>public.live_sessions</code>.</p></div><div class="panel info-card"><h3>Account controls</h3><p>Blocking uses the admin-only <code>admin_set_user_blocked</code> RPC and must also be enforced by protected-page checks and RLS. Permanent deletion uses the <code>admin-delete-user</code> Edge Function with a server-side service-role key; never put that key in this HTML file.</p></div></div></section>
 </div></main></div>
 <div class="app-dialog-backdrop" id="appDialogModal" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
  <div class="app-dialog">
@@ -253,7 +282,26 @@ async function rejectManagedUser(id){
  if(!confirm(`Reject the registration for ${user.email||user.display_name||id}?`))return;
  try{const {data,error}=await supabase.from("profiles").update({status:"rejected",mac_talk_id:null}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check the admin UPDATE policy.");showNotice("Registration rejected. No Mac&Talk ID was assigned.");await loadManagedUsers();}catch(error){console.error("Account rejection failed:",error);showNotice("Could not reject account: "+error.message,"error");}
 }
-async function toggleManagedUserBlock(id){const user=managedUsers.find(u=>u.id===id);if(!user)return;if(isFirstAdmin(user))return showNotice("Protected founder admin: this account cannot be blocked.","error");if(id===currentAdminId)return showNotice("You cannot block your own account here.","error");const nextBlocked=!user.is_blocked,label=user.email||user.display_name||id;if(!confirm(`${nextBlocked?"Block":"Unblock"} ${label} in the application?`))return;try{const {data,error}=await supabase.from("profiles").update({is_blocked:nextBlocked}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw new Error("No profile was updated. Check that the profile exists and the admin UPDATE policy is installed.");showNotice(nextBlocked?"Profile marked as blocked.":"Profile unblocked.");await loadManagedUsers();}catch(error){console.error("Block update failed:",error);showNotice("Could not change block status: "+error.message,"error");}}
+async function toggleManagedUserBlock(id){
+ const user=managedUsers.find(u=>u.id===id);if(!user)return;
+ if(isFirstAdmin(user))return showNotice("Protected founder admin: this account cannot be blocked.","error");
+ if(id===currentAdminId)return showNotice("You cannot block your own account here.","error");
+ const nextBlocked=!user.is_blocked,label=user.email||user.display_name||id;
+ if(!confirm(`${nextBlocked?"Block":"Unblock"} ${label}? ${nextBlocked?"They will lose access to protected app areas.":"Their application access will be restored."}`))return;
+ const button=Array.from(document.querySelectorAll('button[data-user-action="block"]')).find(el=>el.dataset.id===id);
+ if(button){button.disabled=true;button.textContent=nextBlocked?"Blocking…":"Unblocking…";}
+ try{
+  const {data,error}=await supabase.functions.invoke("admin-manage-user",{body:{user_id:id,action:nextBlocked?"block":"unblock"}});
+  if(error)throw error;
+  if(data?.success===false)throw new Error(data.message||"The database did not update this account.");
+  showNotice(nextBlocked?"Student account blocked successfully.":"Student account unblocked successfully.");
+  await loadManagedUsers();
+ }catch(error){
+  console.error("Block update failed:",error);
+  showNotice("Could not change account access: "+error.message+". Deploy the admin-manage-user Edge Function and run the admin setup SQL first.","error");
+  if(button){button.disabled=false;button.textContent=user.is_blocked?"Unblock":"Block";}
+ }
+}
 async function deleteManagedUserProfile(id){
   if(id===currentAdminId)return showNotice("You cannot delete your own account here.","error");
   const user=managedUsers.find(u=>u.id===id);if(!user)return;
@@ -276,71 +324,101 @@ async function deleteManagedUserProfile(id){
   }
 }
 
-let accessStudentOptions = [];
-let selectedAccessStudentIds = new Set();
+let accessStudentOptions=[],accessTeachers=[],accessClasses=[],accessClassStudents=[];
+let selectedAccessStudentIds=new Set(),activeAccessClass=null;
+function studentSearchText(u){
+ const full=String(u.mac_talk_id||"");
+ return `${u.display_name||""} ${u.email||""} ${u.id||""} ${full} ${full.replace(/\D/g,"")}`.toLowerCase();
+}
+function getAccessStudent(id){return accessStudentOptions.find(u=>String(u.id)===String(id))||{};}
 function renderAccessStudentOptions(){
-  const list=$("accessStudentsList"),query=($("accessStudentSearch").value||"").trim().toLowerCase();
-  const filtered=accessStudentOptions.filter(u=>`${u.display_name||""} ${u.email||""} ${u.id||""}`.toLowerCase().includes(query));
-  $("accessSelectedCount").textContent=`${selectedAccessStudentIds.size} student${selectedAccessStudentIds.size===1?"":"s"} selected`;
-  if(!filtered.length){list.innerHTML='<p class="empty" style="padding:12px">No students match your search.</p>';return;}
-  list.innerHTML=filtered.map(u=>`<label class="access-student-option"><input type="checkbox" data-access-student-check="${esc(u.id)}" ${selectedAccessStudentIds.has(u.id)?"checked":""}><span class="access-student-copy"><strong>${esc(u.display_name||"Student")}</strong><small>${esc(u.email||u.id)}</small></span></label>`).join("");
+ const list=$("accessStudentsList"),q=($("accessStudentSearch").value||"").trim().toLowerCase();
+ const existing=new Set(accessClassStudents.map(x=>String(x.student_id)));
+ const filtered=accessStudentOptions.filter(u=>!existing.has(String(u.id))&&studentSearchText(u).includes(q));
+ $("accessSelectedCount").textContent=`${selectedAccessStudentIds.size} student${selectedAccessStudentIds.size===1?"":"s"} selected`;
+ if(!activeAccessClass){list.innerHTML='<p class="empty" style="padding:16px">Select a class first.</p>';return;}
+ if(!filtered.length){list.innerHTML='<p class="empty" style="padding:16px">No available students match your search.</p>';return;}
+ list.innerHTML=filtered.map(u=>`<label class="access-student-option"><input type="checkbox" data-access-student-check="${esc(u.id)}" ${selectedAccessStudentIds.has(String(u.id))?"checked":""}><span class="access-student-copy"><strong>${esc(u.display_name||"Student")}</strong><small>${esc(u.email||"No email")} · ${esc(u.mac_talk_id||"No Mac&Talk ID")}</small></span></label>`).join("");
 }
 async function loadStudentAccessOptions(){
-  const teacherSel=$("accessTeacher");
-  teacherSel.innerHTML='<option value="">Choose a teacher…</option>';
-  const {data,error}=await supabase.rpc("admin_list_managed_users");
-  if(error) throw error;
-  const rows=data||[];
-  const teachers=rows.filter(u=>String(u.role||"").toLowerCase()==="teacher");
-  accessStudentOptions=rows.filter(u=>String(u.role||"").toLowerCase()==="student");
-  teachers.forEach(u=>{teacherSel.insertAdjacentHTML("beforeend",`<option value="${esc(u.id)}">${esc(u.display_name||u.email||u.id)}${u.email?" — "+esc(u.email):""}</option>`)});
-  if(!teachers.length) teacherSel.innerHTML='<option value="">No teacher accounts found</option>';
-  const allowedIds=new Set(accessStudentOptions.map(u=>u.id));
-  selectedAccessStudentIds=new Set([...selectedAccessStudentIds].filter(id=>allowedIds.has(id)));
-  renderAccessStudentOptions();
+ const {data,error}=await supabase.rpc("admin_list_managed_users");if(error)throw error;
+ const rows=data||[];
+ const {data:profiles,error:profileError}=await supabase.from("profiles").select("id,display_name,mac_talk_id,role,status,is_blocked");
+ if(profileError)throw profileError;
+ const pm=new Map((profiles||[]).map(p=>[String(p.id),p]));
+ const enriched=rows.map(u=>({...u,...(pm.get(String(u.id))||{})}));
+ accessTeachers=enriched.filter(u=>String(u.role||"").toLowerCase()==="teacher"&&String(u.status||"approved").toLowerCase()==="approved"&&!u.is_blocked);
+ accessStudentOptions=enriched.filter(u=>String(u.role||"").toLowerCase()==="student"&&String(u.status||"approved").toLowerCase()==="approved"&&!u.is_blocked);
+ const sel=$("accessTeacher"),old=sel.value;
+ sel.innerHTML='<option value="">Choose a teacher…</option>'+accessTeachers.map(u=>`<option value="${esc(u.id)}">${esc(u.display_name||u.email||u.id)}${u.email?" — "+esc(u.email):""}</option>`).join("");
+ if(old&&accessTeachers.some(t=>String(t.id)===old))sel.value=old;
+ if(!accessTeachers.length)sel.innerHTML='<option value="">No approved, active teachers found</option>';
+}
+async function loadTeacherClassesForAdmin(){
+ const teacherId=$("accessTeacher").value;
+ activeAccessClass=null;accessClasses=[];accessClassStudents=[];selectedAccessStudentIds.clear();
+ $("accessClassesList").innerHTML='<p class="empty">Loading classes…</p>';
+ $("accessClassStudentsList").innerHTML='<p class="empty">Select a class first.</p>';
+ $("accessActiveClassTitle").textContent="Class students";$("accessClassSubtitle").textContent="Select a class to see its students.";
+ $("accessClassStudentCount").textContent="";$("addStudentsToClassBtn").disabled=true;
+ if(!teacherId){$("accessClassesList").innerHTML='<p class="empty">Select a teacher first.</p>';$("accessClassCount").textContent="Choose a teacher to load classes.";renderAccessStudentOptions();return;}
+ const {data,error}=await supabase.from("teacher_classes").select("id,teacher_id,class_name,created_at").eq("teacher_id",teacherId).order("created_at",{ascending:false});
+ if(error)throw error;accessClasses=data||[];
+ $("accessClassCount").textContent=`${accessClasses.length} class${accessClasses.length===1?"":"es"}`;
+ if(!accessClasses.length){$("accessClassesList").innerHTML='<p class="empty">This teacher has no classes yet.</p>';renderAccessStudentOptions();return;}
+ const counts=await Promise.all(accessClasses.map(async c=>{const r=await supabase.from("class_students").select("id",{count:"exact",head:true}).eq("class_id",c.id);return [String(c.id),r.error?null:r.count];}));
+ const cm=new Map(counts);
+ $("accessClassesList").innerHTML=accessClasses.map(c=>`<button type="button" class="class-admin-item" data-access-class="${esc(c.id)}" style="width:100%;border:0;background:transparent;text-align:left"><span><strong>${esc(c.class_name)}</strong><small>Created ${c.created_at?esc(new Date(c.created_at).toLocaleDateString()):"—"}</small></span><span class="pill pill-scheduled">${cm.get(String(c.id))===null?"—":cm.get(String(c.id))} students</span></button>`).join("");
+}
+async function openAdminAccessClass(classId){
+ activeAccessClass=accessClasses.find(c=>String(c.id)===String(classId));if(!activeAccessClass)return;
+ selectedAccessStudentIds.clear();
+ document.querySelectorAll("[data-access-class]").forEach(el=>el.classList.toggle("active",el.dataset.accessClass===String(classId)));
+ $("accessActiveClassTitle").textContent=activeAccessClass.class_name;
+ $("accessClassSubtitle").textContent="Manage the students assigned to this teacher's class.";
+ $("accessClassStudentsList").innerHTML='<p class="empty">Loading class students…</p>';$("addStudentsToClassBtn").disabled=false;
+ const {data,error}=await supabase.from("class_students").select("id,class_id,student_id,added_at").eq("class_id",classId).order("added_at",{ascending:false});
+ if(error)throw error;accessClassStudents=data||[];
+ $("accessClassStudentCount").textContent=`${accessClassStudents.length} students`;
+ $("accessClassStudentsList").innerHTML=accessClassStudents.length?accessClassStudents.map(link=>{
+  const u=getAccessStudent(link.student_id);
+  return `<div class="class-admin-student"><div><strong>${esc(u.display_name||"Student")}</strong><small>${esc(u.email||"")} · ${esc(u.mac_talk_id||link.student_id)}</small></div><button type="button" class="btn btn-danger btn-small" data-remove-class-member="${esc(link.student_id)}">Remove from class</button></div>`;
+ }).join(""):'<p class="empty">This class has no students yet.</p>';
+ renderAccessStudentOptions();
+}
+async function addSelectedStudentsToClass(){
+ if(!activeAccessClass)return showNotice("Choose a class first.","error");
+ const ids=[...selectedAccessStudentIds];if(!ids.length)return showNotice("Select at least one student first.","error");
+ const classId=activeAccessClass.id;
+ const btn=$("addStudentsToClassBtn");btn.disabled=true;btn.textContent="Adding students…";
+ try{
+  const rows=ids.map(student_id=>({class_id:activeAccessClass.id,student_id}));
+  const {error}=await supabase.from("class_students").insert(rows);if(error)throw error;
+  const permissions=ids.map(student_id=>({teacher_id:activeAccessClass.teacher_id,student_id,granted_by:currentAdminId}));
+  const {error:pe}=await supabase.from("teacher_student_permissions").upsert(permissions,{onConflict:"teacher_id,student_id",ignoreDuplicates:true});if(pe)throw pe;
+  selectedAccessStudentIds.clear();showNotice(`Added ${ids.length} student${ids.length===1?"":"s"} to ${activeAccessClass.class_name}.`);
+  await loadTeacherClassesForAdmin();await openAdminAccessClass(classId);
+ }catch(e){console.error(e);showNotice("Could not add students: "+e.message+". Check the admin class policies in Supabase.","error");}
+ finally{btn.disabled=false;btn.textContent="＋ Add selected students to this class";}
+}
+async function removeAdminClassStudent(studentId){
+ if(!activeAccessClass)return;const u=getAccessStudent(studentId);
+ if(!confirm(`Remove ${u.display_name||"this student"} from ${activeAccessClass.class_name}? Their account remains active and other classes are unchanged.`))return;
+ const classId=activeAccessClass.id,teacherId=activeAccessClass.teacher_id;
+ try{
+  const {error}=await supabase.from("class_students").delete().eq("class_id",classId).eq("student_id",studentId);if(error)throw error;
+  const {error:ge}=await supabase.from("class_student_grades").delete().eq("class_id",classId).eq("student_id",studentId);if(ge)throw ge;
+  const {data:classes,error:ce}=await supabase.from("teacher_classes").select("id").eq("teacher_id",teacherId);if(ce)throw ce;
+  const ids=(classes||[]).map(c=>c.id);let still=false;
+  if(ids.length){const {data:links,error:le}=await supabase.from("class_students").select("id").eq("student_id",studentId).in("class_id",ids);if(le)throw le;still=(links||[]).length>0;}
+  if(!still){const {error:pe}=await supabase.from("teacher_student_permissions").delete().eq("teacher_id",teacherId).eq("student_id",studentId);if(pe)throw pe;}
+  showNotice("Student removed from this class. Their account is unchanged.");
+  await loadTeacherClassesForAdmin();await openAdminAccessClass(classId);
+ }catch(e){console.error(e);showNotice("Could not remove student from class: "+e.message,"error");}
 }
 async function loadStudentAccess(){
-  $("studentAccessRows").innerHTML='<tr><td colspan="4" class="empty">Loading permissions…</td></tr>';
-  try{
-    await loadStudentAccessOptions();
-    const {data,error}=await supabase.rpc("admin_list_teacher_student_permissions");
-    if(error) throw error;
-    studentAccessRows=data||[];
-    $("studentAccessRows").innerHTML=studentAccessRows.length?studentAccessRows.map(p=>`<tr><td><strong>${esc(p.teacher_name||"Teacher")}</strong><br><small>${esc(p.teacher_email||"")}</small></td><td><strong>${esc(p.student_name||"Student")}</strong><br><small>${esc(p.student_email||"")}</small></td><td>${p.created_at?esc(new Date(p.created_at).toLocaleDateString()):"—"}</td><td><button class="btn btn-danger btn-small" data-access-action="revoke" data-teacher="${esc(p.teacher_id)}" data-student="${esc(p.student_id)}">Revoke access</button></td></tr>`).join(""):'<tr><td colspan="4" class="empty">No student access permissions have been granted yet.</td></tr>';
-  }catch(e){
-    console.error("Student access load failed:",e);
-    $("studentAccessRows").innerHTML=`<tr><td colspan="4" class="empty">Could not load permissions: ${esc(e.message)}</td></tr>`;
-    showNotice("Student access could not load. Run the updated teacher-setup.sql: "+e.message,"error");
-  }
-}
-async function grantStudentAccess(event){
-  event.preventDefault();
-  const teacherId=$("accessTeacher").value,button=$("grantStudentAccessBtn");
-  const studentIds=[...selectedAccessStudentIds];
-  if(!teacherId)return showNotice("Choose a teacher first.","error");
-  if(!studentIds.length)return showNotice("Select one or more students first.","error");
-  if(studentIds.includes(teacherId))return showNotice("A teacher cannot be assigned as their own student.","error");
-  const old=button.textContent;button.disabled=true;button.textContent=`Granting access to ${studentIds.length} student(s)…`;
-  try{
-    const rows=studentIds.map(student_id=>({teacher_id:teacherId,student_id,granted_by:currentAdminId}));
-    const {error}=await supabase.from("teacher_student_permissions").upsert(rows,{onConflict:"teacher_id,student_id",ignoreDuplicates:true});
-    if(error)throw error;
-    showNotice(`Access granted to ${studentIds.length} selected student(s).`);
-    selectedAccessStudentIds.clear();
-    renderAccessStudentOptions();
-    await loadStudentAccess();
-  }catch(e){console.error(e);showNotice("Could not grant access: "+e.message,"error");}
-  finally{button.disabled=false;button.textContent=old;}
-}
-async function revokeStudentAccess(teacherId,studentId){
-  const p=studentAccessRows.find(x=>x.teacher_id===teacherId&&x.student_id===studentId);
-  if(!confirm(`Revoke ${p?.student_name||"this student"}'s access for ${p?.teacher_name||"this teacher"}?`))return;
-  try{
-    const {error}=await supabase.from("teacher_student_permissions").delete().eq("teacher_id",teacherId).eq("student_id",studentId);
-    if(error)throw error;
-    showNotice("Student access revoked.");
-    await loadStudentAccess();
-  }catch(e){console.error(e);showNotice("Could not revoke access: "+e.message,"error");}
+ try{await loadStudentAccessOptions();if($("accessTeacher").value)await loadTeacherClassesForAdmin();else{$("accessClassesList").innerHTML='<p class="empty">Select a teacher first.</p>';$("accessClassCount").textContent="Choose a teacher to load classes.";}}
+ catch(e){console.error(e);$("accessClassesList").innerHTML=`<p class="empty">Could not load classes: ${esc(e.message)}</p>`;showNotice("Teacher/class access could not load: "+e.message+". Run the admin setup SQL and check RLS.","error");}
 }
 
 function showPage(name){const headings={overview:"Admin overview",sessions:"Live session management",accounts:"Account Management",users:"Users Management","student-access":"Teacher Student Access",guide:"Setup & security"};document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));document.querySelectorAll(".nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));$("pageHeading").textContent=headings[name]||"Admin";if(name==="users")loadManagedUsers();if(name==="student-access")loadStudentAccess();}
@@ -403,8 +481,15 @@ $("inviteAccountForm").addEventListener("submit",async event=>{
  setButton(button,false,originalText);
  if(!failed){$("inviteAccountForm").reset();$("invitePreview").hidden=true;$("invitePdfStatus").textContent="";}else{renderInvitePreview(recipients,results.filter(x=>!x.ok).map(x=>x.email+": "+x.error).join("; "));}
 });
-$("studentAccessForm").addEventListener("submit",grantStudentAccess);$("refreshStudentAccessBtn").addEventListener("click",loadStudentAccess);document.addEventListener("click",event=>{const b=event.target.closest("button[data-access-action=\"revoke\"]");if(b)revokeStudentAccess(b.dataset.teacher,b.dataset.student);});
-$("accessStudentSearch").addEventListener("input",renderAccessStudentOptions);$("accessStudentsList").addEventListener("change",event=>{const input=event.target.closest("input[data-access-student-check]");if(!input)return;const id=input.dataset.accessStudentCheck;if(input.checked)selectedAccessStudentIds.add(id);else selectedAccessStudentIds.delete(id);renderAccessStudentOptions();});$("selectFilteredStudentsBtn").addEventListener("click",()=>{const query=($("accessStudentSearch").value||"").trim().toLowerCase();accessStudentOptions.filter(u=>`${u.display_name||""} ${u.email||""} ${u.id||""}`.toLowerCase().includes(query)).forEach(u=>selectedAccessStudentIds.add(u.id));renderAccessStudentOptions();});$("clearStudentsBtn").addEventListener("click",()=>{selectedAccessStudentIds.clear();renderAccessStudentOptions();});
+$("refreshStudentAccessBtn").addEventListener("click",loadStudentAccess);
+$("accessTeacher").addEventListener("change",()=>loadTeacherClassesForAdmin().catch(e=>showNotice(e.message,"error")));
+$("accessStudentSearch").addEventListener("input",renderAccessStudentOptions);
+$("accessStudentsList").addEventListener("change",event=>{const input=event.target.closest("input[data-access-student-check]");if(!input)return;const id=String(input.dataset.accessStudentCheck);if(input.checked)selectedAccessStudentIds.add(id);else selectedAccessStudentIds.delete(id);renderAccessStudentOptions();});
+$("selectFilteredStudentsBtn").addEventListener("click",()=>{const q=($("accessStudentSearch").value||"").trim().toLowerCase();const existing=new Set(accessClassStudents.map(x=>String(x.student_id)));accessStudentOptions.filter(u=>!existing.has(String(u.id))&&studentSearchText(u).includes(q)).forEach(u=>selectedAccessStudentIds.add(String(u.id)));renderAccessStudentOptions();});
+$("clearStudentsBtn").addEventListener("click",()=>{selectedAccessStudentIds.clear();renderAccessStudentOptions();});
+$("addStudentsToClassBtn").addEventListener("click",addSelectedStudentsToClass);
+$("accessClassesList").addEventListener("click",event=>{const b=event.target.closest("[data-access-class]");if(b)openAdminAccessClass(b.dataset.accessClass).catch(e=>showNotice("Could not open class: "+e.message,"error"));});
+$("accessClassStudentsList").addEventListener("click",event=>{const b=event.target.closest("[data-remove-class-member]");if(b)removeAdminClassStudent(b.dataset.removeClassMember);});
 $("usersSearch").addEventListener("input",renderManagedUsers);$("usersRoleFilter").addEventListener("change",renderManagedUsers);$("usersApprovalFilter").addEventListener("change",renderManagedUsers);$("usersStatusFilter").addEventListener("change",renderManagedUsers);$("refreshUsersBtn").addEventListener("click",loadManagedUsers);
 // Robust delegated click handling for dynamically rendered account-action buttons.
 document.getElementById("managedUsersRows").addEventListener("click", event => {
