@@ -103,7 +103,7 @@
 </div>
 <div class="panel" style="margin-top:18px"><div class="panel-head"><div><h3>Account actions</h3><p>Block or permanently delete the whole account separately in Users Management.</p></div><button class="btn btn-light btn-small" type="button" data-goto="users">Open Users Management →</button></div></div>
 </section>
-<section class="page" id="page-guide"><div class="welcome"><div><h2>Setup & security</h2><p>Required configuration before production.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Supabase</h3><p>Open this page through <code>http://localhost</code> or HTTPS, not <code>file://</code>. This page checks the admin role in <code>public.profiles.role</code>, where <code>profiles.id</code> remains the internal Auth UUID and <code>mac_talk_id</code> is the official user-facing ID.</p></div><div class="panel info-card"><h3>Registered users</h3><p>The host and invitee lists use <code>admin_list_live_users()</code>. Users Management uses <code>admin_list_managed_users()</code>. Both functions must check the admin role internally.</p></div><div class="panel info-card"><h3>Session schema</h3><p>Uses <code>owner_id</code>, <code>title</code>, <code>description</code>, <code>scheduled_at</code>, <code>join_url</code>, <code>cover_image_url</code>, <code>status</code>, and <code>approved</code> in <code>public.live_sessions</code>.</p></div><div class="panel info-card"><h3>Account controls</h3><p>Blocking uses the admin-only <code>admin_set_user_blocked</code> RPC and must also be enforced by protected-page checks and RLS. Permanent deletion uses the <code>admin-delete-user</code> Edge Function with a server-side service-role key; never put that key in this HTML file.</p></div></div></section>
+<section class="page" id="page-guide"><div class="welcome"><div><h2>Setup & security</h2><p>Required configuration before production.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Supabase</h3><p>Open this page through <code>http://localhost</code> or HTTPS, not <code>file://</code>. This page checks the admin role in <code>public.profiles.role</code>, where <code>profiles.id</code> remains the internal Auth UUID and <code>mac_talk_id</code> is the official user-facing ID.</p></div><div class="panel info-card"><h3>Registered users</h3><p>The host and invitee lists use <code>admin_list_live_users()</code>. Users Management uses <code>admin_list_managed_users()</code>. Both functions must check the admin role internally.</p></div><div class="panel info-card"><h3>Session schema</h3><p>Uses <code>owner_id</code>, <code>title</code>, <code>description</code>, <code>scheduled_at</code>, <code>join_url</code>, <code>cover_image_url</code>, <code>status</code>, and <code>approved</code> in <code>public.live_sessions</code>.</p></div><div class="panel info-card"><h3>Account controls</h3><p>Blocking and permanent account deletion use admin-only PostgreSQL RPC functions (<code>admin_set_user_blocked</code> and <code>admin_delete_user</code>). Run the admin SQL setup in Supabase. No Edge Functions or service-role key are used by these account controls. The app must enforce <code>profiles.is_blocked</code> through protected-page checks and RLS.</p></div></div></section>
 </div></main></div>
 <div class="app-dialog-backdrop" id="appDialogModal" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
  <div class="app-dialog">
@@ -205,7 +205,7 @@ function renderManagedUsers(){
     actionButtons+=`<button type="button" class="btn btn-light btn-small" data-user-action="role" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot change your own role here'":""}>Save role</button>`;
    }
    actionButtons+=`<button type="button" class="btn ${blocked?"btn-yellow":"btn-light"} btn-small" data-user-action="block" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot block your own account here'":""}>${blocked?"Unblock":"Block"}</button>`;
-   actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="delete" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot delete your own profile here'":""}>Delete profile</button>`;
+   actionButtons+=`<button type="button" class="btn btn-danger btn-small" data-user-action="delete" data-id="${esc(user.id)}" ${isSelf?"disabled title='You cannot delete your own profile here'":""}>Delete account</button>`;
   }
   const roleControl=protectedAdmin?'<strong>ADMIN 🔒</strong>':(!isFounderAdminSession()?'<strong title="Only jemaay55@gmail.com can change roles">Role locked 🔒</strong>':`<select class="field-control" data-user-role="${esc(user.id)}" aria-label="Role for ${esc(user.email||user.id)}" ${isSelf?"disabled":""}><option value="student" ${role==="student"?"selected":""}>Student</option><option value="teacher" ${role==="teacher"?"selected":""}>Teacher</option><option value="admin" ${role==="admin"?"selected":""}>Admin</option></select>`);
   return `<tr><td><div class="session-title">${esc(user.display_name||"Unnamed user")}</div>${protectedAdmin?'<small>Original Mac&amp;Talk administrator</small>':""}</td><td>${esc(user.email||"No email")}</td><td><div class="actions">${roleControl}</div></td><td>${user.mac_talk_id?`<strong>${esc(user.mac_talk_id)}</strong>`:'<span class="session-sub">Not assigned</span>'}</td><td><span class="pill ${statusClass}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td><td><span class="pill ${blocked?"pill-cancelled":"pill-approved"}">${blocked?"Blocked":"Active"}</span></td><td>${user.created_at?esc(new Date(user.created_at).toLocaleDateString()):"—"}</td><td><div class="actions">${actionButtons}</div></td></tr>`;
@@ -291,14 +291,14 @@ async function toggleManagedUserBlock(id){
  const button=Array.from(document.querySelectorAll('button[data-user-action="block"]')).find(el=>el.dataset.id===id);
  if(button){button.disabled=true;button.textContent=nextBlocked?"Blocking…":"Unblocking…";}
  try{
-  const {data,error}=await supabase.functions.invoke("admin-manage-user",{body:{user_id:id,action:nextBlocked?"block":"unblock"}});
+  const {data,error}=await supabase.rpc("admin_set_user_blocked",{p_user_id:id,p_blocked:nextBlocked});
   if(error)throw error;
   if(data?.success===false)throw new Error(data.message||"The database did not update this account.");
   showNotice(nextBlocked?"Student account blocked successfully.":"Student account unblocked successfully.");
   await loadManagedUsers();
  }catch(error){
   console.error("Block update failed:",error);
-  showNotice("Could not change account access: "+error.message+". Deploy the admin-manage-user Edge Function and run the admin setup SQL first.","error");
+  showNotice("Could not change account access: "+error.message+". Run the updated admin SQL in Supabase first.","error");
   if(button){button.disabled=false;button.textContent=user.is_blocked?"Unblock":"Block";}
  }
 }
@@ -306,21 +306,21 @@ async function deleteManagedUserProfile(id){
   if(id===currentAdminId)return showNotice("You cannot delete your own account here.","error");
   const user=managedUsers.find(u=>u.id===id);if(!user)return;
   const label=user.email||user.display_name||id;
-  if(!confirm(`Permanently delete ${label}?\n\nThis deletes the Supabase Auth account as well as its profile. Related records are removed only where your database foreign keys are configured to cascade.`))return;
+  if(!confirm(`Permanently delete ${label}?\n\nThis permanently deletes the Supabase Auth account and its profile, plus the known Lear Academy class records. This cannot be undone.`))return;
   const button=Array.from(document.querySelectorAll('button[data-user-action="delete"]')).find(el=>el.dataset.id===id);
   if(button){button.disabled=true;button.textContent="Deleting…";}
   try{
-    const {data,error}=await supabase.functions.invoke("admin-delete-user",{body:{user_id:id}});
-    if(error)throw new Error(error.message||"The admin-delete-user Edge Function failed.");
-    if(data?.error)throw new Error(data.error);
+    const {data,error}=await supabase.rpc("admin_delete_user",{p_user_id:id});
+    if(error)throw error;
+    if(data?.success!==true)throw new Error(data?.message||"Supabase did not confirm account deletion.");
     managedUsers=managedUsers.filter(u=>u.id!==id);
     renderManagedUsers();
     showNotice(`Deleted ${label} from Supabase Auth and refreshed the user list.`);
     await Promise.all([loadManagedUsers(),loadLiveUsers()]);
   }catch(error){
     console.error("Full account deletion failed:",error);
-    showNotice("Could not fully delete account: "+error.message+". Deploy the admin-delete-user Edge Function and configure its secrets first.","error");
-    if(button){button.disabled=false;button.textContent="Delete profile";}
+    showNotice("Could not fully delete account: "+error.message+". Run the updated admin SQL in Supabase and check for any remaining foreign-key references.","error");
+    if(button){button.disabled=false;button.textContent="Delete account";}
   }
 }
 
