@@ -83,6 +83,26 @@
 
 .quiz-import{margin:0 0 18px;padding:20px}.quiz-import h3{margin:0 0 8px}.quiz-import .import-help{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 14px}.import-preview{display:grid;gap:12px;margin-top:14px}.import-question{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fbfcfe}.import-question h4{margin:0 0 10px;font-size:13px}.import-question .form-grid{gap:9px}.import-status{font-size:12px;margin-top:10px;color:var(--muted)}.import-status.error{color:#a52d3a}.import-status.success{color:#146c49}.import-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
 
+/* Class-wide grade entry */
+.bulk-grade-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bulk-grade-btn{padding:13px 18px!important;font-size:14px!important;font-weight:850!important}
+.bulk-grade-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.bulk-grade-stat{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}
+.bulk-grade-stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.bulk-grade-stat strong{font-size:20px;color:var(--navy)}
+.trimester-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.trimester-tab{border:1px solid var(--line);background:#fff;color:var(--navy);padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer}
+.trimester-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.bulk-grade-table{width:100%;min-width:650px;border-collapse:collapse}
+.bulk-grade-table th,.bulk-grade-table td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:12px;text-align:left}
+.bulk-grade-table th{background:#f7f9fc;color:var(--navy);font-weight:850;position:sticky;top:0}
+.bulk-grade-table input{width:82px;max-width:100%;padding:9px 7px;border:1px solid var(--line);border-radius:8px;color:var(--navy)}
+.bulk-student-name{font-weight:800;color:var(--navy);min-width:150px}
+.bulk-letter-row td{background:#eef2f8;color:var(--navy);font-weight:900;padding:8px 10px}
+.bulk-row-average{font-weight:900;color:var(--navy);white-space:nowrap}
+.bulk-incomplete{color:#a15b00;font-weight:800}
+.bulk-complete{color:#16804a;font-weight:800}
+@media(max-width:700px){.bulk-grade-summary{grid-template-columns:1fr}.bulk-grade-table input{width:68px}.bulk-grade-table th,.bulk-grade-table td{padding:8px 6px}}
 /* Student Classes workspace */
 .classes-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.class-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:18px}.class-tile{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:12px}.class-tile h3{margin:0;font-size:16px}.class-tile p{margin:0;color:var(--muted);font-size:12px}.class-tile-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}.class-detail{padding:18px}.class-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.class-student-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 15px;border:1px solid var(--line);border-radius:12px;margin:9px 0}.class-student-name{font-weight:800;font-size:13px}.class-student-sub{font-size:11px;color:var(--muted);margin-top:4px}.student-id-prefix{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f7f9fc}.student-id-prefix span{padding:11px 10px;background:#eef2f8;font-weight:850;font-size:12px;white-space:nowrap}.student-id-prefix input{border:0!important;min-width:0;flex:1;background:#fff!important;outline:none}.grade-table{width:100%;min-width:680px;border-collapse:collapse}.grade-table th,.grade-table td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:12px}.grade-table input{width:88px;padding:9px;border:1px solid var(--line);border-radius:8px;color:var(--navy)}.grade-average{font-weight:900;color:var(--navy)}.grade-panel{padding:16px;margin-top:14px}.grade-panel h4{margin:0 0 12px}.record-header{display:flex;gap:12px;align-items:center;padding:17px;background:#f8fafc;border:1px solid var(--line);border-radius:13px;margin-bottom:14px}.record-header .student-avatar{width:48px;height:48px;flex-basis:48px}.record-header h3{margin:0 0 4px}.record-header p{margin:0;color:var(--muted);font-size:12px}
 @media(max-width:1000px){.class-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -142,9 +162,31 @@
  </div>
  <div id="classDetailView" class="hidden">
   <div class="panel"><div class="class-detail">
-   <div class="class-detail-head"><div><button class="btn btn-light btn-small" id="backToClassesBtn">← All classes</button><h2 id="activeClassName" style="margin:12px 0 4px">Class</h2><p class="muted-note" id="activeClassMeta">Students in this class</p></div><button class="btn btn-light btn-small" id="refreshClassStudentsBtn">↻ Refresh</button></div>
+   <div class="class-detail-head"><div><button class="btn btn-light btn-small" id="backToClassesBtn">← All classes</button><h2 id="activeClassName" style="margin:12px 0 4px">Class</h2><p class="muted-note" id="activeClassMeta">Students in this class</p></div><div class="bulk-grade-actions"><button class="btn btn-primary bulk-grade-btn" id="openBulkGradesBtn">＋ Enter grades for the whole class</button><button class="btn btn-light btn-small" id="refreshClassStudentsBtn">↻ Refresh</button></div></div>
    <div class="panel" style="box-shadow:none;margin-bottom:16px"><div class="panel-head"><div><h3>Add a student</h3><p>Enter 3, 4, 5, or 6 digits. The MT-STU- prefix is added automatically.</p></div></div><div style="padding:16px"><form id="addClassStudentForm" class="form-grid" style="align-items:end"><div class="form-field"><label for="studentDigits">Lear Academy Student ID</label><div class="student-id-prefix"><span>MT-STU-</span><input id="studentDigits" inputmode="numeric" autocomplete="off" maxlength="6" minlength="3" pattern="[0-9]{3,6}" placeholder="0017" required></div></div><div><button class="btn btn-primary" id="addClassStudentBtn" type="submit">＋ Add student</button></div></form><p class="muted-note" style="margin:10px 0 0">The student must already have an approved Lear Academy student account.</p></div></div>
-   <div class="panel" style="box-shadow:none"><div class="panel-head"><div><h3>Students in this class</h3><p id="classStudentCount">Loading…</p></div></div><div id="classStudentsList" style="padding:10px 16px"><p class="empty">Loading students…</p></div></div>
+   <div class="panel" id="classStudentsPanel" style="box-shadow:none"><div class="panel-head"><div><h3>Students in this class</h3><p id="classStudentCount">Loading…</p></div></div><div id="classStudentsList" style="padding:10px 16px"><p class="empty">Loading students…</p></div></div>
+   <div id="classBulkGradeView" class="panel hidden" style="box-shadow:none;margin-top:16px">
+    <div class="panel-head"><div><button class="btn btn-light btn-small" id="backFromBulkGradesBtn">← Back to student list</button><h3 style="margin:12px 0 4px">Enter grades for the whole class</h3><p id="bulkClassSubtitle">Only students in this class are shown.</p></div></div>
+    <div style="padding:16px">
+     <div class="trimester-tabs" id="bulkTrimesterTabs">
+      <button type="button" class="trimester-tab active" data-bulk-trimester="1">First trimester</button>
+      <button type="button" class="trimester-tab" data-bulk-trimester="2">Second trimester</button>
+      <button type="button" class="trimester-tab" data-bulk-trimester="3">Third trimester</button>
+     </div>
+     <div class="bulk-grade-summary">
+      <div class="bulk-grade-stat"><small>Students in class</small><strong id="bulkTotalStudents">0</strong></div>
+      <div class="bulk-grade-stat"><small>Students with all 3 marks</small><strong id="bulkCompleteStudents">0</strong></div>
+      <div class="bulk-grade-stat"><small>Students missing marks</small><strong id="bulkMissingStudents">0</strong></div>
+      <div class="bulk-grade-stat"><small>Class general average</small><strong id="bulkClassAverage">—</strong></div>
+     </div>
+     <p id="bulkMissingNotice" class="muted-note">Students without all three marks will be counted as incomplete. The class average appears when every student has all three marks. You can still save the marks entered.</p>
+     <div class="table-wrap" id="bulkGradesTableWrap"><p class="empty">Loading grades…</p></div>
+     <div style="display:flex;justify-content:flex-end;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px">
+      <span class="muted-note" id="bulkSaveStatus">Changes are not saved until you click Save all students.</span>
+      <button type="button" class="btn btn-primary bulk-grade-btn" id="saveAllClassGradesBtn">Save all students</button>
+     </div>
+    </div>
+   </div>
   </div></div>
  </div>
  <div id="studentRecordView" class="hidden" style="margin-top:16px"><div class="panel"><div class="class-detail"><div class="class-detail-head"><div><button class="btn btn-light btn-small" id="backToClassStudentsBtn">← Back to class</button><h2 style="margin:12px 0 4px">Academic record</h2><p class="muted-note">Manage each trimester's marks separately.</p></div></div><div id="studentRecordHeader"></div><div id="studentGradesArea"></div></div></div></div>
@@ -162,7 +204,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
 const SUPABASE_KEY="sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=id=>document.getElementById(id); let user=null,profile=null,sessions=[],students=[],editingId=null,noticeTimer=null,roomFrame=null,teacherClasses=[],activeClass=null,classStudents=[],activeStudent=null,studentGrades=[];
+const $=id=>document.getElementById(id); let user=null,profile=null,sessions=[],students=[],editingId=null,noticeTimer=null,roomFrame=null,teacherClasses=[],activeClass=null,classStudents=[],activeStudent=null,studentGrades=[],bulkTrimester=1,bulkClassGrades=[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function notice(msg,type="success"){const n=$("notice");n.textContent=msg;n.className="notice show "+(type==="error"?"error":"success");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>n.className="notice",6000)}
 function gate(title,msg,showLink=true){$("gateTitle").textContent=title;$("gateText").textContent=msg;$("spinner").classList.add("hidden");if(showLink)$("gateActions").classList.remove("hidden")}
@@ -231,15 +273,15 @@ async function createTeacherClass(e){
 }
 async function openTeacherClass(id){
  activeClass=teacherClasses.find(c=>String(c.id)===String(id));if(!activeClass)return;
- $("classListView").classList.add("hidden");$("studentRecordView").classList.add("hidden");$("classDetailView").classList.remove("hidden");$("activeClassName").textContent=activeClass.class_name;await loadClassStudents();
+ $("classListView").classList.add("hidden");$("studentRecordView").classList.add("hidden");$("classBulkGradeView").classList.add("hidden");$("classStudentsPanel").classList.remove("hidden");$("classDetailView").classList.remove("hidden");$("activeClassName").textContent=activeClass.class_name;await loadClassStudents();
 }
 async function loadClassStudents(){
  const root=$("classStudentsList");root.innerHTML='<p class="empty">Loading students…</p>';
  try{
   const {data:links,error}=await supabase.from("class_students").select("id,class_id,student_id,added_at").eq("class_id",activeClass.id).order("added_at",{ascending:false});if(error)throw error;
-  classStudents=links||[];await loadStudents();
+  classStudents=links||[];await loadStudents();classStudents.sort((a,b)=>classStudentName(a.student_id).localeCompare(classStudentName(b.student_id),undefined,{sensitivity:"base"}));
   $("classStudentCount").textContent=`${classStudents.length} student${classStudents.length===1?"":"s"}`;
-  root.innerHTML=classStudents.length?classStudents.map(link=>`<div class="class-student-row"><div style="display:flex;gap:11px;align-items:center;min-width:0"><div class="student-avatar">${esc(classStudentName(link.student_id).slice(0,1).toUpperCase())}</div><div style="min-width:0"><div class="class-student-name">${esc(classStudentName(link.student_id))}</div><div class="class-student-sub">${esc(classStudentEmail(link.student_id))}</div></div></div><div class="actions"><button class="btn btn-primary btn-small" data-open-record="${esc(link.student_id)}">Academic record</button><button class="btn btn-danger btn-small" data-remove-class-student="${esc(link.student_id)}">Remove</button></div></div>`).join(""):'<p class="empty">This class is empty. Add a student using their five-digit ID above.</p>';
+  root.innerHTML=classStudents.length?classStudents.map(link=>`<div class="class-student-row"><div style="display:flex;gap:11px;align-items:center;min-width:0"><div class="student-avatar">${esc(classStudentName(link.student_id).slice(0,1).toUpperCase())}</div><div style="min-width:0"><div class="class-student-name">${esc(classStudentName(link.student_id))}</div><div class="class-student-sub">${esc(classStudentEmail(link.student_id))}</div></div></div><div class="actions"><button class="btn btn-primary btn-small" data-open-record="${esc(link.student_id)}">Academic record</button><button class="btn btn-danger btn-small" data-remove-class-student="${esc(link.student_id)}">Remove</button></div></div>`).join(""):'<p class="empty">This class is empty. Add an approved student using their ID above.</p>';
  }catch(e){console.error(e);root.innerHTML=`<p class="empty">Could not load class students: ${esc(e.message)}</p>`;$("classStudentCount").textContent="Unavailable";}
 }
 async function addStudentToClass(e){
@@ -273,6 +315,128 @@ async function saveTrimesterGrades(t){
  const payload={class_id:activeClass.id,student_id:activeStudent,trimester:t,control_note:values.control_note===""?null:Number(values.control_note),oral_note:values.oral_note===""?null:Number(values.oral_note),synthese_note:values.synthese_note===""?null:Number(values.synthese_note),updated_at:new Date().toISOString()};
  try{const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});if(error)throw error;notice(`Trimester ${t} grades saved.`);await loadStudentGrades();}
  catch(e){notice("Could not save grades: "+e.message,"error");}
+}
+
+function getBulkStudentName(id){return classStudentName(id)||"Student"}
+function getBulkAverage(row){
+ const vals=[row.control_note,row.oral_note,row.synthese_note];
+ if(vals.some(v=>v===null||v===undefined||v===""))return null;
+ const [control,oral,synthese]=vals.map(Number);
+ if(vals.some(v=>!Number.isFinite(Number(v))))return null;
+ return (control+oral+(synthese*2))/4;
+}
+async function openBulkGrades(){
+ if(!activeClass)return;
+ $("classStudentsPanel").classList.add("hidden");
+ $("classBulkGradeView").classList.remove("hidden");
+ $("bulkClassSubtitle").textContent=`${activeClass.class_name} · Only students assigned to this class`;
+ bulkTrimester=1;
+ document.querySelectorAll("[data-bulk-trimester]").forEach(b=>b.classList.toggle("active",Number(b.dataset.bulkTrimester)===1));
+ await loadBulkClassGrades();
+}
+async function loadBulkClassGrades(){
+ const wrap=$("bulkGradesTableWrap");wrap.innerHTML='<p class="empty">Loading grades…</p>';
+ try{
+  const {data,error}=await supabase.from("class_student_grades").select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average").eq("class_id",activeClass.id).eq("trimester",bulkTrimester);
+  if(error)throw error;
+  bulkClassGrades=data||[];
+  renderBulkClassGrades();
+ }catch(e){console.error(e);wrap.innerHTML=`<p class="empty">Could not load class grades: ${esc(e.message)}</p>`;}
+}
+function renderBulkClassGrades(){
+ const wrap=$("bulkGradesTableWrap");
+ const rows=classStudents.map(link=>{
+  const old=bulkClassGrades.find(g=>String(g.student_id)===String(link.student_id))||{};
+  return {student_id:link.student_id,name:getBulkStudentName(link.student_id),control_note:old.control_note??"",oral_note:old.oral_note??"",synthese_note:old.synthese_note??""};
+ }).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:"base"}));
+ if(!rows.length){wrap.innerHTML='<p class="empty">Add students to this class before entering grades.</p>';updateBulkSummary();return;}
+ const groups={};
+ rows.forEach(row=>{const letter=(row.name.trim().charAt(0)||"#").toLocaleUpperCase();const key=/^[A-ZÀ-ÖØ-Þ]$/i.test(letter)?letter:"#";(groups[key]??=[]).push(row);});
+ let body="";
+ Object.keys(groups).sort((a,b)=>a==="#"?1:b==="#"?-1:a.localeCompare(b)).forEach(letter=>{
+  body+=`<tr class="bulk-letter-row"><td colspan="5">${esc(letter)}</td></tr>`;
+  groups[letter].forEach(row=>{
+   const avg=getBulkAverage(row);
+   body+=`<tr data-bulk-student-row="${esc(row.student_id)}">
+    <td class="bulk-student-name">${esc(row.name)}</td>
+    <td><input aria-label="Control note for ${esc(row.name)}" type="number" min="0" max="20" step="0.01" data-bulk-field="control_note" data-student-id="${esc(row.student_id)}" value="${row.control_note}" placeholder="—"></td>
+    <td><input aria-label="Oral note for ${esc(row.name)}" type="number" min="0" max="20" step="0.01" data-bulk-field="oral_note" data-student-id="${esc(row.student_id)}" value="${row.oral_note}" placeholder="—"></td>
+    <td><input aria-label="Synthèse note for ${esc(row.name)}" type="number" min="0" max="20" step="0.01" data-bulk-field="synthese_note" data-student-id="${esc(row.student_id)}" value="${row.synthese_note}" placeholder="—"></td>
+    <td class="bulk-row-average" data-bulk-average="${esc(row.student_id)}">${avg===null?'<span class="bulk-incomplete">Incomplete</span>':avg.toFixed(2)}</td>
+   </tr>`;
+  });
+ });
+ wrap.innerHTML=`<table class="bulk-grade-table"><thead><tr><th>Student name</th><th>Control</th><th>Oral</th><th>Synthèse</th><th>Average</th></tr></thead><tbody>${body}</tbody></table>`;
+ $("bulkTotalStudents").textContent=rows.length;
+ updateBulkSummary();
+}
+function readBulkRows(){
+ return classStudents.map(link=>{
+  const id=String(link.student_id);
+  const read=field=>{const el=document.querySelector(`[data-bulk-field="${field}"][data-student-id="${CSS.escape(id)}"]`);return el?el.value.trim():"";};
+  return {student_id:link.student_id,control_note:read("control_note"),oral_note:read("oral_note"),synthese_note:read("synthese_note")};
+ });
+}
+function updateBulkSummary(){
+ const rows=readBulkRows();
+ const complete=rows.map(r=>getBulkAverage(r)).filter(v=>v!==null);
+ const incomplete=rows.length-complete.length;
+ $("bulkTotalStudents").textContent=rows.length;
+ $("bulkCompleteStudents").textContent=complete.length;
+ $("bulkMissingStudents").textContent=incomplete;
+ $("bulkClassAverage").textContent=rows.length>0&&incomplete===0?(complete.reduce((a,b)=>a+b,0)/rows.length).toFixed(2):"—";
+ $("bulkMissingNotice").textContent=incomplete===0
+  ? "All students have Control, Oral, and Synthèse marks for this trimester."
+  : `${incomplete} student${incomplete===1?" is":"s are"} missing at least one mark. Their average will remain incomplete until all three marks are entered. You can still save the marks already entered.`;
+}
+function updateBulkRowAverage(studentId){
+ const row=document.querySelector(`[data-bulk-student-row="${CSS.escape(String(studentId))}"]`);
+ if(!row)return;
+ const get=field=>row.querySelector(`[data-bulk-field="${field}"]`)?.value.trim()??"";
+ const avg=getBulkAverage({control_note:get("control_note"),oral_note:get("oral_note"),synthese_note:get("synthese_note")});
+ const cell=row.querySelector("[data-bulk-average]");
+ cell.innerHTML=avg===null?'<span class="bulk-incomplete">Incomplete</span>':avg.toFixed(2);
+ updateBulkSummary();
+}
+async function saveAllClassGrades(){
+ if(!activeClass)return;
+ const rows=readBulkRows();
+ for(const row of rows){
+  for(const [field,value] of Object.entries(row).filter(([k])=>k!=="student_id")){
+   if(value!==""&&(!Number.isFinite(Number(value))||Number(value)<0||Number(value)>20)){
+    notice(`Every mark must be between 0 and 20. Check ${getBulkStudentName(row.student_id)}.`,"error");return;
+   }
+  }
+ }
+ const existingIds=new Set(bulkClassGrades.map(g=>String(g.student_id)));
+ const toSave=rows.filter(r=>existingIds.has(String(r.student_id))||r.control_note!==""||r.oral_note!==""||r.synthese_note!=="");
+ if(!toSave.length){notice("Enter at least one mark before saving.","error");return;}
+ const btn=$("saveAllClassGradesBtn");btn.disabled=true;btn.textContent="Saving…";
+ let saved=0;
+ try{
+  for(const row of toSave){
+   const payload={
+    class_id:activeClass.id,
+    student_id:row.student_id,
+    trimester:bulkTrimester,
+    control_note:row.control_note===""?null:Number(row.control_note),
+    oral_note:row.oral_note===""?null:Number(row.oral_note),
+    synthese_note:row.synthese_note===""?null:Number(row.synthese_note),
+    updated_at:new Date().toISOString()
+   };
+   const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});
+   if(error)throw new Error(`${getBulkStudentName(row.student_id)}: ${error.message}`);
+   saved++;
+  }
+  $("bulkSaveStatus").textContent=`Saved ${saved} student record${saved===1?"":"s"} for trimester ${bulkTrimester}.`;
+  notice(`Saved marks for ${saved} student${saved===1?"":"s"}.`);
+  await loadBulkClassGrades();
+ }catch(e){console.error(e);notice("Could not save all grades: "+e.message,"error");}
+ finally{btn.disabled=false;btn.textContent="Save all students";}
+}
+function closeBulkGrades(){
+ $("classBulkGradeView").classList.add("hidden");
+ $("classStudentsPanel").classList.remove("hidden");
 }
 function showClassList(){activeClass=null;activeStudent=null;$("studentRecordView").classList.add("hidden");$("classDetailView").classList.add("hidden");$("classListView").classList.remove("hidden");loadTeacherClasses();}
 
@@ -370,9 +534,23 @@ $("cancelCreateClassBtn")?.addEventListener("click",()=>{$("createClassFormWrap"
 $("refreshClassesBtn")?.addEventListener("click",()=>loadTeacherClasses());
 $("backToClassesBtn")?.addEventListener("click",showClassList);
 $("refreshClassStudentsBtn")?.addEventListener("click",()=>loadClassStudents());
-$("backToClassStudentsBtn")?.addEventListener("click",()=>{$("studentRecordView").classList.add("hidden");$("classDetailView").classList.remove("hidden");});
+$("openBulkGradesBtn")?.addEventListener("click",()=>openBulkGrades().catch(err=>notice(err.message,"error")));
+$("backFromBulkGradesBtn")?.addEventListener("click",closeBulkGrades);
+$("saveAllClassGradesBtn")?.addEventListener("click",saveAllClassGrades);
+$("bulkTrimesterTabs")?.addEventListener("click",e=>{
+ const tab=e.target.closest("[data-bulk-trimester]");if(!tab)return;
+ bulkTrimester=Number(tab.dataset.bulkTrimester);
+ document.querySelectorAll("[data-bulk-trimester]").forEach(b=>b.classList.toggle("active",b===tab));
+ $("bulkSaveStatus").textContent="Changes are not saved until you click Save all students.";
+ loadBulkClassGrades();
+});
+$("bulkGradesTableWrap")?.addEventListener("input",e=>{
+ const input=e.target.closest("[data-bulk-field]");if(input)updateBulkRowAverage(input.dataset.studentId);
+});
+
+$("backToClassStudentsBtn")?.addEventListener("click",()=>{$("studentRecordView").classList.add("hidden");$("classDetailView").classList.remove("hidden");$("classStudentsPanel").classList.remove("hidden");$("classBulkGradeView").classList.add("hidden");});
 $("addClassStudentForm")?.addEventListener("submit",addStudentToClass);
-$("studentDigits")?.addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,5)});
+$("studentDigits")?.addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,6)});
 document.addEventListener("click",e=>{
  const open=e.target.closest("[data-open-class]");if(open){openTeacherClass(open.dataset.openClass).catch(err=>notice(err.message,"error"));return;}
  const record=e.target.closest("[data-open-record]");if(record){openStudentRecord(record.dataset.openRecord).catch(err=>notice(err.message,"error"));return;}
