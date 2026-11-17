@@ -30,7 +30,8 @@
 <script>
 const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
 const SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"; // Replace with the project's anon/public key from Supabase > Project Settings > API.
-if (!/^https?:\\/\\//i.test(SUPABASE_URL)) throw new Error("Invalid Supabase URL. Use your project's HTTPS URL.");
+const parsedSupabaseUrl = new URL(SUPABASE_URL);
+if (!/^https?:$/.test(parsedSupabaseUrl.protocol)) throw new Error("Invalid Supabase URL. Use your project HTTPS URL.");
 if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === "YOUR_SUPABASE_ANON_KEY") {
   console.error("Add your Supabase anon/public key in SUPABASE_ANON_KEY before using this admin page.");
 }
