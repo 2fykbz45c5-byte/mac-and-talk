@@ -28,30 +28,144 @@
 <section class="panel"><h2 style="margin:0 0 12px">Student edit requests</h2><div class="tablewrap"><table><thead><tr><th>Student</th><th>Request</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="requestsBody"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody></table></div></section>
 </main></div><div id="toast"></div>
 <script>
-const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
-const SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"; // Replace with the project's anon/public key from Supabase > Project Settings > API.
-const parsedSupabaseUrl = new URL(SUPABASE_URL);
-if (!/^https?:$/.test(parsedSupabaseUrl.protocol)) throw new Error("Invalid Supabase URL. Use your project HTTPS URL.");
-if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === "YOUR_SUPABASE_ANON_KEY") {
-  console.error("Add your Supabase anon/public key in SUPABASE_ANON_KEY before using this admin page.");
+const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
+// Paste the anon/public (or publishable) key from this same Supabase project.
+const SUPABASE_ANON_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+
+const $ = id => document.getElementById(id);
+const toast = message => {
+  $('toast').textContent = message;
+  $('toast').style.display = 'block';
+  window.clearTimeout(toast.timer);
+  toast.timer = window.setTimeout(() => $('toast').style.display = 'none', 4500);
+};
+
+// Validate the URL without a regular expression.
+let validUrl = false;
+try {
+  const parsed = new URL(SUPABASE_URL);
+  validUrl = (parsed.protocol === 'https:' || parsed.protocol === 'http:') && !!parsed.hostname;
+} catch (_) {}
+if (!validUrl) throw new Error('Invalid Supabase URL. Check SUPABASE_URL.');
+if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+  throw new Error('Supabase JS did not load. Check your internet connection.');
 }
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const $=id=>document.getElementById(id);
-let selected=null;
-function toast(m){$('toast').textContent=m;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',3500)}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function dt(v){return v?new Date(v).toLocaleString():'—'}
-async function rpc(name,args={}){const {data,error}=await db.rpc(name,args);if(error)throw error;return data}
-function selectStudent(u){selected=u;$('studentId').value=u.user_id;$('selectedLabel').textContent=(u.display_name||u.email||u.user_id)+' · '+u.user_id;$('level').value=u.school_level||'';$('track').value=u.school_track||'';$('stream').value=u.school_stream||'';$('className').value=u.school_class||'';$('editPanel').scrollIntoView({behavior:'smooth',block:'start'})}
-async function loadUsers(){const q=$('search').value.trim();const rows=await rpc('admin_search_academic_users',{p_search:q});$('countUsers').textContent=rows.length;$('usersBody').innerHTML=rows.length?rows.map(u=>`<tr><td><b>${esc(u.display_name||'Student')}</b><br><span class="muted">${esc(u.mac_talk_id||'')}</span></td><td>${esc(u.email)}<br><small class="muted">${esc(u.user_id)}</small></td><td>${esc(u.school_level||'—')}</td><td>${esc([u.school_track,u.school_stream].filter(Boolean).join(' · ')||'—')}</td><td>${esc(u.school_class||'—')}</td><td><span class="pill">${u.edit_allowed?'Allowed':'Locked'}</span></td><td><button class="btn light" onclick="pick('${u.user_id}')">Edit</button></td></tr>`).join(''):'<tr><td colspan="7" class="muted">No students found.</td></tr>'}
-async function loadRequests(){const rows=await rpc('admin_list_academic_requests');const pending=rows.filter(r=>r.status==='pending').length;$('countPending').textContent=pending;$('requestsBody').innerHTML=rows.length?rows.map(r=>`<tr><td><b>${esc(r.display_name||'Student')}</b><br><small>${esc(r.email||'')}</small><br><small class="muted">${esc(r.mac_talk_id||r.student_id)}</small></td><td>${esc(r.message||'Please allow me to edit my academic information.')}</td><td>${dt(r.created_at)}</td><td><span class="pill ${esc(r.status)}">${esc(r.status)}</span></td><td>${r.status==='pending'?`<div class="actions"><button class="btn" onclick="review('${r.request_id}','approved')">Allow Edit</button><button class="btn red" onclick="review('${r.request_id}','rejected')">Reject</button><button class="btn light" onclick="pickById('${r.student_id}')">Edit for User</button></div>`:'—'}</td></tr>`).join(''):'<tr><td colspan="5" class="muted">No requests yet.</td></tr>'}
-async function refresh(){try{await Promise.all([loadUsers(),loadRequests()]);$('lastRefresh').textContent=new Date().toLocaleTimeString();const s=await rpc('admin_get_academic_edit_settings');$('globalState').textContent=s?.[0]?.enabled_for_all?'Open':'Closed'}catch(e){toast(e.message||String(e))}}
-window.pick=async id=>{try{const rows=await rpc('admin_search_academic_users',{p_search:id});const u=rows.find(x=>x.user_id===id);if(u)selectStudent(u)}catch(e){toast(e.message)}};
-window.pickById=window.pick;
-window.review=async(id,decision)=>{const note=decision==='rejected'?prompt('Optional note for the student:')||'':'';try{await rpc('admin_review_academic_request',{p_request_id:id,p_decision:decision,p_admin_note:note});toast(decision==='approved'?'Edit permission granted.':'Request rejected.');refresh()}catch(e){toast(e.message)}};
-$('searchBtn').onclick=()=>loadUsers();$('search').addEventListener('keydown',e=>{if(e.key==='Enter')loadUsers()});$('refreshBtn').onclick=refresh;
-$('saveStudent').onclick=async()=>{try{if(!$('studentId').value)throw Error('Select a student first.');await rpc('admin_update_student_academics',{p_student_id:$('studentId').value,p_school_level:$('level').value,p_school_track:$('track').value,p_school_stream:$('stream').value,p_school_class:$('className').value});toast('Student academic information updated.');refresh()}catch(e){toast(e.message)}};
-$('clearStudent').onclick=()=>{selected=null;$('studentId').value='';$('selectedLabel').textContent='Choose a student from the list.';['level','track','stream','className'].forEach(k=>$(k).value='')};
-$('applyAccess').onclick=async()=>{try{const all=$('scope').value==='all';const start=$('starts').value?new Date($('starts').value).toISOString():null;const end=$('ends').value?new Date($('ends').value).toISOString():null;await rpc('admin_set_academic_edit_access',{p_user_id:all?null:$('studentId').value||null,p_enabled:$('permission').value==='true',p_starts_at:start,p_ends_at:end,p_for_all:all});toast('Edit access updated.');refresh()}catch(e){toast(e.message)}};
-refresh();
+
+// Reuse the authenticated MAC & TALK session created by admin.html.
+// Supabase stores the session in this browser for the same project.
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
+let selected = null;
+
+function esc(value) {
+  let text = String(value ?? '');
+  const replacements = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+  for (const character of ['&','<','>','"',"'"]) text = text.split(character).join(replacements[character]);
+  return text;
+}
+function dt(value) { return value ? new Date(value).toLocaleString() : '—'; }
+async function rpc(name, args = {}) {
+  const { data: sessionData, error: sessionError } = await db.auth.getSession();
+  if (sessionError) throw sessionError;
+  if (!sessionData.session) {
+    throw new Error('Your MAC & TALK admin session was not found. Return to Admin Control Center and open Academic Classes again.');
+  }
+  const { data, error } = await db.rpc(name, args);
+  if (error) throw error;
+  return data;
+}
+async function requireSession() {
+  const { data, error } = await db.auth.getSession();
+  if (error) throw error;
+  if (!data.session?.user) {
+    throw new Error('Your MAC & TALK admin session was not found. Return to Admin Control Center and open Academic Classes again.');
+  }
+}
+async function selectStudent(user) {
+  selected = user;
+  $('studentId').value = user.user_id;
+  $('selectedLabel').textContent = (user.display_name || user.email || user.user_id) + ' · ' + user.user_id;
+  $('level').value = user.school_level || '';
+  $('track').value = user.school_track || '';
+  $('stream').value = user.school_stream || '';
+  $('className').value = user.school_class || '';
+  $('editPanel').scrollIntoView({behavior:'smooth', block:'start'});
+}
+async function loadUsers() {
+  const query = $('search').value.trim();
+  const rows = await rpc('admin_search_academic_users', {p_search:query});
+  $('countUsers').textContent = rows.length;
+  $('usersBody').innerHTML = rows.length ? rows.map(user => `<tr><td><b>${esc(user.display_name || 'Student')}</b><br><span class="muted">${esc(user.mac_talk_id || '')}</span></td><td>${esc(user.email)}<br><small class="muted">${esc(user.user_id)}</small></td><td>${esc(user.school_level || '—')}</td><td>${esc([user.school_track,user.school_stream].filter(Boolean).join(' · ') || '—')}</td><td>${esc(user.school_class || '—')}</td><td><span class="pill">${user.edit_allowed ? 'Allowed' : 'Locked'}</span></td><td><button class="btn light" onclick="pick('${esc(user.user_id)}')">Edit</button></td></tr>`).join('') : '<tr><td colspan="7" class="muted">No students found.</td></tr>';
+}
+async function loadRequests() {
+  const rows = await rpc('admin_list_academic_requests');
+  $('countPending').textContent = rows.filter(row => row.status === 'pending').length;
+  $('requestsBody').innerHTML = rows.length ? rows.map(row => `<tr><td><b>${esc(row.display_name || 'Student')}</b><br><small>${esc(row.email || '')}</small><br><small class="muted">${esc(row.mac_talk_id || row.student_id)}</small></td><td>${esc(row.message || 'Please allow me to edit my academic information.')}</td><td>${dt(row.created_at)}</td><td><span class="pill ${esc(row.status)}">${esc(row.status)}</span></td><td>${row.status === 'pending' ? `<div class="actions"><button class="btn" onclick="review('${esc(row.request_id)}','approved')">Allow Edit</button><button class="btn red" onclick="review('${esc(row.request_id)}','rejected')">Reject</button><button class="btn light" onclick="pickById('${esc(row.student_id)}')">Edit for User</button></div>` : '—'}</td></tr>`).join('') : '<tr><td colspan="5" class="muted">No requests yet.</td></tr>';
+}
+async function refresh() {
+  try {
+    await requireSession();
+    await Promise.all([loadUsers(), loadRequests()]);
+    $('lastRefresh').textContent = new Date().toLocaleTimeString();
+    const settings = await rpc('admin_get_academic_edit_settings');
+    $('globalState').textContent = settings?.[0]?.enabled_for_all ? 'Open' : 'Closed';
+  } catch (error) { toast(error.message || String(error)); }
+}
+window.pick = async id => {
+  try {
+    const rows = await rpc('admin_search_academic_users', {p_search:id});
+    const user = rows.find(item => item.user_id === id);
+    if (user) selectStudent(user);
+  } catch (error) { toast(error.message); }
+};
+window.pickById = window.pick;
+window.review = async (id, decision) => {
+  const note = decision === 'rejected' ? (prompt('Optional note for the student:') || '') : '';
+  try {
+    await rpc('admin_review_academic_request', {p_request_id:id, p_decision:decision, p_admin_note:note});
+    toast(decision === 'approved' ? 'Edit permission granted.' : 'Request rejected.');
+    await refresh();
+  } catch (error) { toast(error.message); }
+};
+$('searchBtn').onclick = () => loadUsers().catch(error => toast(error.message));
+$('search').addEventListener('keydown', event => { if (event.key === 'Enter') loadUsers().catch(error => toast(error.message)); });
+$('refreshBtn').onclick = refresh;
+$('saveStudent').onclick = async () => {
+  try {
+    if (!$('studentId').value) throw new Error('Select a student first.');
+    await rpc('admin_update_student_academics', {p_student_id:$('studentId').value, p_school_level:$('level').value, p_school_track:$('track').value, p_school_stream:$('stream').value, p_school_class:$('className').value});
+    toast('Student academic information updated.');
+    await refresh();
+  } catch (error) { toast(error.message); }
+};
+$('clearStudent').onclick = () => {
+  selected = null; $('studentId').value = ''; $('selectedLabel').textContent = 'Choose a student from the list.';
+  ['level','track','stream','className'].forEach(id => $(id).value = '');
+};
+$('applyAccess').onclick = async () => {
+  try {
+    const all = $('scope').value === 'all';
+    const start = $('starts').value ? new Date($('starts').value).toISOString() : null;
+    const end = $('ends').value ? new Date($('ends').value).toISOString() : null;
+    if (!all && !$('studentId').value) throw new Error('Select a student first, or choose All students.');
+    await rpc('admin_set_academic_edit_access', {p_user_id:all ? null : $('studentId').value, p_enabled:$('permission').value === 'true', p_starts_at:start, p_ends_at:end, p_for_all:all});
+    toast('Edit access updated.');
+    await refresh();
+  } catch (error) { toast(error.message); }
+};
+
+// The Admin Control Center already signs the administrator in.
+// This page reads that same persisted session; it does not ask for another login.
+db.auth.getSession().then(({ data, error }) => {
+  if (error) {
+    toast('Could not read your MAC & TALK session: ' + error.message);
+    return;
+  }
+  if (!data.session?.user) {
+    toast('No active admin session found. Go back to Admin Control Center and open Academic Classes from its menu.');
+    return;
+  }
+  refresh();
+}).catch(error => toast(error.message || String(error)));
 </script></body></html>
