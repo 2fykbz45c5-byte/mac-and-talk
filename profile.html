@@ -93,150 +93,7 @@ a { color: inherit; text-decoration: none; }
 .app { min-height: 100vh; }
 
 
-/* ACADEMIC PROFILE */
-let academicInfo = null;
-let academicEditAllowed = false;
 
-function setAcademicText(id, value) {
-  $(id).textContent = value && String(value).trim() ? value : "—";
-}
-
-async function loadAcademicProfile() {
-  if (!currentUser?.id) return;
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("school_level,school_track,school_stream,school_class,academic_completed_at")
-    .eq("id", currentUser.id)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Academic profile load error:", error);
-    ["academicLevel","academicTrack","academicStream","academicClass"].forEach(id => setAcademicText(id, "Unavailable"));
-    $("academicHelp").textContent = "Academic profile is not available yet. Please contact the Admin if this continues.";
-    $("academicRequestBtn").disabled = true;
-    $("academicRequestState").textContent = "Academic profile setup is required.";
-    $("academicNotifications").innerHTML = '<div class="academic-empty">Notifications are not available.</div>';
-    return;
-  }
-
-  academicInfo = data || {};
-  setAcademicText("academicLevel", academicInfo.school_level);
-  setAcademicText("academicTrack", academicInfo.school_track);
-  setAcademicText("academicStream", academicInfo.school_stream);
-  setAcademicText("academicClass", academicInfo.school_class);
-
-  const hasSaved = !!(academicInfo.academic_completed_at || academicInfo.school_level || academicInfo.school_class);
-  const [accessResult, requestResult] = await Promise.all([
-    supabase.rpc("student_can_edit_academics"),
-    supabase.rpc("my_latest_academic_request")
-  ]);
-
-  academicEditAllowed = !accessResult.error && accessResult.data === true;
-  const latest = !requestResult.error && Array.isArray(requestResult.data) ? requestResult.data[0] : null;
-
-  $("academicLock").textContent = academicEditAllowed ? "🔓 Editing allowed" : (hasSaved ? "🔒 Locked" : "📝 Not completed");
-  $("academicEditor").hidden = !academicEditAllowed;
-  $("academicRequestBtn").hidden = academicEditAllowed;
-  $("academicRequestBtn").disabled = !!(latest && latest.status === "pending");
-  $("academicRequestState").textContent = latest
-    ? (latest.status === "pending" ? "Your request is waiting for Admin review." :
-       latest.status === "approved" ? "Your latest request was approved." :
-       latest.status === "rejected" ? "Your latest request was rejected. You can send another request." :
-       "No pending edit request.")
-    : (hasSaved ? "" : "Your academic information has not been completed yet.");
-  $("academicHelp").textContent = academicEditAllowed
-    ? "The Admin has allowed you to edit your academic information. Save your changes when finished."
-    : "Your academic information is locked after saving. You can ask the Admin to allow editing.";
-
-  if (academicEditAllowed) {
-    $("academicLevelInput").value = academicInfo.school_level || "";
-    $("academicTrackInput").value = academicInfo.school_track || "";
-    $("academicStreamInput").value = academicInfo.school_stream || "";
-    $("academicClassInput").value = academicInfo.school_class || "";
-  }
-  await loadAcademicNotifications();
-}
-
-async function loadAcademicNotifications() {
-  const wrap = $("academicNotifications");
-  const { data, error } = await supabase.rpc("my_academic_notifications");
-  if (error) {
-    console.warn("Academic notifications unavailable:", error);
-    wrap.innerHTML = '<div class="academic-empty">Could not load notifications. Please try again later.</div>';
-    return;
-  }
-  wrap.replaceChildren();
-  if (!data?.length) {
-    const empty = document.createElement("div");
-    empty.className = "academic-empty";
-    empty.textContent = "No academic notifications yet.";
-    wrap.append(empty);
-    return;
-  }
-  data.forEach(item => {
-    const card = document.createElement("article");
-    card.className = "academic-notice-item" + (item.is_read ? "" : " unread");
-    const title = document.createElement("strong");
-    title.textContent = item.title || "Academic update";
-    const body = document.createElement("p");
-    body.textContent = item.body || "";
-    const time = document.createElement("time");
-    time.textContent = item.created_at ? formatDate(item.created_at, {dateStyle:"medium",timeStyle:"short"}) : "";
-    card.append(title, body, time);
-    if (!item.is_read) {
-      card.addEventListener("click", async () => {
-        const { error: readError } = await supabase.rpc("mark_academic_notification_read", {p_id:item.id});
-        if (!readError) {
-          card.classList.remove("unread");
-          loadAcademicNotifications();
-        }
-      });
-    }
-    wrap.append(card);
-  });
-}
-
-$("academicRequestBtn").addEventListener("click", async () => {
-  const btn = $("academicRequestBtn");
-  btn.disabled = true;
-  $("academicRequestState").textContent = "Sending request…";
-  const { error } = await supabase.rpc("request_academic_edit", {p_message:"Please allow me to edit my academic information."});
-  if (error) {
-    $("academicRequestState").textContent = error.message || "Could not send your request.";
-    btn.disabled = false;
-    return;
-  }
-  showNotice("Your academic edit request was sent to the Admin.");
-  await loadAcademicProfile();
-});
-
-$("academicSaveBtn").addEventListener("click", async () => {
-  const btn = $("academicSaveBtn");
-  btn.disabled = true;
-  const { error } = await supabase.rpc("save_my_academic_info", {
-    p_school_level:$("academicLevelInput").value,
-    p_school_track:$("academicTrackInput").value,
-    p_school_stream:$("academicStreamInput").value,
-    p_school_class:$("academicClassInput").value.trim()
-  });
-  btn.disabled = false;
-  if (error) {
-    showNotice(error.message || "Could not save academic information.", "error");
-    return;
-  }
-  showNotice("Your academic information was saved.");
-  await loadAcademicProfile();
-});
-
-$("academicCancelBtn").addEventListener("click", () => {
-  $("academicEditor").hidden = true;
-  $("academicEditor").querySelectorAll("input,select").forEach(el => {
-    const key = {academicLevelInput:"school_level",academicTrackInput:"school_track",academicStreamInput:"school_stream",academicClassInput:"school_class"}[el.id];
-    el.value = academicInfo?.[key] || "";
-  });
-});
-
-/* END ACADEMIC PROFILE */
 
 
 /* SIDEBAR */
@@ -1301,6 +1158,151 @@ function formatDate(value, options = {}) {
 
   return new Intl.DateTimeFormat(undefined, options).format(date);
 }
+
+/* ACADEMIC PROFILE */
+let academicInfo = null;
+let academicEditAllowed = false;
+
+function setAcademicText(id, value) {
+  $(id).textContent = value && String(value).trim() ? value : "—";
+}
+
+async function loadAcademicProfile() {
+  if (!currentUser?.id) return;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("school_level,school_track,school_stream,school_class,academic_completed_at")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Academic profile load error:", error);
+    ["academicLevel","academicTrack","academicStream","academicClass"].forEach(id => setAcademicText(id, "Unavailable"));
+    $("academicHelp").textContent = "Academic profile is not available yet. Please contact the Admin if this continues.";
+    $("academicRequestBtn").disabled = true;
+    $("academicRequestState").textContent = "Academic profile setup is required.";
+    $("academicNotifications").innerHTML = '<div class="academic-empty">Notifications are not available.</div>';
+    return;
+  }
+
+  academicInfo = data || {};
+  setAcademicText("academicLevel", academicInfo.school_level);
+  setAcademicText("academicTrack", academicInfo.school_track);
+  setAcademicText("academicStream", academicInfo.school_stream);
+  setAcademicText("academicClass", academicInfo.school_class);
+
+  const hasSaved = !!(academicInfo.academic_completed_at || academicInfo.school_level || academicInfo.school_class);
+  const [accessResult, requestResult] = await Promise.all([
+    supabase.rpc("student_can_edit_academics"),
+    supabase.rpc("my_latest_academic_request")
+  ]);
+
+  academicEditAllowed = !accessResult.error && accessResult.data === true;
+  const latest = !requestResult.error && Array.isArray(requestResult.data) ? requestResult.data[0] : null;
+
+  $("academicLock").textContent = academicEditAllowed ? "🔓 Editing allowed" : (hasSaved ? "🔒 Locked" : "📝 Not completed");
+  $("academicEditor").hidden = !academicEditAllowed;
+  $("academicRequestBtn").hidden = academicEditAllowed;
+  $("academicRequestBtn").disabled = !!(latest && latest.status === "pending");
+  $("academicRequestState").textContent = latest
+    ? (latest.status === "pending" ? "Your request is waiting for Admin review." :
+       latest.status === "approved" ? "Your latest request was approved." :
+       latest.status === "rejected" ? "Your latest request was rejected. You can send another request." :
+       "No pending edit request.")
+    : (hasSaved ? "" : "Your academic information has not been completed yet.");
+  $("academicHelp").textContent = academicEditAllowed
+    ? "The Admin has allowed you to edit your academic information. Save your changes when finished."
+    : "Your academic information is locked after saving. You can ask the Admin to allow editing.";
+
+  if (academicEditAllowed) {
+    $("academicLevelInput").value = academicInfo.school_level || "";
+    $("academicTrackInput").value = academicInfo.school_track || "";
+    $("academicStreamInput").value = academicInfo.school_stream || "";
+    $("academicClassInput").value = academicInfo.school_class || "";
+  }
+  await loadAcademicNotifications();
+}
+
+async function loadAcademicNotifications() {
+  const wrap = $("academicNotifications");
+  const { data, error } = await supabase.rpc("my_academic_notifications");
+  if (error) {
+    console.warn("Academic notifications unavailable:", error);
+    wrap.innerHTML = '<div class="academic-empty">Could not load notifications. Please try again later.</div>';
+    return;
+  }
+  wrap.replaceChildren();
+  if (!data?.length) {
+    const empty = document.createElement("div");
+    empty.className = "academic-empty";
+    empty.textContent = "No academic notifications yet.";
+    wrap.append(empty);
+    return;
+  }
+  data.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "academic-notice-item" + (item.is_read ? "" : " unread");
+    const title = document.createElement("strong");
+    title.textContent = item.title || "Academic update";
+    const body = document.createElement("p");
+    body.textContent = item.body || "";
+    const time = document.createElement("time");
+    time.textContent = item.created_at ? formatDate(item.created_at, {dateStyle:"medium",timeStyle:"short"}) : "";
+    card.append(title, body, time);
+    if (!item.is_read) {
+      card.addEventListener("click", async () => {
+        const { error: readError } = await supabase.rpc("mark_academic_notification_read", {p_id:item.id});
+        if (!readError) {
+          card.classList.remove("unread");
+          loadAcademicNotifications();
+        }
+      });
+    }
+    wrap.append(card);
+  });
+}
+
+$("academicRequestBtn").addEventListener("click", async () => {
+  const btn = $("academicRequestBtn");
+  btn.disabled = true;
+  $("academicRequestState").textContent = "Sending request…";
+  const { error } = await supabase.rpc("request_academic_edit", {p_message:"Please allow me to edit my academic information."});
+  if (error) {
+    $("academicRequestState").textContent = error.message || "Could not send your request.";
+    btn.disabled = false;
+    return;
+  }
+  showNotice("Your academic edit request was sent to the Admin.");
+  await loadAcademicProfile();
+});
+
+$("academicSaveBtn").addEventListener("click", async () => {
+  const btn = $("academicSaveBtn");
+  btn.disabled = true;
+  const { error } = await supabase.rpc("save_my_academic_info", {
+    p_school_level:$("academicLevelInput").value,
+    p_school_track:$("academicTrackInput").value,
+    p_school_stream:$("academicStreamInput").value,
+    p_school_class:$("academicClassInput").value.trim()
+  });
+  btn.disabled = false;
+  if (error) {
+    showNotice(error.message || "Could not save academic information.", "error");
+    return;
+  }
+  showNotice("Your academic information was saved.");
+  await loadAcademicProfile();
+});
+
+$("academicCancelBtn").addEventListener("click", () => {
+  $("academicEditor").hidden = true;
+  $("academicEditor").querySelectorAll("input,select").forEach(el => {
+    const key = {academicLevelInput:"school_level",academicTrackInput:"school_track",academicStreamInput:"school_stream",academicClassInput:"school_class"}[el.id];
+    el.value = academicInfo?.[key] || "";
+  });
+});
+
+/* END ACADEMIC PROFILE */
 
 /* NOTIFICATION STORAGE */
 
