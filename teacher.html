@@ -170,6 +170,7 @@
   <div class="student-action-grid">
    <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">＋</div><div><h3>Add quick student</h3><p>Enter one student ID, view the student's academic profile and choose the right class.</p></div></div><button class="btn btn-primary" id="openStudentImportBtn">Add student →</button></article>
    <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">👥</div><div><h3>Students without a class</h3><p>Open the list, review each student's profile and assign them to any of your classes.</p></div></div><button class="count-button" id="unassignedCount" type="button"><span id="unassignedCountNumber">0</span><small>VIEW LIST</small></button></article>
+   <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">📄</div><div><h3>Import student IDs</h3><p>Upload a class list document. Student IDs with 3, 4 or 5 digits will be detected and checked automatically.</p></div></div><input id="studentIdsDocument" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" hidden><button class="btn btn-primary" id="uploadStudentIdsBtn" type="button">Upload document →</button><p class="muted-note" id="studentIdsImportStatus" style="margin:8px 0 0">PDF, DOCX, TXT, CSV and Excel files</p></article>
   </div>
   <div class="classes-guide"><strong>Class setup</strong><span>Open a class to manage its students, groups and academic records.</span></div>
   <div class="panel"><div class="panel-head"><div><h3>My classes</h3><p>Classes created by your teacher account.</p></div><button class="btn btn-light btn-small" id="refreshClassesBtn">↻ Refresh</button></div><div id="teacherClassList" class="class-grid"><p class="empty">Loading classes…</p></div></div>
@@ -227,6 +228,8 @@
 <div class="modal-backdrop" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><form class="modal" id="sessionForm"><div class="panel-head"><h3 id="modalTitle">Create session</h3><button type="button" class="btn btn-light btn-small" id="closeModal">×</button></div><div class="modal-body"><div class="form-grid"><div class="form-field full"><label for="sessionTitle">Session title *</label><input id="sessionTitle" required maxlength="100" placeholder="e.g. English Conversation Club"></div><div class="form-field"><label for="sessionDate">Date and time *</label><input id="sessionDate" type="datetime-local" required></div><div class="form-field"><label for="sessionEmoji">Session icon</label><input id="sessionEmoji" maxlength="8" value="🎙️"></div><div class="form-field full"><label for="sessionDescription">Description</label><textarea id="sessionDescription" maxlength="1000" placeholder="What will students learn or discuss?"></textarea></div></div><p class="muted-note">All sessions are submitted as <strong>Pending approval</strong>. An admin must approve your session before its room becomes available to students.</p></div><div class="modal-foot"><button type="button" class="btn btn-light" id="cancelModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveSessionBtn">Submit for approval</button></div></form></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
@@ -325,6 +328,58 @@ async function createTeacherClass(e){
 async function openTeacherClass(id){
  activeClass=teacherClasses.find(c=>String(c.id)===String(id));if(!activeClass)return;
  $("classListView").classList.add("hidden");$("studentRecordView").classList.add("hidden");$("classBulkGradeView").classList.add("hidden");$("classStudentsPanel").classList.remove("hidden");$("classDetailView").classList.remove("hidden");$("activeClassName").textContent=activeClass.class_name;$("activeClassMeta").textContent=classMetaText(activeClass);await loadClassGroups();await loadClassStudents();
+}
+function extractStudentDigitsFromDocument(text){
+ const found=new Set();
+ // Prefer explicit Lear Academy/student ID labels first.
+ const explicit=/(?:MT\s*[- ]?\s*STU\s*[- ]?|STU\s*[- ]?|student\s*(?:id|number|no\.?|#)\s*[:#-]?|\bID\s*[:#-])\s*(\d{3,5})/gi;
+ let m;while((m=explicit.exec(text))!==null)found.add(m[1]);
+ // Also accept plain 3–5 digit IDs in lists where the document contains only the digits.
+ const plain=/(?:^|[^\d])(?:MT\s*[- ]?\s*STU\s*[- ]?)?(\d{3,5})(?!\d)/gim;
+ while((m=plain.exec(text))!==null)found.add(m[1]);
+ return [...found];
+}
+async function readStudentIdDocument(file){
+ const name=file.name.toLowerCase(),ext=name.split('.').pop();
+ if(ext==='txt'||ext==='csv')return await file.text();
+ if(ext==='pdf'){
+  if(!window.pdfjsLib)throw new Error('PDF reader did not load. Refresh the page and try again.');
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let pages=[];
+  for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();pages.push(content.items.map(x=>x.str).join(' '));}
+  return pages.join('\n');
+ }
+ if(ext==='docx'){
+  if(!window.mammoth)throw new Error('Word document reader did not load. Refresh the page and try again.');
+  return (await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()})).value;
+ }
+ if(ext==='xlsx'||ext==='xls'){
+  if(!window.XLSX)throw new Error('Excel reader did not load. Refresh the page and try again.');
+  const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});return wb.SheetNames.map(n=>XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n');
+ }
+ throw new Error('Unsupported file. Upload PDF, DOCX, TXT, CSV, XLSX or XLS.');
+}
+async function importStudentIdsDocument(){
+ const file=$('studentIdsDocument')?.files?.[0];if(!file)return notice('Choose a document first.','error');
+ const status=$('studentIdsImportStatus'),btn=$('uploadStudentIdsBtn');btn.disabled=true;btn.textContent='Reading document…';status.textContent='Reading the document and detecting student IDs…';
+ try{
+  const text=await readStudentIdDocument(file);const ids=extractStudentDigitsFromDocument(text);
+  if(!ids.length)throw new Error('No 3, 4 or 5 digit student IDs were detected. Check that the document contains selectable text, not only scanned images.');
+  status.textContent=`Detected ${ids.length} unique ID(s) in ${file.name}. Checking student accounts…`;
+  activeClass=null;await showStudentPreview(ids);
+  const autoRows=pendingStudentImport.filter(r=>r.found&&r.matched_class_id);let autoAdded=0,autoFailed=[];
+  for(const r of autoRows){try{const {error}=await supabase.rpc("teacher_add_student_to_class",{p_class_id:r.matched_class_id,p_student_digits:r.student_digits});if(error)throw error;autoAdded++;r._autoAdded=true;}catch(err){autoFailed.push(r);r._autoError=err.message||"Could not add automatically";}}
+  // Keep successfully auto-added rows visible as a result, but prevent a second submission.
+  pendingStudentImport=pendingStudentImport.filter(r=>!r._autoAdded);
+  renderStudentImportPreview();
+  if(autoAdded){const summary=`<div class="import-status success" style="margin-bottom:12px">✓ ${autoAdded} student(s) automatically added to the class matched with their academic profile.</div>`;$('studentImportPreview').insertAdjacentHTML('afterbegin',summary);}
+  if(!pendingStudentImport.length&&autoAdded){$('studentImportPreview').innerHTML=`<div class="import-status success">✓ All ${autoAdded} matched student(s) were added automatically. No manual class selection is needed.</div>`;}
+  await loadStudents();await loadTeacherClasses();
+  const needsClass=pendingStudentImport.filter(r=>r.found).length;
+  status.textContent=`${ids.length} ID(s) detected. ${autoAdded} student(s) automatically added to their matched class. ${needsClass} student(s) need a class selection.`;
+  if(!needsClass){$('confirmStudentImportBtn').disabled=true;$('confirmStudentImportBtn').textContent='All matched students added';}
+  if(autoFailed.length)notice(`${autoFailed.length} matched student(s) could not be added automatically. Review and assign them manually.`,'error');
+ }catch(e){status.textContent=e.message;notice(e.message,'error');}
+ finally{btn.disabled=false;btn.textContent='Upload document →';$('studentIdsDocument').value='';}
 }
 async function showStudentPreview(digitsList){
  const unique=[...new Set(digitsList.map(x=>String(x).replace(/\D/g,"")).filter(x=>/^\d{3,6}$/.test(x)))];if(!unique.length)throw new Error("Enter a valid 3–6 digit student ID.");
@@ -644,6 +699,8 @@ document.addEventListener("click",e=>{
 
 
 $("openStudentImportBtn")?.addEventListener("click",()=>{activeClass=null;openQuickStudentModal();});
+$("uploadStudentIdsBtn")?.addEventListener("click",()=>$("studentIdsDocument").click());
+$("studentIdsDocument")?.addEventListener("change",()=>importStudentIdsDocument());
 $("addStudentToActiveClassBtn")?.addEventListener("click",openQuickStudentModal);
 $("lookupQuickStudentBtn")?.addEventListener("click",lookupQuickStudent);
 $("quickStudentIdInput")?.addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,6)});
