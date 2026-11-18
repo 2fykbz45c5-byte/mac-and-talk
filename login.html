@@ -95,7 +95,7 @@
 <header class="topbar"><a href="index.html" class="logo">🎙 Mac&<span>Talk</span></a><a href="index.html" class="back-link">← Back to Home</a></header>
 <main class="main"><section class="brand-panel"><div class="big-mic">🎙️</div><div class="brand-title">Mac&<span>Talk</span></div><p class="brand-description">Real voices. Real conversations.<br>A stronger community.</p><div class="illustration">🎧</div><div class="features"><div class="feature"><span class="feature-icon">🎧</span><strong>Live Sessions</strong><p>Join the conversation</p></div><div class="feature"><span class="feature-icon">🎙️</span><strong>Podcasts</strong><p>Listen anytime</p></div><div class="feature"><span class="feature-icon">👥</span><strong>Community</strong><p>Be part of it</p></div></div></section>
 <section class="login-panel"><div class="login-heading"><h1>Welcome Back!</h1><p>Sign in to your Mac&Talk account</p></div><div id="formMessage" class="message" role="status" aria-live="polite"></div>
-<form id="loginForm"><div class="form-group"><label for="email">Mac&Talk ID or Email</label><div class="input-wrap"><input type="text" id="email" placeholder="MT-Role-0000 or you@example.com" autocomplete="username" autocapitalize="none" spellcheck="false" required></div></div><div class="form-group"><label for="password">Password</label><div class="input-wrap"><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required><button type="button" class="input-icon" id="togglePassword" aria-label="Show password">◉</button></div></div><div class="form-options"><label class="remember"><input type="checkbox" id="rememberMe" checked><span>Keep me signed in</span></label><a href="#" class="text-link" id="forgotPassword">Forgot password?</a></div><button type="submit" class="submit-btn" id="signInButton">Sign In →</button></form>
+<form id="loginForm"><div class="form-group"><label for="email">Mac&Talk ID, Email or Username</label><div class="input-wrap"><input type="text" id="email" placeholder="MT-Role-0000, username or you@example.com" autocomplete="username" autocapitalize="none" spellcheck="false" required></div></div><div class="form-group"><label for="password">Password</label><div class="input-wrap"><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required><button type="button" class="input-icon" id="togglePassword" aria-label="Show password">◉</button></div></div><div class="form-options"><label class="remember"><input type="checkbox" id="rememberMe" checked><span>Keep me signed in</span></label><a href="forgot-password.html" class="text-link" id="forgotPassword">Forgot password?</a></div><button type="submit" class="submit-btn" id="signInButton">Sign In →</button></form>
 <div class="divider">OR</div><button type="button" class="google-btn" id="googleSignIn">🌐 &nbsp; Continue with Google</button>
 <div class="role-choice" id="roleChoice"><h2>Where would you like to go?</h2><p>Your account has administrator access. You can use the student area too.</p><div class="role-actions"><button type="button" class="choice-btn" id="studentDashboard">🎓 Student area</button><button type="button" class="choice-btn" id="adminDashboard">🛡️ Admin dashboard</button></div></div>
 <p class="signup-text">New to Mac&Talk? <a href="register.html" class="text-link">Create an account</a></p><p class="small-note">One sign-in page for students, teachers, and administrators.</p></section></main>
@@ -413,16 +413,19 @@ if (form) {
       let error;
 
       if (identifier.includes("@")) {
-        // Standard Supabase Auth email/password sign-in.
+        // Email addresses can be authenticated directly by Supabase.
         ({ data, error } = await supabase.auth.signInWithPassword({
-          email: identifier,
+          email: identifier.toLowerCase(),
           password: passwordInput.value
         }));
       } else {
-        // The Edge Function resolves mac_talk_id privately, then signs in through Supabase Auth.
+        // The Edge Function must resolve either a Mac&Talk ID or username
+        // privately, then authenticate using the account's actual auth email.
         const result = await supabase.functions.invoke("login-with-mac-talk-id", {
           body: {
+            identifier: identifier,
             mac_talk_id: identifier.toUpperCase(),
+            username: identifier.toLowerCase(),
             password: passwordInput.value
           }
         });
@@ -435,6 +438,8 @@ if (form) {
           data.user = data.session.user;
         } else if (!error && data?.error) {
           throw new Error(data.error);
+        } else if (!error && !data?.session) {
+          throw new Error("The login service did not return a session. Please check the login Edge Function.");
         }
       }
 
@@ -498,44 +503,13 @@ if (googleButton) {
 
 /*
  * Forgot password.
+ * The link opens the dedicated forgot-password page; that page handles
+ * collecting the email and requesting the Supabase reset email.
  */
 if ($("forgotPassword")) {
-  $("forgotPassword").addEventListener("click", async event => {
+  $("forgotPassword").addEventListener("click", event => {
     event.preventDefault();
-    clearMessage();
-
-    const email = emailInput.value.trim();
-
-    if (!email || !email.includes("@")) {
-      showMessage("For password reset, enter your account email address (not your Mac&Talk ID).", "info");
-      emailInput.focus();
-      return;
-    }
-
-    try {
-      const redirectTo = new URL(
-        ROUTES.reset,
-        window.location.href
-      ).href;
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo
-      });
-
-      if (error) throw error;
-
-      showMessage(
-        "If an account exists for this email, a password reset email will be sent.",
-        "success"
-      );
-
-    } catch (error) {
-      console.error("Password reset error:", error);
-      showMessage(
-        "Could not request password reset: " +
-        (error.message || "Unknown error")
-      );
-    }
+    window.location.href = "forgot-password.html";
   });
 }
 
