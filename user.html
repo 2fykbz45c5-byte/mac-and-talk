@@ -25,6 +25,31 @@ button,input,textarea,select{font:inherit}button,a{-webkit-tap-highlight-color:t
 .profile-card,.settings-card{background:white;border:1px solid var(--border);border-radius:17px;padding:24px;box-shadow:var(--shadow)}.profile-header{display:flex;align-items:center;gap:17px;padding-bottom:22px;border-bottom:1px solid var(--border);margin-bottom:20px}.profile-header .avatar{width:65px;height:65px;font-size:22px}.profile-header h3{margin-bottom:6px}.profile-header p{color:var(--muted);font-size:13px;overflow-wrap:anywhere}.profile-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:15px;padding:14px 0;border-bottom:1px solid var(--border);font-size:13px}.profile-row:last-child{border-bottom:0}.profile-row span{color:var(--muted)}.profile-row strong{overflow-wrap:anywhere}.settings-card h3{margin-bottom:9px}.settings-card p{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:18px}.settings-card .signout{max-width:300px}.notice{display:none;margin-bottom:18px;padding:14px 16px;border-radius:11px;font-size:13px;line-height:1.5;border:1px solid transparent}.notice.show{display:block}.notice.error{color:var(--red);background:#fff0f0;border-color:#f4cccc}.notice.success{color:var(--green);background:#eaf8f0;border-color:#c7ead6}.page-footer{padding-top:28px;text-align:center;color:#98a1af;font-size:11px}
 .notification-wrap{position:relative}.notification-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:9px;position:relative;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:white;color:var(--navy);cursor:pointer;font-size:12px;font-weight:700}.notification-button:hover,.notification-button[aria-expanded=true]{background:#f5f7fb;border-color:#cbd5e1}.notification-bell{font-size:17px;line-height:1}.notification-badge{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#e5484d;color:white;font-size:10px;font-weight:800}.notification-panel{position:absolute;top:calc(100% + 12px);right:0;z-index:100;width:min(365px,calc(100vw - 28px));overflow:hidden;border:1px solid #e4e9f1;border-radius:17px;background:white;box-shadow:0 18px 55px #10243e2b;animation:notificationAppear .18s ease-out}@keyframes notificationAppear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}.notification-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:19px 18px 15px}.notification-panel-header h3{font-size:16px;font-weight:800}.notification-panel-header p{margin-top:5px;color:var(--muted);font-size:11px;line-height:1.5}.notification-close{width:29px;height:29px;border:0;border-radius:8px;background:#f1f4f8;color:var(--navy);cursor:pointer;font-size:21px}.notification-tabs{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 18px 12px;border-bottom:1px solid #edf0f5}.notification-tab{padding-bottom:9px;border-bottom:2px solid var(--yellow);font-size:12px;font-weight:800}.notification-count{color:var(--muted);font-size:10px}.notification-list{max-height:330px;overflow-y:auto}.notification-item{display:flex;align-items:flex-start;gap:12px;padding:14px 17px;border-bottom:1px solid #f0f2f6;cursor:pointer;transition:background .15s}.notification-item:hover,.notification-item:focus{background:#f7f9fc}.notification-item-icon{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#fff4ce;font-size:20px}.notification-item-icon.is-live{background:#e7f8ef}.notification-item-content{flex:1;min-width:0}.notification-item-content h4{font-size:12px;line-height:1.5;overflow-wrap:anywhere}.notification-item-content p{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.55;overflow-wrap:anywhere}.notification-item-time{display:block;margin-top:6px;color:#8792a3;font-size:10px}.notification-empty{padding:28px 18px;text-align:center}.notification-empty>span{display:block;margin-bottom:9px;font-size:27px}.notification-empty p{color:var(--muted);font-size:12px;line-height:1.7}.notification-view-all{width:100%;padding:14px;border:0;border-top:1px solid #edf0f5;background:#fafbfe;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}.notification-view-all:hover{background:#f0f4fa}
 .live-modal{position:fixed;inset:0;z-index:2000;background:#071221c7;display:grid;place-items:center;padding:20px}.live-modal-box{width:min(100%,460px);background:white;border-radius:18px;padding:24px;color:var(--navy);box-shadow:0 20px 70px #0003}.live-modal-box h2{font-size:19px;overflow-wrap:anywhere}.live-modal-box p{font-size:13px;color:var(--muted);margin:12px 0;line-height:1.6}.live-modal-box audio{width:100%;margin-top:8px}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.modal-btn{border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff}.modal-btn.secondary{background:#eef2f7;color:var(--navy)}
+
+/* Student results */
+.results-top-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}
+.results-top-button:hover,.results-top-button[aria-expanded=true]{background:#fff9e5;border-color:#e8c34d}
+.results-modal{position:fixed;inset:0;z-index:2100;background:#071221b8;display:grid;place-items:center;padding:18px}
+.results-modal-card{width:min(100%,760px);max-height:min(86vh,780px);overflow:hidden;display:flex;flex-direction:column;background:#fff;border:1px solid #eee8d9;border-radius:18px;box-shadow:0 22px 70px #0003}
+.results-modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:21px 23px;border-bottom:1px solid var(--border)}
+.results-modal-header h2{font-size:20px;font-weight:850}
+.results-modal-header p{margin-top:5px;color:var(--muted);font-size:12px}
+.results-modal-close{width:34px;height:34px;flex-shrink:0;border:0;border-radius:9px;background:#f1f4f8;color:var(--navy);font-size:23px;cursor:pointer}
+.results-trimester-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:15px 20px;border-bottom:1px solid var(--border)}
+.results-trimester-tab{padding:11px 8px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--navy);font-size:12px;font-weight:800;cursor:pointer}
+.results-trimester-tab.active{background:#fff4c9;border-color:#e8c34d}
+.results-content{padding:19px 22px 24px;overflow:auto;min-height:180px}
+.results-empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;background:#fafbfd;border:1px dashed #d9e0e9;border-radius:12px}
+.result-list{display:grid;gap:11px}
+.result-card{padding:15px 16px;border:1px solid var(--border);border-radius:12px;background:#fff}
+.result-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.result-card h3{font-size:14px;overflow-wrap:anywhere}
+.result-score{flex-shrink:0;padding:6px 10px;border-radius:9px;background:#fff4c9;color:var(--navy);font-size:13px;font-weight:900}
+.result-card p{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.result-card small{display:block;margin-top:8px;color:#8993a2;font-size:10px}
+.notification-item.is-unread{background:#fffdf5}
+@media(max-width:800px){.results-top-button{width:43px;padding:0;font-size:0}.results-top-button .results-button-icon{font-size:17px}.results-modal{padding:10px}.results-modal-card{max-height:90vh}.results-modal-header{padding:17px}.results-trimester-tabs{padding:12px 12px;gap:5px}.results-trimester-tab{font-size:10px;padding:10px 4px}.results-content{padding:14px}}
+
 @media(max-width:1050px){.content{padding:25px 22px 35px}.topbar{padding:16px 22px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:800px){.sidebar{width:260px;transform:translateX(-110%);box-shadow:10px 0 30px #0002}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%}.menu-toggle{display:block}.topbar{min-height:75px;padding:13px 16px}.topbar h2{font-size:17px}.user-mini{display:none}.content{padding:20px 16px 32px}.welcome-banner{border-radius:16px;align-items:flex-start;flex-direction:column}.session-grid{grid-template-columns:1fr}.notification-label{display:none}.notification-button{width:43px;padding:0}.notification-panel{position:fixed;top:80px;right:12px}.section-heading{align-items:flex-start}.stat-card:hover,.session-card:hover{transform:none}}
 @media(max-width:440px){.stats-grid{grid-template-columns:1fr}.stat-card{padding:18px}.section-heading h2{font-size:17px}.profile-row{grid-template-columns:1fr;gap:7px}.topbar-right{gap:8px}.welcome-member-id{max-width:100%}.welcome-banner .primary-btn{white-space:normal}}
@@ -142,6 +167,7 @@ body { background: #ffffff; }
 <header class="topbar">
   <div class="topbar-left"><button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-controls="mtSharedSidebar" aria-expanded="false">☰</button><div><h2 id="pageTitle">Dashboard</h2><p id="currentDate">Welcome to Mac&amp;Talk</p></div></div>
   <div class="topbar-right">
+    <button type="button" class="results-top-button" id="openResultsButton" aria-label="Open my results" aria-haspopup="dialog" aria-expanded="false"><span class="results-button-icon">📊</span><span>My Results</span></button>
     <div class="notification-wrap" id="notificationWrap">
       <button type="button" class="notification-button" id="notificationButton" aria-label="Open notifications" aria-expanded="false" aria-controls="notificationPanel"><span class="notification-bell" aria-hidden="true">🔔</span><span class="notification-label">Notifications</span><span class="notification-badge" id="notificationBadge" hidden>0</span></button>
       <div class="notification-panel" id="notificationPanel" role="region" aria-label="Notifications" hidden>
@@ -150,6 +176,20 @@ body { background: #ffffff; }
         <div id="notificationList" class="notification-list"><div class="notification-empty"><span>🎙️</span><p>Loading sessions...</p></div></div>
         <button type="button" class="notification-view-all" id="notificationViewAll">Explore all sessions →</button>
       </div>
+    </div>
+    <div class="results-modal" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsModalTitle" hidden>
+      <section class="results-modal-card">
+        <header class="results-modal-header">
+          <div><h2 id="resultsModalTitle">📊 My Academic Results</h2><p>Only your own results are shown here.</p></div>
+          <button type="button" class="results-modal-close" id="closeResultsButton" aria-label="Close results">×</button>
+        </header>
+        <div class="results-trimester-tabs" role="tablist" aria-label="Choose trimester">
+          <button type="button" class="results-trimester-tab active" data-trimester="first" role="tab" aria-selected="true">First Trimester</button>
+          <button type="button" class="results-trimester-tab" data-trimester="second" role="tab" aria-selected="false">Second Trimester</button>
+          <button type="button" class="results-trimester-tab" data-trimester="third" role="tab" aria-selected="false">Third Trimester</button>
+        </div>
+        <div class="results-content" id="resultsContent" aria-live="polite"><div class="results-empty">Loading your results…</div></div>
+      </section>
     </div>
     <div class="user-mini"><strong id="headerName">Member</strong><span>Mac&amp;Talk Member</span></div><div class="avatar" id="headerAvatar">M</div>
   </div>
@@ -186,6 +226,8 @@ let signingOut = false;
 let sessions = [];
 let notificationInitialized = false;
 let creatorNotifications = [];
+let studentResults = [];
+let activeResultsTrimester = "first";
 let authListenerRegistered = false;
 const SEEN_KEY = "mactalk_seen_sessions_v1";
 const pageTitles = {dashboard:"Dashboard",sessions:"Live Sessions",profile:"My Profile",settings:"Settings"};
@@ -306,6 +348,7 @@ document.addEventListener("keydown",event=>{
   if(event.key==="Escape"){
     $("notificationPanel").hidden=true;
     $("notificationButton").setAttribute("aria-expanded","false");
+    closeResultsModal();
     $("mtSharedSidebar").classList.remove("open");
     $("menuToggle").setAttribute("aria-expanded","false");
   }
@@ -336,6 +379,84 @@ function renderSessions(containerId,list){
   }
   list.forEach(session=>container.append(createSessionCard(session)));
 }
+
+const RESULT_SEEN_KEY = "mactalk_seen_result_updates_v1";
+function readSeenResults(){
+  try{return new Set(JSON.parse(localStorage.getItem(RESULT_SEEN_KEY)||"[]").map(String));}
+  catch{return new Set();}
+}
+function writeSeenResults(ids){
+  try{localStorage.setItem(RESULT_SEEN_KEY,JSON.stringify([...ids].slice(-500)));}
+  catch(error){console.warn("Unable to save result notification state:",error);}
+}
+function resultUpdateKey(result){
+  return `${result.id}:${result.updated_at||result.created_at||""}`;
+}
+async function loadStudentResults(){
+  if(!currentUser?.id){studentResults=[];return;}
+  // The student_id filter is intentional; database RLS must enforce the same restriction.
+  const {data,error}=await supabase.from("student_results")
+    .select("id,student_id,trimester,subject,score,max_score,teacher_note,updated_at,created_at")
+    .eq("student_id",currentUser.id)
+    .order("updated_at",{ascending:false});
+  if(error){
+    if(error.code==="42P01") console.warn("Create the student_results table using the SQL provided with this page.");
+    else console.warn("Could not load student results:",error);
+    studentResults=[];
+    return;
+  }
+  studentResults=data||[];
+  if(!$("resultsModal").hidden)renderStudentResults(activeResultsTrimester);
+}
+function renderStudentResults(trimester){
+  activeResultsTrimester=trimester;
+  document.querySelectorAll(".results-trimester-tab").forEach(tab=>{
+    const active=tab.dataset.trimester===trimester;
+    tab.classList.toggle("active",active);
+    tab.setAttribute("aria-selected",String(active));
+  });
+  const content=$("resultsContent");
+  content.replaceChildren();
+  const rows=studentResults.filter(row=>String(row.trimester||"").toLowerCase()===trimester);
+  if(!rows.length){
+    const empty=document.createElement("div");empty.className="results-empty";
+    empty.textContent="No results have been published for this trimester yet. Your teacher's updates will appear here.";
+    content.append(empty);return;
+  }
+  const list=document.createElement("div");list.className="result-list";
+  rows.forEach(row=>{
+    const card=document.createElement("article");card.className="result-card";
+    const top=document.createElement("div");top.className="result-card-top";
+    const subject=document.createElement("h3");subject.textContent=row.subject||"Subject";
+    const score=document.createElement("span");score.className="result-score";
+    score.textContent=`${row.score??"—"} / ${row.max_score??20}`;
+    top.append(subject,score);card.append(top);
+    if(row.teacher_note){
+      const note=document.createElement("p");note.textContent=row.teacher_note;card.append(note);
+    }
+    const date=document.createElement("small");
+    date.textContent="Last updated: "+formatDate(row.updated_at||row.created_at,{year:"numeric",month:"short",day:"numeric"});
+    card.append(date);list.append(card);
+  });
+  content.append(list);
+}
+function openResultsModal(){
+  $("resultsModal").hidden=false;
+  $("openResultsButton").setAttribute("aria-expanded","true");
+  renderStudentResults(activeResultsTrimester);
+  loadStudentResults().catch(error=>console.error("Load results:",error));
+}
+function closeResultsModal(){
+  $("resultsModal").hidden=true;
+  $("openResultsButton").setAttribute("aria-expanded","false");
+}
+$("openResultsButton").addEventListener("click",openResultsModal);
+$("closeResultsButton").addEventListener("click",closeResultsModal);
+$("resultsModal").addEventListener("click",event=>{if(event.target===$("resultsModal"))closeResultsModal();});
+document.querySelectorAll(".results-trimester-tab").forEach(tab=>{
+  tab.addEventListener("click",()=>renderStudentResults(tab.dataset.trimester));
+});
+
 async function loadLiveSessions(){
   const {data,error}=await supabase.from("live_sessions").select("*").eq("approved",true).in("status",["live","scheduled"]);
   if(error){
@@ -354,6 +475,7 @@ async function loadLiveSessions(){
   renderSessions("allSessions",sessions);
   $("sessionCount").textContent=String(sessions.length);
   creatorNotifications = [];
+  await loadStudentResults();
   if(currentUser){
     const {data:notices,error:noticeError}=await supabase.from("creator_notifications")
       .select("id,title,message,is_read,created_at,related_episode_id")
@@ -372,10 +494,12 @@ function renderNotifications(list){
   }
   const unreadCreator=creatorNotifications.filter(n=>!n.is_read);
   const fresh=list.filter(session=>!seen.has(String(session.id)));
-  const unreadCount=fresh.length+unreadCreator.length;
+  const seenResults=readSeenResults();
+  const freshResults=studentResults.filter(result=>!seenResults.has(resultUpdateKey(result)));
+  const unreadCount=fresh.length+unreadCreator.length+freshResults.length;
   $("notificationBadge").textContent=unreadCount>99?"99+":String(unreadCount);
   $("notificationBadge").hidden=unreadCount===0;
-  const total=list.length+creatorNotifications.length;
+  const total=list.length+creatorNotifications.length+studentResults.length;
   $("notificationCount").textContent=`${total} notification${total===1?"":"s"}`;
   const container=$("notificationList");container.replaceChildren();
   if(!total){
@@ -386,19 +510,27 @@ function renderNotifications(list){
   }
   const entries=[
     ...list.map(session=>({_kind:"session",data:session,unread:!seen.has(String(session.id)),sort:session.created_at||session.scheduled_at||""})),
-    ...creatorNotifications.map(notice=>({_kind:"creator",data:notice,unread:!notice.is_read,sort:notice.created_at||""}))
+    ...creatorNotifications.map(notice=>({_kind:"creator",data:notice,unread:!notice.is_read,sort:notice.created_at||""})),
+    ...studentResults.map(result=>({_kind:"result",data:result,unread:!seenResults.has(resultUpdateKey(result)),sort:result.updated_at||result.created_at||""}))
   ].sort((a,b)=>Number(b.unread)-Number(a.unread)||new Date(b.sort||0)-new Date(a.sort||0));
   entries.slice(0,15).forEach(entry=>{
-    const isCreator=entry._kind==="creator", session=entry.data;
+    const isCreator=entry._kind==="creator", isResult=entry._kind==="result", session=entry.data;
     const item=document.createElement("div");item.className="notification-item"+(entry.unread?" is-unread":"");item.tabIndex=0;item.setAttribute("role","button");
-    const icon=document.createElement("div");icon.className="notification-item-icon"+(!isCreator&&session.status==="live"?" is-live":"");icon.textContent=isCreator?"📩":(session.emoji||"🎙️");
+    const icon=document.createElement("div");icon.className="notification-item-icon"+(!isCreator&&!isResult&&session.status==="live"?" is-live":"");icon.textContent=isResult?"📊":(isCreator?"📩":(session.emoji||"🎙️"));
     const content=document.createElement("div");content.className="notification-item-content";
-    const heading=document.createElement("h4");heading.textContent=(entry.unread?"● ":"")+(isCreator?(session.title||"Podcast update"):(session.title||"New live session"));
-    const desc=document.createElement("p");desc.textContent=isCreator?(session.message||"You have an update from the Mac&Talk team."):((session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||session.host_name||"Mac&Talk Community"));
+    const heading=document.createElement("h4");
+    heading.textContent=(entry.unread?"● ":"")+(isResult?("New result: "+(session.subject||"Subject")):(isCreator?(session.title||"Podcast update"):(session.title||"New live session")));
+    const desc=document.createElement("p");
+    desc.textContent=isResult?(`${String(session.trimester||"").replace(/^./,c=>c.toUpperCase())} trimester · ${session.score??"—"} / ${session.max_score??20}${session.teacher_note?" · "+session.teacher_note:""}`):(isCreator?(session.message||"You have an update from the Mac&Talk team."):((session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||session.host_name||"Mac&Talk Community")));
     const time=document.createElement("span");time.className="notification-item-time";time.textContent=session.created_at?formatDate(session.created_at,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Recently added";
     content.append(heading,desc,time);item.append(icon,content);
     const open=async()=>{
       $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");
+      if(isResult){
+        const updatedResults=readSeenResults();updatedResults.add(resultUpdateKey(session));writeSeenResults(updatedResults);
+        renderNotifications(sessions);openResultsModal();renderStudentResults(String(session.trimester||"first").toLowerCase());
+        return;
+      }
       if(isCreator){
         try{
           const {error}=await supabase.from("creator_notifications").update({is_read:true}).eq("id",session.id).eq("user_id",currentUser.id);
