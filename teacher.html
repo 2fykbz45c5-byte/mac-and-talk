@@ -232,6 +232,7 @@ const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
 const SUPABASE_KEY="sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id); let user=null,profile=null,sessions=[],students=[],editingId=null,noticeTimer=null,roomFrame=null,teacherClasses=[],activeClass=null,classStudents=[],activeStudent=null,studentGrades=[],bulkTrimester=1,bulkClassGrades=[];
+let pendingStudentImport=[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function notice(msg,type="success"){const n=$("notice");n.textContent=msg;n.className="notice show "+(type==="error"?"error":"success");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>n.className="notice",6000)}
 function gate(title,msg,showLink=true){$("gateTitle").textContent=title;$("gateText").textContent=msg;$("spinner").classList.add("hidden");if(showLink)$("gateActions").classList.remove("hidden")}
