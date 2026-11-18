@@ -45,6 +45,11 @@ body.results-modal-open{overflow:hidden!important}
 .results-content{padding:19px 22px 24px;overflow:auto;min-height:180px}
 .results-empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;background:#fafbfd;border:1px dashed #d9e0e9;border-radius:12px}
 .result-list{display:grid;gap:11px}
+.grade-notes-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:13px}
+.grade-note{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 11px;background:#f7f9fc;border:1px solid var(--border);border-radius:9px;min-width:0}
+.grade-note span{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.grade-note strong{font-size:13px;color:var(--navy);font-weight:850}
+@media(max-width:520px){.grade-notes-grid{gap:6px}.grade-note{padding:9px 7px;display:flex;flex-direction:column;align-items:flex-start}.grade-note strong{font-size:12px}}
 .result-card{padding:15px 16px;border:1px solid var(--border);border-radius:12px;background:#fff}
 .result-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .result-card h3{font-size:14px;overflow-wrap:anywhere}
@@ -396,20 +401,25 @@ function writeSeenResults(ids){
   try{localStorage.setItem(RESULT_SEEN_KEY,JSON.stringify([...ids].slice(-500)));}
   catch(error){console.warn("Unable to save result notification state:",error);}
 }
+const TRIMESTER_NUMBERS = {first:1, second:2, third:3};
+const TRIMESTER_LABELS = {1:"First", 2:"Second", 3:"Third"};
 function resultUpdateKey(result){
-  return `${result.id}:${result.updated_at||result.created_at||""}`;
+  return `${result.id||result.class_id+":"+result.student_id+":"+result.trimester}:${result.updated_at||""}`;
+}
+function gradeClassName(row){
+  return row.class?.class_name || row.class_name || "Your class";
 }
 async function loadStudentResults(){
   if(!currentUser?.id){studentResults=[];return;}
   // The student_id filter is intentional; database RLS must enforce the same restriction.
-  const {data,error}=await supabase.from("student_results")
-    .select("id,student_id,trimester,subject,score,max_score,teacher_note,updated_at,created_at")
+  const {data,error}=await supabase.from("class_student_grades")
+    .select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average,updated_at,class:teacher_classes(class_name)")
     .eq("student_id",currentUser.id)
     .order("updated_at",{ascending:false});
   if(error){
-    if(error.code==="42P01") console.warn("Create the student_results table using the SQL provided with this page.");
-    else console.warn("Could not load student results:",error);
+    console.warn("Could not load class_student_grades. Check its SELECT RLS policy for students:",error);
     studentResults=[];
+    if(!$("resultsModal").hidden)renderStudentResults(activeResultsTrimester);
     return;
   }
   studentResults=data||[];
@@ -424,7 +434,8 @@ function renderStudentResults(trimester){
   });
   const content=$("resultsContent");
   content.replaceChildren();
-  const rows=studentResults.filter(row=>String(row.trimester||"").toLowerCase()===trimester);
+  const trimesterNumber=TRIMESTER_NUMBERS[trimester];
+  const rows=studentResults.filter(row=>Number(row.trimester)===trimesterNumber);
   if(!rows.length){
     const empty=document.createElement("div");empty.className="results-empty";
     empty.textContent="No results have been published for this trimester yet. Your teacher's updates will appear here.";
@@ -434,15 +445,24 @@ function renderStudentResults(trimester){
   rows.forEach(row=>{
     const card=document.createElement("article");card.className="result-card";
     const top=document.createElement("div");top.className="result-card-top";
-    const subject=document.createElement("h3");subject.textContent=row.subject||"Subject";
+    const subject=document.createElement("h3");subject.textContent=gradeClassName(row);
     const score=document.createElement("span");score.className="result-score";
-    score.textContent=`${row.score??"—"} / ${row.max_score??20}`;
+    score.textContent=row.average!==null&&row.average!==undefined?`Average: ${row.average}`:"Average: pending";
     top.append(subject,score);card.append(top);
-    if(row.teacher_note){
-      const note=document.createElement("p");note.textContent=row.teacher_note;card.append(note);
-    }
+    const notes=document.createElement("div");notes.className="grade-notes-grid";
+    [
+      ["Control",row.control_note],
+      ["Oral",row.oral_note],
+      ["Synthèse",row.synthese_note]
+    ].forEach(([label,value])=>{
+      const note=document.createElement("div");note.className="grade-note";
+      const name=document.createElement("span");name.textContent=label;
+      const mark=document.createElement("strong");mark.textContent=value===null||value===undefined?"—":String(value);
+      note.append(name,mark);notes.append(note);
+    });
+    card.append(notes);
     const date=document.createElement("small");
-    date.textContent="Last updated: "+formatDate(row.updated_at||row.created_at,{year:"numeric",month:"short",day:"numeric"});
+    date.textContent="Last updated: "+formatDate(row.updated_at,{year:"numeric",month:"short",day:"numeric"});
     card.append(date);list.append(card);
   });
   content.append(list);
@@ -528,16 +548,16 @@ function renderNotifications(list){
     const icon=document.createElement("div");icon.className="notification-item-icon"+(!isCreator&&!isResult&&session.status==="live"?" is-live":"");icon.textContent=isResult?"📊":(isCreator?"📩":(session.emoji||"🎙️"));
     const content=document.createElement("div");content.className="notification-item-content";
     const heading=document.createElement("h4");
-    heading.textContent=(entry.unread?"● ":"")+(isResult?("New result: "+(session.subject||"Subject")):(isCreator?(session.title||"Podcast update"):(session.title||"New live session")));
+    heading.textContent=(entry.unread?"● ":"")+(isResult?("Grade updated: "+gradeClassName(session)):(isCreator?(session.title||"Podcast update"):(session.title||"New live session")));
     const desc=document.createElement("p");
-    desc.textContent=isResult?(`${String(session.trimester||"").replace(/^./,c=>c.toUpperCase())} trimester · ${session.score??"—"} / ${session.max_score??20}${session.teacher_note?" · "+session.teacher_note:""}`):(isCreator?(session.message||"You have an update from the Mac&Talk team."):((session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||session.host_name||"Mac&Talk Community")));
+    desc.textContent=isResult?(`${TRIMESTER_LABELS[Number(session.trimester)]||"Trimester"} trimester · Average: ${session.average??"Pending"} · Control ${session.control_note??"—"} · Oral ${session.oral_note??"—"} · Synthèse ${session.synthese_note??"—"}`):(isCreator?(session.message||"You have an update from the Mac&Talk team."):((session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||session.host_name||"Mac&Talk Community")));
     const time=document.createElement("span");time.className="notification-item-time";time.textContent=session.created_at?formatDate(session.created_at,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Recently added";
     content.append(heading,desc,time);item.append(icon,content);
     const open=async()=>{
       $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");
       if(isResult){
         const updatedResults=readSeenResults();updatedResults.add(resultUpdateKey(session));writeSeenResults(updatedResults);
-        renderNotifications(sessions);openResultsModal();renderStudentResults(String(session.trimester||"first").toLowerCase());
+        renderNotifications(sessions);openResultsModal();renderStudentResults(({1:"first",2:"second",3:"third"})[Number(session.trimester)]||"first");
         return;
       }
       if(isCreator){
