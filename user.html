@@ -29,8 +29,10 @@ button,input,textarea,select{font:inherit}button,a{-webkit-tap-highlight-color:t
 /* Student results */
 .results-top-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}
 .results-top-button:hover,.results-top-button[aria-expanded=true]{background:#fff9e5;border-color:#e8c34d}
-.results-modal{position:fixed;inset:0;z-index:2100;background:#071221b8;display:grid;place-items:center;padding:18px}
-.results-modal-card{width:min(100%,760px);max-height:min(86vh,780px);overflow:hidden;display:flex;flex-direction:column;background:#fff;border:1px solid #eee8d9;border-radius:18px;box-shadow:0 22px 70px #0003}
+.results-modal{position:fixed;inset:0;z-index:2100;background:#071221b8;display:grid;align-items:center;justify-items:center;padding:18px;overflow-y:auto;box-sizing:border-box}
+.results-modal[hidden]{display:none!important}
+.results-modal:not([hidden]){display:grid}
+.results-modal-card{width:min(100%,760px);max-height:min(86vh,780px);margin:auto;overflow:hidden;display:flex;flex-direction:column;background:#fff;border:1px solid #eee8d9;border-radius:18px;box-shadow:0 22px 70px #0003}
 .results-modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:21px 23px;border-bottom:1px solid var(--border)}
 .results-modal-header h2{font-size:20px;font-weight:850}
 .results-modal-header p{margin-top:5px;color:var(--muted);font-size:12px}
