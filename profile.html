@@ -1050,15 +1050,38 @@ a { color: inherit; text-decoration: none; }
         <div class="academic-editor" id="academicEditor" hidden>
           <h3 style="font-size:14px;margin-bottom:12px">Edit my information</h3>
           <div class="academic-editor-grid">
-            <div><label for="academicLevelInput">School level</label><select id="academicLevelInput">
-              <option value="">Choose level</option><option>1ère année secondaire</option><option>2ème année secondaire</option><option>3ème année secondaire</option><option>4ème année secondaire (Bac)</option>
-            </select></div>
-            <div><label for="academicTrackInput">Track</label><select id="academicTrackInput"><option value="">Not specified</option><option>Normal</option><option>Sport</option></select></div>
-            <div><label for="academicStreamInput">Stream / Section</label><select id="academicStreamInput">
-              <option value="">Choose stream</option><option>Lettres</option><option>Sciences</option><option>Économie et Services</option><option>Technologies de l'Information</option><option>Mathématiques</option><option>Sciences expérimentales</option><option>Sciences techniques</option><option>Sciences informatiques</option><option>Économie et Gestion</option><option>Sport</option><option>Tronc commun</option><option>Other / Not listed</option>
-            </select></div>
-            <div><label for="academicClassInput">Class / Group</label><input id="academicClassInput" type="text" placeholder="Example: 3ème Sciences 2"></div>
+            <div>
+              <label for="academicLevelInput">School level</label>
+              <select id="academicLevelInput">
+                <option value="">Choose level first</option>
+                <option>1ère année secondaire</option>
+                <option>2ème année secondaire</option>
+                <option>3ème année secondaire</option>
+                <option>4ème année secondaire (Bac)</option>
+              </select>
+            </div>
+            <div>
+              <label for="academicTrackInput">Track</label>
+              <select id="academicTrackInput" disabled>
+                <option value="">Choose school level first</option>
+              </select>
+            </div>
+            <div id="academicStreamField">
+              <label for="academicStreamInput">Stream / Section</label>
+              <select id="academicStreamInput" disabled>
+                <option value="">Choose track first</option>
+              </select>
+            </div>
+            <div>
+              <label for="academicClassInput">Class / Group</label>
+              <select id="academicClassInput" disabled>
+                <option value="">Choose previous options first</option>
+              </select>
+            </div>
           </div>
+          <p class="academic-help" style="margin-bottom:0">
+            Choose each option in order. Sport students go directly to the class/group selection without a stream or section. Group numbers are generic; your lycée may use a different numbering system.
+          </p>
           <div class="academic-actions" style="margin-top:13px"><button class="academic-btn" type="button" id="academicSaveBtn">Save my information</button><button class="academic-btn secondary" type="button" id="academicCancelBtn">Cancel</button></div>
         </div>
 
@@ -1167,6 +1190,149 @@ function setAcademicText(id, value) {
   $(id).textContent = value && String(value).trim() ? value : "—";
 }
 
+
+/* TUNISIAN SECONDARY SCHOOL CASCADING OPTIONS */
+const ACADEMIC_LEVELS = [
+  "1ère année secondaire",
+  "2ème année secondaire",
+  "3ème année secondaire",
+  "4ème année secondaire (Bac)"
+];
+
+const ACADEMIC_STREAMS = {
+  "1ère année secondaire": ["Tronc commun"],
+  "2ème année secondaire": [
+    "Arts",
+    "Sciences",
+    "Économie et Services",
+    "Technologies de l'information"
+  ],
+  "3ème année secondaire": [
+    "Littérature",
+    "Mathématiques",
+    "Sciences expérimentales",
+    "Sciences techniques",
+    "Informatique",
+    "Économie et Gestion"
+  ],
+  "4ème année secondaire (Bac)": [
+    "Littérature",
+    "Mathématiques",
+    "Sciences expérimentales",
+    "Sciences techniques",
+    "Informatique",
+    "Économie et Gestion"
+  ]
+};
+
+// Group numbers are generic choices because each lycée organizes its own classes.
+const ACADEMIC_GROUPS = Array.from({length: 12}, (_, i) => `Groupe ${i + 1}`);
+
+function fillAcademicSelect(select, placeholder, values, selected = "") {
+  select.replaceChildren();
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = placeholder;
+  select.append(first);
+
+  values.forEach(value => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.append(option);
+  });
+
+  select.disabled = values.length === 0;
+  if (selected && values.includes(selected)) select.value = selected;
+}
+
+function configureAcademicTrack(level, selectedTrack = "") {
+  const track = $("academicTrackInput");
+  const stream = $("academicStreamInput");
+  const group = $("academicClassInput");
+
+  fillAcademicSelect(
+    track,
+    level ? "Choose track" : "Choose school level first",
+    level ? (level === "4ème année secondaire (Bac)" ? ["Normal"] : ["Normal", "Sport"]) : [],
+    selectedTrack
+  );
+
+  fillAcademicSelect(stream, "Choose track first", []);
+  fillAcademicSelect(group, "Choose stream or Sport track first", []);
+  $("academicStreamField").hidden = false;
+}
+
+function configureAcademicStream(level, selectedTrack, selectedStream = "") {
+  const stream = $("academicStreamInput");
+  const group = $("academicClassInput");
+
+  if (selectedTrack === "Sport") {
+    // Sport has no stream/section step in this profile flow.
+    $("academicStreamField").hidden = true;
+    stream.value = "";
+    fillAcademicSelect(group, "Choose class/group", ACADEMIC_GROUPS);
+    return;
+  }
+
+  $("academicStreamField").hidden = false;
+  const streams = ACADEMIC_STREAMS[level] || [];
+  fillAcademicSelect(stream, "Choose stream / section", streams, selectedStream);
+  fillAcademicSelect(group, "Choose stream / section first", []);
+}
+
+function configureAcademicGroups(selectedGroup = "") {
+  const level = $("academicLevelInput").value;
+  const track = $("academicTrackInput").value;
+  const stream = $("academicStreamInput").value;
+
+  if (!level || !track) {
+    fillAcademicSelect($("academicClassInput"), "Choose previous options first", []);
+    return;
+  }
+
+  if (track === "Sport" || stream) {
+    fillAcademicSelect($("academicClassInput"), "Choose class/group", ACADEMIC_GROUPS, selectedGroup);
+  } else {
+    fillAcademicSelect($("academicClassInput"), "Choose stream / section first", []);
+  }
+}
+
+function setAcademicEditorValues(info = {}) {
+  const level = info.school_level || "";
+  const track = info.school_track || "";
+  const stream = info.school_stream || "";
+  const group = info.school_class || "";
+
+  $("academicLevelInput").value = ACADEMIC_LEVELS.includes(level) ? level : "";
+  configureAcademicTrack($("academicLevelInput").value, track);
+  $("academicTrackInput").value = track && [...$("academicTrackInput").options].some(o => o.value === track) ? track : "";
+
+  configureAcademicStream($("academicLevelInput").value, $("academicTrackInput").value, stream);
+  if ($("academicTrackInput").value !== "Sport") {
+    $("academicStreamInput").value = [...$("academicStreamInput").options].some(o => o.value === stream) ? stream : "";
+  }
+
+  const groupMatch = String(group).match(/(?:Groupe|Group)\s*(\d+)\s*$/i) || String(group).match(/(\d+)\s*$/);
+  const selectedGroup = groupMatch ? `Groupe ${groupMatch[1]}` : "";
+  configureAcademicGroups(selectedGroup);
+}
+
+$("academicLevelInput").addEventListener("change", () => {
+  configureAcademicTrack($("academicLevelInput").value);
+});
+
+$("academicTrackInput").addEventListener("change", () => {
+  configureAcademicStream($("academicLevelInput").value, $("academicTrackInput").value);
+  if ($("academicTrackInput").value === "Sport") configureAcademicGroups();
+});
+
+$("academicStreamInput").addEventListener("change", () => {
+  configureAcademicGroups();
+});
+
+/* END TUNISIAN SECONDARY SCHOOL CASCADING OPTIONS */
+
 async function loadAcademicProfile() {
   if (!currentUser?.id) return;
   const { data, error } = await supabase
@@ -1215,10 +1381,7 @@ async function loadAcademicProfile() {
     : "Your academic information is locked after saving. You can ask the Admin to allow editing.";
 
   if (academicEditAllowed) {
-    $("academicLevelInput").value = academicInfo.school_level || "";
-    $("academicTrackInput").value = academicInfo.school_track || "";
-    $("academicStreamInput").value = academicInfo.school_stream || "";
-    $("academicClassInput").value = academicInfo.school_class || "";
+    setAcademicEditorValues(academicInfo);
   }
   await loadAcademicNotifications();
 }
@@ -1278,12 +1441,22 @@ $("academicRequestBtn").addEventListener("click", async () => {
 
 $("academicSaveBtn").addEventListener("click", async () => {
   const btn = $("academicSaveBtn");
+  const level = $("academicLevelInput").value;
+  const track = $("academicTrackInput").value;
+  const stream = track === "Sport" ? "" : $("academicStreamInput").value;
+  const group = $("academicClassInput").value;
+
+  if (!level || !track || (track !== "Sport" && !stream) || !group) {
+    showNotice("Please complete each academic choice in order.", "error");
+    return;
+  }
+
   btn.disabled = true;
   const { error } = await supabase.rpc("save_my_academic_info", {
-    p_school_level:$("academicLevelInput").value,
-    p_school_track:$("academicTrackInput").value,
-    p_school_stream:$("academicStreamInput").value,
-    p_school_class:$("academicClassInput").value.trim()
+    p_school_level:level,
+    p_school_track:track,
+    p_school_stream:stream,
+    p_school_class:group
   });
   btn.disabled = false;
   if (error) {
@@ -1296,10 +1469,7 @@ $("academicSaveBtn").addEventListener("click", async () => {
 
 $("academicCancelBtn").addEventListener("click", () => {
   $("academicEditor").hidden = true;
-  $("academicEditor").querySelectorAll("input,select").forEach(el => {
-    const key = {academicLevelInput:"school_level",academicTrackInput:"school_track",academicStreamInput:"school_stream",academicClassInput:"school_class"}[el.id];
-    el.value = academicInfo?.[key] || "";
-  });
+  setAcademicEditorValues(academicInfo || {});
 });
 
 /* END ACADEMIC PROFILE */
