@@ -208,7 +208,7 @@
   <form id="createClassForm" class="modal create-class-modal" role="dialog" aria-modal="true" aria-labelledby="createClassTitle">
    <div class="panel-head"><div><h3 id="createClassTitle">Create a class</h3><p>Set up your class using the Tunisian secondary-school structure.</p></div><button type="button" class="btn btn-light btn-small" id="closeCreateClassBtn" aria-label="Close">✕</button></div>
    <div class="modal-body"><div class="form-grid">
-    <div class="form-field full"><label for="newClassLevel">1. School level *</label><select id="newClassLevel" required><option value="">Choose school level</option><option>1ère année secondaire</option><option>2ème année secondaire</option><option>4ème année secondaire (Bac)</option></select></div>
+    <div class="form-field full"><label for="newClassLevel">1. School level *</label><select id="newClassLevel" required><option value="">Choose school level</option><option>1ère année secondaire</option><option>2ème année secondaire</option><option>3ème année secondaire</option><option>4ème année secondaire (Bac)</option></select></div>
     <div class="form-field full"><label for="newClassTrack">2. Track *</label><select id="newClassTrack" required disabled><option value="">Choose level first</option></select><small class="field-hint">Sport is available only for the levels configured in the academic profile.</small></div>
     <div class="form-field full" id="newClassStreamWrap"><label for="newClassStream">3. Stream / Section *</label><select id="newClassStream" required disabled><option value="">Choose track first</option></select></div>
    </div><div class="class-name-preview" id="classNamePreview"><span>Class name preview</span><strong>Choose your academic options</strong></div><p class="muted-note">The class name is generated automatically. You can create and manage groups inside the class later.</p></div>
@@ -286,11 +286,12 @@ function classStudentEmail(id){const s=students.find(x=>String(x.id||x.student_i
 const CLASS_STREAMS={
  "1ère année secondaire":["Tronc commun"],
  "2ème année secondaire":["Lettres","Sciences","Économie et Services","Technologies de l'information"],
- "4ème année secondaire (Bac)":["Littérature","Mathématiques","Sciences expérimentales","Sciences techniques","Informatique","Économie et Gestion"]
+ "3ème année secondaire":["Lettres","Mathématiques","Sciences expérimentales","Sciences techniques","Informatique","Économie et Gestion"],
+ "4ème année secondaire (Bac)":["Lettres","Mathématiques","Sciences expérimentales","Sciences techniques","Informatique","Économie et Gestion"]
 };
 function updateClassStreamOptions(){
  const level=$("newClassLevel").value,trackSel=$("newClassTrack"),oldTrack=trackSel.value;
- trackSel.innerHTML=level?'<option value="Normal">Normal</option>'+(level!=="4ème année secondaire (Bac)"?'<option value="Sport">Sport</option>':""):'<option value="">Choose level first</option>';
+ trackSel.innerHTML=level?'<option value="Normal">Normal</option>'+(["1ère année secondaire","2ème année secondaire","3ème année secondaire"].includes(level)?'<option value="Sport">Sport</option>':""):'<option value="">Choose level first</option>';
  if(level&&[...trackSel.options].some(o=>o.value===oldTrack))trackSel.value=oldTrack;else if(level)trackSel.value="Normal";
  trackSel.disabled=!level;
  const track=trackSel.value,sel=$("newClassStream"),wrap=$("newClassStreamWrap");
