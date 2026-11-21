@@ -253,9 +253,9 @@ import emailjs from "https://esm.sh/@emailjs/browser@4";
 const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
 // Configure these three public EmailJS values after creating a NEW grade-notification template.
 // Do not put an EmailJS private key or Supabase service-role key in this page.
-const EMAILJS_SERVICE_ID="YOUR_EMAILJS_SERVICE_ID";
-const EMAILJS_GRADE_TEMPLATE_ID="YOUR_NEW_GRADE_TEMPLATE_ID";
-const EMAILJS_PUBLIC_KEY="YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID="service_1tsuefo";
+const EMAILJS_GRADE_TEMPLATE_ID="template_pi6g8sb";
+const EMAILJS_PUBLIC_KEY="SvTx8lUUtNdlQFP2n";
 const SUPABASE_KEY="sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id); let user=null,profile=null,sessions=[],students=[],editingId=null,noticeTimer=null,roomFrame=null,teacherClasses=[],activeClass=null,classGroups=[],classStudents=[],activeStudent=null,studentGrades=[],bulkTrimester=1,bulkClassGrades=[],pendingGradePublication=null;
@@ -659,7 +659,7 @@ function gradePublicationHash(value){
  return (h1>>>0).toString(16)+(h2>>>0).toString(16);
 }
 function gradeEmailSettingsReady(){
- return EMAILJS_SERVICE_ID!=="YOUR_EMAILJS_SERVICE_ID"&&EMAILJS_GRADE_TEMPLATE_ID!=="YOUR_NEW_GRADE_TEMPLATE_ID"&&EMAILJS_PUBLIC_KEY!=="YOUR_EMAILJS_PUBLIC_KEY";
+ return EMAILJS_SERVICE_ID!=="service_1tsuefo"&&EMAILJS_GRADE_TEMPLATE_ID!=="template_pi6g8sb"&&EMAILJS_PUBLIC_KEY!=="SvTx8lUUtNdlQFP2n";
 }
 function findTeacherStudent(studentId){
  return students.find(x=>String(x.id||x.student_id||x.user_id||x.auth_user_id)===String(studentId))||null;
