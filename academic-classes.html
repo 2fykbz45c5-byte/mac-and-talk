@@ -239,21 +239,18 @@ async function loadTeacherAssignments(students) {
   const teacherIds = [...new Set((permissions || []).map(row => row.teacher_id).filter(Boolean))];
   if (!teacherIds.length) return;
 
-  // teacher_id references auth.users(id); public.users.auth_id links that UUID
-  // to the teacher's public profile and display name.
+  // teacher_id references auth.users(id), which is the same UUID stored in profiles.id.
   const {data: teacherProfiles, error: profileError} = await db
-    .from('users')
-    .select('*')
-    .in('auth_id', teacherIds);
+    .from('profiles')
+    .select('id, display_name, username')
+    .in('id', teacherIds);
   if (profileError) throw new Error(`Teacher assignments were found, but teacher profiles could not be loaded: ${profileError.message}`);
 
-  const profileByAuthId = new Map((teacherProfiles || []).map(profile => [profile.auth_id, profile]));
+  const profileById = new Map((teacherProfiles || []).map(profile => [profile.id, profile]));
   for (const permission of permissions || []) {
-    const profile = profileByAuthId.get(permission.teacher_id);
+    const profile = profileById.get(permission.teacher_id);
     const teacherName = profile && (
-      profile.display_name || profile.full_name ||
-      [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
-      profile.username || profile.email || profile.mac_talk_id
+      profile.display_name || profile.username
     );
     if (!teacherNamesByStudent.has(permission.student_id)) teacherNamesByStudent.set(permission.student_id, []);
     if (teacherName && !teacherNamesByStudent.get(permission.student_id).includes(teacherName)) {
