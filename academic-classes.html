@@ -45,7 +45,7 @@
         <div><label for="level">School level</label><select id="level"><option value="">Choose level</option><option>1ère année secondaire</option><option>2ème année secondaire</option><option>3ème année secondaire</option><option>4ème année secondaire (Bac)</option></select></div>
         <div><label for="track">Track</label><select id="track"><option value="">Not specified</option><option>Normal</option><option>Sport</option></select></div>
         <div><label for="stream">Stream / Section</label><select id="stream"><option value="">Choose section</option><option>Lettres</option><option>Sciences</option><option>Économie et Services</option><option>Technologies de l'Information</option><option>Mathématiques</option><option>Sciences expérimentales</option><option>Sciences techniques</option><option>Sciences informatiques</option><option>Économie et Gestion</option><option>Sport</option><option>Tronc commun</option><option>Other / Not listed</option></select></div>
-        <div><label for="className">Class / Group <span class="required-note">(Optional)</span></label><input id="className" placeholder="Example: 3ème Sciences 2"></div>
+        <div><label for="className">Class / Group <span class="required-note">(Optional)</span></label><input id="className" placeholder="Optional — e.g. 3ème Sciences 2" aria-describedby="classOptionalHelp"><small id="classOptionalHelp" class="muted">You can leave this field empty and still save.</small></div>
       </div>
       <div class="actions" style="margin-top:16px"><button class="btn gold" id="saveStudent">Save changes</button><button class="btn light" id="clearStudent">Clear selection</button><button class="btn light" data-view="studentsView">Find another student</button></div>
     </section>
@@ -201,7 +201,8 @@ async function selectStudent(user) {
   $('track').value = user.school_track || '';
   $('stream').value = user.school_stream || '';
   $('className').value = user.school_class || '';
-  showView('editView');
+  // Open the modal directly; the editor is mounted inside modalEditHost.
+  openStudentModal();
 }
 async function loadRequests() {
   const rows = await rpc('admin_list_academic_requests');
@@ -261,7 +262,7 @@ $('saveStudent').addEventListener('click', async () => {
       p_school_level:$('level').value,
       p_school_track:$('track').value,
       p_school_stream:$('stream').value,
-      p_school_class:$('className').value.trim()
+      p_school_class:$('className').value.trim() || ''
     });
     toast('Student academic information updated.');
     await refresh();
