@@ -6,7 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--navy:#10243e;--blue:#1d4168;--gold:#ffc629;--bg:#f3f6fb;--white:#fff;--muted:#718096;--line:#e4eaf2;--green:#16845b;--red:#b42318}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font:14px Inter,Arial,sans-serif}.main{width:100%;max-width:1450px;margin:0 auto;padding:28px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.top h1{margin:0;font-size:26px}.sub{color:var(--muted);margin-top:6px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 5px 20px #10243e08}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer}.btn:hover{filter:brightness(1.08)}.btn.gold{background:var(--gold);color:var(--navy)}.btn.light{background:#edf2f8;color:var(--navy)}.btn.red{background:#fff0ef;color:var(--red)}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;color:var(--navy);font:inherit}label{display:block;font-weight:700;margin:12px 0 6px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:620px}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{color:var(--muted);font-size:12px;text-transform:uppercase}.muted{color:var(--muted)}.pill{display:inline-block;padding:4px 9px;border-radius:20px;background:#edf2f8;font-size:12px}.pill.pending{background:#fff4d6;color:#805b00}.pill.approved{background:#e7f7ef;color:var(--green)}.pill.rejected{background:#fff0ef;color:var(--red)}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{background:#f6f8fb;border-radius:12px;padding:15px}.stat b{display:block;font-size:23px;margin-top:5px}.hidden{display:none!important}#toast{position:fixed;right:20px;bottom:20px;background:var(--navy);color:#fff;padding:13px 17px;border-radius:10px;display:none;z-index:20;max-width:90vw;box-shadow:0 8px 25px #10243e30}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions .btn{padding:8px 10px;font-size:12px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.notice{padding:12px;background:#fff8e5;border-radius:10px;color:#745300;margin-top:12px}.navgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.navcard{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:17px;background:#fff;border:1px solid var(--line);border-radius:13px;color:var(--navy);cursor:pointer}.navcard:hover{border-color:#b9c7d9;background:#fbfcfe}.navicon{width:42px;height:42px;display:grid;place-items:center;background:#edf2f8;border-radius:12px;font-size:20px;flex:none}.navcard strong{display:block;font-size:15px}.navcard small{display:block;color:var(--muted);margin-top:4px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.sectionhead h2{margin:0}.student-name{font-weight:700}.student-code{display:block;color:var(--muted);font-size:12px;margin-top:4px}.empty{padding:20px;text-align:center;color:var(--muted)}.backbtn{margin-bottom:14px}.required-note{font-size:12px;color:var(--muted);font-weight:400;margin-left:5px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font:14px Inter,Arial,sans-serif}.main{width:100%;max-width:1450px;margin:0 auto;padding:28px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.top h1{margin:0;font-size:26px}.sub{color:var(--muted);margin-top:6px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 5px 20px #10243e08}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer}.btn:hover{filter:brightness(1.08)}.btn.gold{background:var(--gold);color:var(--navy)}.btn.light{background:#edf2f8;color:var(--navy)}.btn.red{background:#fff0ef;color:var(--red)}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;color:var(--navy);font:inherit}label{display:block;font-weight:700;margin:12px 0 6px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:620px}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{color:var(--muted);font-size:12px;text-transform:uppercase}.muted{color:var(--muted)}.pill{display:inline-block;padding:4px 9px;border-radius:20px;background:#edf2f8;font-size:12px}.pill.pending{background:#fff4d6;color:#805b00}.pill.approved{background:#e7f7ef;color:var(--green)}.pill.rejected{background:#fff0ef;color:var(--red)}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{background:#f6f8fb;border-radius:12px;padding:15px}.stat b{display:block;font-size:23px;margin-top:5px}.hidden{display:none!important}#toast{position:fixed;right:20px;bottom:20px;background:var(--navy);color:#fff;padding:13px 17px;border-radius:10px;display:none;z-index:20;max-width:90vw;box-shadow:0 8px 25px #10243e30}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions .btn{padding:8px 10px;font-size:12px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.notice{padding:12px;background:#fff8e5;border-radius:10px;color:#745300;margin-top:12px}.navgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.navcard{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:17px;background:#fff;border:1px solid var(--line);border-radius:13px;color:var(--navy);cursor:pointer}.navcard:hover{border-color:#b9c7d9;background:#fbfcfe}.navicon{width:42px;height:42px;display:grid;place-items:center;background:#edf2f8;border-radius:12px;font-size:20px;flex:none}.navcard strong{display:block;font-size:15px}.navcard small{display:block;color:var(--muted);margin-top:4px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.sectionhead h2{margin:0}.student-name{font-weight:700}.student-code{display:block;color:var(--muted);font-size:12px;margin-top:4px}.empty{padding:20px;text-align:center;color:var(--muted)}.backbtn{margin-bottom:14px}.required-note{font-size:12px;color:var(--muted);font-weight:400;margin-left:5px}.modal-backdrop{position:fixed;inset:0;background:#0b1b2dcc;display:none;align-items:center;justify-content:center;padding:18px;z-index:50;overflow:auto}.modal-backdrop.open{display:flex}.modal{width:min(900px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 25px 80px #0005}.modal-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:2}.modal-body{padding:20px 22px}.detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.detail-item{background:#f6f8fb;border:1px solid var(--line);border-radius:10px;padding:11px;min-width:0}.detail-item small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}.detail-item strong{display:block;overflow-wrap:anywhere;font-size:13px}.modal .panel{border:0;box-shadow:none;padding:0;margin:18px 0 0}.modal .sectionhead{display:none}@media(max-width:650px){.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.modal-backdrop{padding:8px}.modal-body{padding:15px}}
 @media(max-width:850px){.main{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.formgrid,.navgrid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.panel{padding:15px}.sectionhead{align-items:flex-start;flex-direction:column}}
 </style></head>
@@ -23,7 +23,7 @@
     </div></section>
     <section class="panel"><h2 style="margin:0 0 14px">管理 · Admin workspace</h2><div class="navgrid">
       <button class="navcard" data-view="studentsView"><span class="navicon">⌕</span><span><strong>Find Students</strong><small>Search students and view their academic details</small></span></button>
-      <button class="navcard" data-view="editView"><span class="navicon">✎</span><span><strong>Edit Academics</strong><small>Update a selected student's information</small></span></button>
+      <button class="navcard" data-view="studentsView"><span class="navicon">✎</span><span><strong>Edit Academics</strong><small>Find a student, then open their details to edit</small></span></button>
       <button class="navcard" data-view="accessView"><span class="navicon">⚙</span><span><strong>Edit Permissions</strong><small>Manage student academic editing access</small></span></button>
       <button class="navcard" data-view="requestsView"><span class="navicon">▤</span><span><strong>Student Edit Requests</strong><small>Review and respond to student requests</small></span></button>
     </div></section>
@@ -33,13 +33,13 @@
     <button class="btn light backbtn" data-view="homeView">← Dashboard</button>
     <section class="panel"><div class="sectionhead"><div><h2>Find Students</h2><p class="sub">Search by student name, email or MAC &amp; TALK student ID.</p></div></div>
       <div class="row"><input id="search" placeholder="Name, email or MT-STU-0010"><button class="btn" id="searchBtn" style="flex:0 0 auto">Search</button></div>
-      <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>Student</th><th>School level</th><th>Section</th><th>Class</th><th>Access</th><th>Action</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody></table></div>
+      <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>Student</th><th>School level</th><th>Section</th><th>Teacher</th><th>Access</th><th>Action</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody></table></div>
     </section>
   </section>
 
   <section id="editView" class="view hidden">
     <button class="btn light backbtn" data-view="homeView">← Dashboard</button>
-    <section class="panel" id="editPanel"><div class="sectionhead"><div><h2>Edit Student Academics</h2><p class="sub" id="selectedLabel">Choose a student from Find Students first.</p></div></div>
+    <section class="panel" id="editPanel"><div class="sectionhead"><div><h2>Edit Student Academics</h2><p class="sub" id="selectedLabel">Edit the academic fields below. Other profile details are shown above.</p></div></div>
       <input type="hidden" id="studentId">
       <div class="formgrid">
         <div><label for="level">School level</label><select id="level"><option value="">Choose level</option><option>1ère année secondaire</option><option>2ème année secondaire</option><option>3ème année secondaire</option><option>4ème année secondaire (Bac)</option></select></div>
@@ -66,6 +66,16 @@
     </section>
   </section>
 </main>
+<div id="studentModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head"><div><h2 id="modalTitle" style="margin:0">Student details</h2><div class="sub" id="modalSubtitle">View and edit student information</div></div><button class="btn light" id="closeStudentModal" type="button">✕ Close</button></div>
+    <div class="modal-body">
+      <h3 style="margin:0 0 12px">User information</h3>
+      <div id="studentDetails" class="detail-grid"></div>
+      <div id="modalEditHost"></div>
+    </div>
+  </div>
+</div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
 const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
@@ -119,6 +129,45 @@ function studentCode(user) {
   // Show only the actual MAC & TALK student code; never substitute the internal UUID.
   return user.mac_talk_id || '';
 }
+function renderStudentDetails(user) {
+  const hiddenKeys = new Set(['user_id','id','auth_id','student_id','teacher_id','created_by','updated_by']);
+  const preferredLabels = {
+    display_name:'Student name', full_name:'Full name', first_name:'First name', last_name:'Last name',
+    mac_talk_id:'MAC & TALK student ID', email:'Email', phone:'Phone',
+    school_level:'School level', school_track:'Track', school_stream:'Section',
+    school_class:'Class', teacher_name:'Teacher', teacher_display_name:'Teacher',
+    assigned_teacher_name:'Teacher', teacher:'Teacher', edit_allowed:'Academic editing access',
+    status:'Account status', role:'Account role', username:'Username', bio:'Bio',
+    created_at:'Created at', updated_at:'Updated at'
+  };
+  const entries = Object.entries(user || {}).filter(([key, value]) =>
+    !hiddenKeys.has(key) && value !== null && value !== undefined && value !== ''
+  );
+  $('studentDetails').innerHTML = entries.length ? entries.map(([key, value]) => {
+    const label = preferredLabels[key] || key.replace(/_/g,' ').replace(/\\b\\w/g, c => c.toUpperCase());
+    let shown = value;
+    if (typeof value === 'boolean') shown = value ? 'Yes' : 'No';
+    else if (typeof value === 'object') shown = JSON.stringify(value);
+    else if (key.endsWith('_at')) shown = dt(value);
+    return `<div class="detail-item"><small>${esc(label)}</small><strong>${esc(shown)}</strong></div>`;
+  }).join('') : '<div class="muted">No additional details were returned by the student search.</div>';
+}
+function openStudentModal() {
+  $('studentModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeStudentModal() {
+  $('studentModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+$('closeStudentModal').addEventListener('click', closeStudentModal);
+$('studentModal').addEventListener('click', event => {
+  if (event.target === $('studentModal')) closeStudentModal();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && $('studentModal').classList.contains('open')) closeStudentModal();
+});
+
 function renderUsers(rows) {
   cachedUsers = Array.isArray(rows) ? rows : [];
   $('countUsers').textContent = cachedUsers.length;
@@ -127,7 +176,7 @@ function renderUsers(rows) {
       <td><span class="student-name">${esc(user.display_name || 'Student')}</span><span class="student-code">${esc(studentCode(user))}</span></td>
       <td>${esc(user.school_level || '—')}</td>
       <td>${esc(user.school_stream || '—')}</td>
-      <td>${esc(user.school_class || '—')}</td>
+      <td>${esc(user.teacher_name || user.teacher_display_name || user.assigned_teacher_name || user.teacher || '—')}</td>
       <td><span class="pill">${user.edit_allowed ? 'Allowed' : 'Locked'}</span></td>
       <td><button class="btn light" data-edit-index="${index}">Edit</button></td>
     </tr>`).join('') : '<tr><td colspan="6" class="empty">No students found.</td></tr>';
@@ -145,6 +194,9 @@ async function selectStudent(user) {
   selected = user;
   $('studentId').value = user.user_id; // Internal ID stays hidden and is used only for RPC calls.
   $('selectedLabel').textContent = `${user.display_name || 'Student'}${studentCode(user) ? ' · ' + studentCode(user) : ''}`;
+  $('modalTitle').textContent = user.display_name || 'Student details';
+  $('modalSubtitle').textContent = studentCode(user) || 'Student information';
+  renderStudentDetails(user);
   $('level').value = user.school_level || '';
   $('track').value = user.school_track || '';
   $('stream').value = user.school_stream || '';
@@ -213,13 +265,13 @@ $('saveStudent').addEventListener('click', async () => {
     });
     toast('Student academic information updated.');
     await refresh();
-    showView('studentsView');
+    closeStudentModal();
   } catch (error) { toast(error.message); }
 });
 $('clearStudent').addEventListener('click', () => {
   selected = null;
   $('studentId').value = '';
-  $('selectedLabel').textContent = 'Choose a student from Find Students first.';
+  $('selectedLabel').textContent = 'Edit the academic fields below. Other profile details are shown above.';
   ['level','track','stream','className'].forEach(id => $(id).value = '');
   toast('Selection cleared.');
 });
@@ -241,6 +293,9 @@ $('applyAccess').addEventListener('click', async () => {
     await refresh();
   } catch (error) { toast(error.message); }
 });
+
+// Place the existing academic editor inside the student-details modal.
+$('modalEditHost').appendChild($('editPanel'));
 
 // The Admin Control Center signs the administrator in; this page reuses that session.
 db.auth.getSession().then(({data, error}) => {
