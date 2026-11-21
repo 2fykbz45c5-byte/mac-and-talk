@@ -1,718 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10243e"><title>Mac&Talk | Teacher Workspace</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10243e">
 <link rel="icon" type="image/png" href="mac-talk-icon.png">
 <link rel="apple-touch-icon" href="mac-talk-icon.png">
+<title>Dashboard | Mac&Talk</title>
 <style>
-:root{--navy:#10243e;--navy2:#1c3657;--yellow:#ffc629;--bg:#f3f6fb;--white:#fff;--muted:#718096;--line:#e5eaf1;--red:#c53b4b;--blue:#3867d6;--shadow:0 12px 35px rgba(16,36,62,.08)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
-.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--navy);color:white;padding:24px 16px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:12px;padding:0 10px 30px}.brand-mark{width:44px;height:44px;border-radius:14px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:22px}.brand-name{font-size:20px;font-weight:850}.brand-name span{color:var(--yellow)}.eyebrow{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#9eacc0;margin:8px 12px 12px}.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#d8e0eb;text-align:left;padding:13px 14px;border-radius:11px;display:flex;gap:12px;align-items:center}.nav button:hover,.nav button.active{background:var(--yellow);color:var(--navy)}.nav .ico{width:22px;text-align:center;font-size:17px}.side-bottom{margin-top:auto;padding:14px 10px 0;color:#aab8ca;font-size:12px;line-height:1.6}
-.main{margin-left:250px;min-height:100vh}.topbar{height:82px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;gap:16px}.topbar h1{font-size:21px;margin:0 0 5px}.topbar p{margin:0;color:var(--muted);font-size:12px}.admin-chip{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}.avatar{width:38px;height:38px;background:var(--navy);color:var(--yellow);border-radius:50%;display:grid;place-items:center;font-weight:900}
-.content{padding:30px 34px 50px;max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}.welcome h2{font-size:25px;margin:0 0 8px}.welcome p{color:var(--muted);margin:0;line-height:1.5}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--navy);color:white}.btn-primary:hover{background:var(--navy2)}.btn-yellow{background:var(--yellow);color:var(--navy)}.btn-light{background:#eef2f8;color:var(--navy)}.btn-danger{background:#fff0f1;color:var(--red)}.btn-small{padding:8px 10px;font-size:12px;border-radius:8px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:700}.stat-icon{width:37px;height:37px;border-radius:12px;background:#fff4cf;display:grid;place-items:center;font-size:18px}.stat strong{display:block;font-size:29px;margin-top:13px}.stat small{display:block;color:var(--muted);margin-top:5px;font-size:11px}
-.panel{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.panel-head h3{margin:0;font-size:16px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.filters{display:flex;gap:9px;flex-wrap:wrap}.field-control{border:1px solid var(--line);background:white;border-radius:9px;padding:10px 11px;color:var(--navy);outline:none;min-width:145px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:15px 20px;border-bottom:1px solid #edf0f5;font-size:13px;vertical-align:middle}th{background:#fbfcfe;color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}.session-title{font-weight:800;margin-bottom:4px}.session-sub{font-size:11px;color:var(--muted);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:850}.pill-live,.pill-approved{background:#e2f8ed;color:#14734e}.pill-scheduled{background:#e9efff;color:#3159b9}.pill-ended{background:#eef0f4;color:#5f6b7b}.pill-pending{background:#fff2cf;color:#8a6100}.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}.notice{margin-bottom:18px;padding:12px 15px;border-radius:10px;font-size:13px;display:none}.notice.show{display:block}.notice.success{background:#e5f8ed;color:#146c49}.notice.error{background:#fff0f1;color:#a52d3a}.page{display:none}.page.active{display:block}.grid-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.info-card{padding:22px}.info-card h3{margin:0 0 10px;font-size:16px}.info-card p,.info-card li{font-size:13px;line-height:1.7;color:var(--muted)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-field{display:grid;gap:7px}.form-field.full{grid-column:1/-1}.form-field label{font-size:12px;font-weight:800}.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;background:white;color:var(--navy)}.form-field textarea{min-height:95px;resize:vertical}.loading{min-height:100vh;display:grid;place-items:center;padding:25px;text-align:center}.loading-card{background:white;padding:30px;border-radius:18px;max-width:480px;box-shadow:var(--shadow)}.loading-card h2{margin:0 0 10px}.loading-card p{color:var(--muted);font-size:14px;line-height:1.6}.spinner{width:30px;height:30px;border:3px solid #e5eaf1;border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}
-.modal-backdrop{position:fixed;inset:0;background:#06112199;z-index:20;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{background:white;border-radius:18px;width:min(640px,100%);max-height:92vh;overflow:auto}.modal-body{padding:22px}.modal-foot{display:flex;justify-content:flex-end;gap:9px;padding:17px 22px;border-top:1px solid var(--line)}
+:root{--navy:#10243e;--navy-light:#1c3657;--yellow:#ffc629;--bg:#f4f6fa;--white:#fff;--muted:#758195;--border:#e5e9f0;--green:#18865a;--red:#b42318;--shadow:0 8px 28px #10243e0d}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--navy);line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}a{color:inherit;text-decoration:none}[hidden]{display:none!important}
+.loading-screen{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.loading-box{width:min(100%,380px);padding:34px 28px;border:1px solid var(--border);border-radius:20px;background:#fff;box-shadow:0 15px 45px #10243e17}.loading-box strong{display:block;font-size:25px}.loading-box p{margin-top:10px;color:var(--muted);font-size:13px;overflow-wrap:anywhere}.loading-box a{display:inline-block;margin-top:15px;font-weight:700;color:var(--navy)}
+.app{min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:260px;height:100dvh;padding:26px 18px 20px;background:var(--navy);color:white;display:flex;flex-direction:column;gap:20px;z-index:30;overflow-y:auto;box-shadow:5px 0 25px #10243e14;transition:transform .25s}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px 10px}.brand-icon{width:45px;height:45px;min-width:45px;display:grid;place-items:center;border-radius:13px;background:var(--yellow);color:var(--navy);font-weight:900;font-size:17px;box-shadow:0 5px 15px #ffc62930}.brand-name{font-size:21px;font-weight:800;white-space:nowrap}.brand-name span{color:var(--yellow)}
+.nav-label{margin:0 12px 0;color:#aab6c8;font-size:11px;font-weight:700;letter-spacing:1.3px}.nav{display:flex;flex-direction:column;gap:6px}.nav-link{display:flex;align-items:center;gap:12px;min-height:46px;padding:12px 14px;border:1px solid transparent;border-radius:10px;color:#d5ddea;font-size:13px;cursor:pointer;background:transparent;text-align:left;width:100%;transition:background .2s,color .2s}.nav-link:hover{background:#ffffff12;color:#fff}.nav-link.active{color:var(--navy);background:var(--yellow);font-weight:800}.nav-icon{width:21px;text-align:center;font-size:17px}.sidebar-spacer{flex:1;min-height:15px}.sidebar-footer{padding:15px;border-radius:12px;background:#ffffff0d}.sidebar-footer strong{font-size:13px}.sidebar-footer p{margin-top:8px;color:#c3ccda;font-size:12px;line-height:1.6}.signout{width:100%;border:0;border-radius:10px;padding:12px 14px;background:#fff0f0;color:var(--red);cursor:pointer;font-size:13px;font-weight:800;text-align:left}.signout:hover{background:#ffe2e2}
+.main{margin-left:260px;min-height:100vh;min-width:0}.topbar{position:sticky;top:0;z-index:20;min-height:82px;padding:16px 30px;display:flex;align-items:center;justify-content:space-between;gap:18px;background:#ffffffed;backdrop-filter:blur(14px);border-bottom:1px solid var(--border);box-shadow:0 3px 15px #10243e08}.topbar h2{font-size:21px;font-weight:800;letter-spacing:-.5px}.topbar p{margin-top:4px;color:var(--muted);font-size:12px}.topbar-left{display:flex;align-items:center;gap:13px;min-width:0}.topbar-right{display:flex;align-items:center;gap:12px}.avatar{width:43px;height:43px;flex-shrink:0;border-radius:50%;background:var(--yellow);border:3px solid #fff3c8;display:grid;place-items:center;color:var(--navy);font-size:15px;font-weight:800;box-shadow:0 3px 10px #10243e14}.user-mini strong{display:block;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.user-mini span{display:block;margin-top:4px;color:var(--muted);font-size:11px}.menu-toggle{display:none;border:0;background:transparent;font-size:24px;color:var(--navy);cursor:pointer}
+.content{max-width:1450px;padding:30px 32px 45px;margin:auto}.page-panel{display:none}.page-panel.active{display:block}.welcome-banner{position:relative;overflow:hidden;min-height:205px;padding:clamp(24px,4vw,38px);border-radius:19px;background:linear-gradient(120deg,var(--navy),#23476d);color:white;display:flex;align-items:center;justify-content:space-between;gap:22px;box-shadow:0 12px 30px #10243e1f}.welcome-banner:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;right:30px;top:-130px;background:#ffc6291f;pointer-events:none}.welcome-banner h1{font-size:clamp(24px,3vw,33px);font-weight:800;letter-spacing:-.8px;line-height:1.25;margin-bottom:11px;position:relative;z-index:1}.welcome-banner p{max-width:580px;color:#d8e1ed;font-size:14px;line-height:1.7;position:relative;z-index:1}.welcome-member-id{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 15px;padding:8px 11px;border:1px solid #ffffff2e;border-radius:11px;background:#ffffff12;color:#dce7f5;font-size:10px;letter-spacing:.8px;position:relative;z-index:2}.member-id-icon{color:var(--yellow);font-size:16px}.welcome-member-id strong{color:white;font-size:12px;letter-spacing:.2px;overflow-wrap:anywhere}.welcome-member-id button{display:grid;place-items:center;width:25px;height:25px;border:0;border-radius:7px;background:#ffffff1c;color:white;cursor:pointer}.primary-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;border:0;border-radius:10px;background:var(--yellow);color:var(--navy);padding:13px 17px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 5px 15px #0002;position:relative;z-index:1}.primary-btn:hover{background:#ffd65e;transform:translateY(-1px)}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:32px 0 17px}.section-heading h2{font-size:19px;font-weight:800;letter-spacing:-.35px}.section-heading p{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.6}.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.stat-card{position:relative;overflow:hidden;padding:23px;background:white;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}.stat-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px #10243e14}.stat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.stat-icon,.session-emoji{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#fff3c8;font-size:20px}.stat-card h3{font-size:27px;margin-bottom:6px;font-weight:800;overflow-wrap:anywhere}.stat-card p{color:var(--muted);font-size:12px}.live-indicator{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:11px;font-weight:700}.live-dot{width:8px;height:8px;border-radius:50%;background:#20b875}
+.session-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.session-card{display:flex;flex-direction:column;min-width:0;padding:22px;border:1px solid var(--border);border-radius:16px;background:white;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}.session-card:hover{transform:translateY(-3px);box-shadow:0 13px 28px #10243e17}.session-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:17px}.session-emoji{width:50px;height:50px;font-size:25px}.session-tag{border-radius:30px;background:#eaf8f0;color:var(--green);padding:7px 10px;font-size:10px;font-weight:800;white-space:nowrap}.session-tag.live{background:#ffeded;color:#c92a2a}.session-card h3{font-size:16px;line-height:1.4;margin-bottom:8px;overflow-wrap:anywhere}.session-card>p{flex:1;color:var(--muted);font-size:13px;line-height:1.65;min-height:42px;overflow-wrap:anywhere}.session-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:15px;border-top:1px solid var(--border)}.host{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.join-btn{border:1px solid var(--navy);border-radius:8px;background:white;color:var(--navy);padding:9px 12px;cursor:pointer;font-size:12px;font-weight:700}.join-btn:hover{background:var(--navy);color:white}.empty-state{padding:30px;background:white;border:1px dashed #cbd3df;border-radius:15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.8;grid-column:1/-1}
+.profile-card,.settings-card{background:white;border:1px solid var(--border);border-radius:17px;padding:24px;box-shadow:var(--shadow)}.profile-header{display:flex;align-items:center;gap:17px;padding-bottom:22px;border-bottom:1px solid var(--border);margin-bottom:20px}.profile-header .avatar{width:65px;height:65px;font-size:22px}.profile-header h3{margin-bottom:6px}.profile-header p{color:var(--muted);font-size:13px;overflow-wrap:anywhere}.profile-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:15px;padding:14px 0;border-bottom:1px solid var(--border);font-size:13px}.profile-row:last-child{border-bottom:0}.profile-row span{color:var(--muted)}.profile-row strong{overflow-wrap:anywhere}.settings-card h3{margin-bottom:9px}.settings-card p{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:18px}.settings-card .signout{max-width:300px}.notice{display:none;margin-bottom:18px;padding:14px 16px;border-radius:11px;font-size:13px;line-height:1.5;border:1px solid transparent}.notice.show{display:block}.notice.error{color:var(--red);background:#fff0f0;border-color:#f4cccc}.notice.success{color:var(--green);background:#eaf8f0;border-color:#c7ead6}.page-footer{padding-top:28px;text-align:center;color:#98a1af;font-size:11px}
+.notification-wrap{position:relative}.notification-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:9px;position:relative;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:white;color:var(--navy);cursor:pointer;font-size:12px;font-weight:700}.notification-button:hover,.notification-button[aria-expanded=true]{background:#f5f7fb;border-color:#cbd5e1}.notification-bell{font-size:17px;line-height:1}.notification-badge{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#e5484d;color:white;font-size:10px;font-weight:800}.notification-panel{position:absolute;top:calc(100% + 12px);right:0;z-index:100;width:min(365px,calc(100vw - 28px));overflow:hidden;border:1px solid #e4e9f1;border-radius:17px;background:white;box-shadow:0 18px 55px #10243e2b;animation:notificationAppear .18s ease-out}@keyframes notificationAppear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}.notification-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:19px 18px 15px}.notification-panel-header h3{font-size:16px;font-weight:800}.notification-panel-header p{margin-top:5px;color:var(--muted);font-size:11px;line-height:1.5}.notification-close{width:29px;height:29px;border:0;border-radius:8px;background:#f1f4f8;color:var(--navy);cursor:pointer;font-size:21px}.notification-tabs{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 18px 12px;border-bottom:1px solid #edf0f5}.notification-tab{padding-bottom:9px;border-bottom:2px solid var(--yellow);font-size:12px;font-weight:800}.notification-count{color:var(--muted);font-size:10px}.notification-list{max-height:330px;overflow-y:auto}.notification-item{display:flex;align-items:flex-start;gap:12px;padding:14px 17px;border-bottom:1px solid #f0f2f6;cursor:pointer;transition:background .15s}.notification-item:hover,.notification-item:focus{background:#f7f9fc}.notification-item-icon{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#fff4ce;font-size:20px}.notification-item-icon.is-live{background:#e7f8ef}.notification-item-content{flex:1;min-width:0}.notification-item-content h4{font-size:12px;line-height:1.5;overflow-wrap:anywhere}.notification-item-content p{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.55;overflow-wrap:anywhere}.notification-item-time{display:block;margin-top:6px;color:#8792a3;font-size:10px}.notification-empty{padding:28px 18px;text-align:center}.notification-empty>span{display:block;margin-bottom:9px;font-size:27px}.notification-empty p{color:var(--muted);font-size:12px;line-height:1.7}.notification-view-all{width:100%;padding:14px;border:0;border-top:1px solid #edf0f5;background:#fafbfe;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}.notification-view-all:hover{background:#f0f4fa}
+.live-modal{position:fixed;inset:0;z-index:2000;background:#071221c7;display:grid;place-items:center;padding:20px}.live-modal-box{width:min(100%,460px);background:white;border-radius:18px;padding:24px;color:var(--navy);box-shadow:0 20px 70px #0003}.live-modal-box h2{font-size:19px;overflow-wrap:anywhere}.live-modal-box p{font-size:13px;color:var(--muted);margin:12px 0;line-height:1.6}.live-modal-box audio{width:100%;margin-top:8px}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.modal-btn{border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff}.modal-btn.secondary{background:#eef2f7;color:var(--navy)}
 
-/* Easier class creation and responsive workspace refinements */
-.create-class-backdrop{z-index:35}.create-class-modal{width:min(570px,100%);box-shadow:0 24px 80px rgba(5,18,35,.25)}.create-class-modal .panel-head{padding:20px 22px}.create-class-modal .modal-body{padding:22px}.create-class-modal .modal-foot{position:sticky;bottom:0;background:#fff}.field-hint{font-size:11px;color:var(--muted);line-height:1.5}.class-name-preview{display:grid;gap:5px;padding:13px 15px;margin:18px 0 10px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc}.class-name-preview span{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:800}.class-name-preview strong{font-size:13px;color:var(--navy)}.classes-guide{display:flex;gap:10px;align-items:flex-start;padding:13px 15px;margin:0 0 16px;border:1px solid var(--line);background:#fff;border-radius:12px;font-size:12px;line-height:1.6}.classes-guide strong{white-space:nowrap;color:var(--navy)}.classes-guide span{color:var(--muted)}.class-tile{transition:transform .15s ease,box-shadow .15s ease}.class-tile:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(16,36,62,.08)}.class-tools .btn{white-space:nowrap}
-.student-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:0 0 22px}.student-action-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:138px}.student-action-card h3{margin:0 0 7px;font-size:18px}.student-action-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.student-action-icon{width:52px;height:52px;border-radius:15px;background:#fff3c8;display:grid;place-items:center;font-size:25px;flex:0 0 52px}.student-action-card .btn{padding:13px 18px;font-size:13px}.count-button{border:0;border-radius:12px;background:#fff1c2;color:var(--navy);font-weight:900;padding:12px 17px;font-size:17px;min-width:58px}.count-button small{display:block;font-size:10px;font-weight:750;margin-top:3px}.unassigned-list{display:grid;gap:10px}.unassigned-row{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px}.student-lookup{display:flex;gap:10px;align-items:end;margin-bottom:18px}.student-lookup .form-field{flex:1}.modal-large{width:min(760px,100%)}@media(max-width:700px){.student-action-grid{grid-template-columns:1fr}.student-action-card{padding:19px;min-height:120px}.student-lookup{align-items:stretch;flex-direction:column}.unassigned-row{align-items:flex-start;flex-direction:column}}
-@media(max-width:560px){.create-class-backdrop{padding:10px}.create-class-modal{max-height:94vh}.create-class-modal .modal-body{padding:16px}.classes-guide{display:grid;gap:3px}.class-tools{width:100%}.class-tools .btn{flex:1}}
+/* Dashboard academic grade cards */
+.your-grades-section{margin:0 0 26px}
+.your-grades-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 14px}
+.your-grades-heading h2{font-size:19px;font-weight:850;letter-spacing:-.3px}
+.your-grades-heading p{margin-top:4px;color:var(--muted);font-size:12px}
+.your-grades-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.your-trimester-card{min-width:0;padding:17px;border:1px solid #eee8d9;border-radius:15px;background:#fff;box-shadow:0 4px 18px rgba(16,36,62,.045)}
+.your-trimester-card h3{font-size:14px;font-weight:850;margin-bottom:12px}
+.your-grade-entry{padding:11px 0;border-top:1px solid var(--border)}
+.your-grade-entry:first-of-type{border-top:0;padding-top:0}
+.your-grade-class{font-size:12px;font-weight:800;margin-bottom:9px;overflow-wrap:anywhere}
+.your-grade-marks{display:flex;gap:7px;flex-wrap:wrap}
+.your-grade-mark{display:flex;flex-direction:column;gap:3px;min-width:64px;padding:7px 9px;border-radius:9px;background:#f7f9fc;border:1px solid var(--border)}
+.your-grade-mark span{font-size:9px;color:var(--muted);font-weight:750}
+.your-grade-mark strong{font-size:13px;font-weight:850}
+.your-grade-average{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:10px 11px;border-radius:10px;background:#fff4c9;border:1px solid #f4df91}
+.your-grade-average span{font-size:11px;font-weight:800;color:#586579}
+.your-grade-average strong{font-size:20px;font-weight:950;color:var(--navy);font-variant-numeric:tabular-nums}
+.your-grade-pending{font-size:10px;color:var(--muted);margin-top:8px}
+.your-grade-empty{padding:12px;border:1px dashed #d9e0e9;border-radius:10px;color:var(--muted);font-size:11px;line-height:1.6}
+@media(max-width:900px){.your-grades-grid{grid-template-columns:1fr}}
+/* Student results */
+.results-top-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}
+.results-top-button:hover,.results-top-button[aria-expanded=true]{background:#fff9e5;border-color:#e8c34d}
+.results-modal{position:fixed!important;inset:0!important;z-index:2147483000!important;width:100vw;height:100vh;height:100dvh;background:rgba(7,18,33,.72);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px;overflow-y:auto;box-sizing:border-box}
+.results-modal[hidden]{display:none!important}
+.results-modal:not([hidden]){display:grid}
+.results-modal-card{position:relative;width:min(760px,calc(100vw - 40px));max-height:min(86vh,780px);max-height:min(86dvh,780px);margin:auto;overflow:hidden;display:flex;flex-direction:column;background:#fff;border:1px solid #eee8d9;border-radius:18px;box-shadow:0 24px 90px rgba(0,0,0,.38);animation:resultsModalIn .18s ease-out}
+@keyframes resultsModalIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+body.results-modal-open{overflow:hidden!important}
+.results-modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:21px 23px;border-bottom:1px solid var(--border)}
+.results-modal-header h2{font-size:20px;font-weight:850}
+.results-modal-header p{margin-top:5px;color:var(--muted);font-size:12px}
+.results-modal-close{width:34px;height:34px;flex-shrink:0;border:0;border-radius:9px;background:#f1f4f8;color:var(--navy);font-size:23px;cursor:pointer}
+.results-trimester-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:15px 20px;border-bottom:1px solid var(--border)}
+.results-trimester-tab{padding:11px 8px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--navy);font-size:12px;font-weight:800;cursor:pointer}
+.results-trimester-tab.active{background:#fff4c9;border-color:#e8c34d}
+.results-content{padding:19px 22px 24px;overflow:auto;min-height:180px}
+.results-empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;background:#fafbfd;border:1px dashed #d9e0e9;border-radius:12px}
+.result-list{display:grid;gap:11px}
+.grade-notes-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:13px}
+.grade-note{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 11px;background:#f7f9fc;border:1px solid var(--border);border-radius:9px;min-width:0}
+.grade-note span{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.grade-note strong{font-size:13px;color:var(--navy);font-weight:850}
+@media(max-width:520px){.grade-notes-grid{gap:6px}.grade-note{padding:9px 7px;display:flex;flex-direction:column;align-items:flex-start}.grade-note strong{font-size:12px}}
+.result-card{padding:15px 16px;border:1px solid var(--border);border-radius:12px;background:#fff}
+.result-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.result-card h3{font-size:14px;overflow-wrap:anywhere}
+.result-score{flex-shrink:0;padding:6px 10px;border-radius:9px;background:#fff4c9;color:var(--navy);font-size:13px;font-weight:900}
+.result-card p{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.result-card small{display:block;margin-top:8px;color:#8993a2;font-size:10px}
+.notification-item.is-unread{background:#fffdf5}
+@media(max-width:800px){.results-top-button{width:43px;padding:0;font-size:0}.results-top-button .results-button-icon{font-size:17px}.results-modal{padding:12px}.results-modal-card{width:calc(100vw - 24px);max-height:90vh;max-height:90dvh}.results-modal-header{padding:17px}.results-trimester-tabs{padding:12px 12px;gap:5px}.results-trimester-tab{font-size:10px;padding:10px 4px}.results-content{padding:14px}}
 
-@media(max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-two{grid-template-columns:1fr}}@media(max-width:760px){.sidebar{width:72px;padding:18px 9px}.brand{padding:0 5px 25px;justify-content:center}.brand-name,.eyebrow,.nav-text,.side-bottom{display:none}.nav button{justify-content:center;padding:13px 7px}.main{margin-left:72px}.topbar{padding:0 17px;height:72px}.content{padding:22px 14px 35px}.welcome{flex-direction:column}.stats{gap:10px}.stat{padding:15px}.stat strong{font-size:25px}.admin-chip .admin-email{display:none}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}}@media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.filters{width:100%}.filters .field-control{flex:1;min-width:0}}
-
-.room-frame{width:100%;height:min(72vh,760px);min-height:420px;border:0;background:#0b1728;border-radius:14px}.student-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:18px}.student-card{border:1px solid var(--line);border-radius:12px;padding:15px;display:flex;gap:12px;align-items:center;min-width:0}.student-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:#fff1c2;color:var(--navy);display:grid;place-items:center;font-weight:900}.student-meta{min-width:0}.student-meta strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.student-meta span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px;margin-top:4px}.session-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px}.session-card{border:1px solid var(--line);border-radius:13px;padding:17px}.session-card h3{margin:0 0 7px;font-size:16px}.session-card p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 13px}.session-actions{display:flex;gap:8px;flex-wrap:wrap}.room-placeholder{padding:36px;text-align:center;color:#d7e0ee;background:#0b1728;border-radius:14px}.tag{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:850;background:#fff2cf;color:#8a6100}.tag.approved{background:#e2f8ed;color:#14734e}.muted-note{font-size:12px;color:var(--muted);line-height:1.7}.search-row{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}.search-row input{flex:1;min-width:200px}.video-controls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
-@media(max-width:900px){.student-list{grid-template-columns:repeat(2,minmax(0,1fr))}.session-cards{grid-template-columns:1fr}}
-@media(max-width:560px){.student-list{grid-template-columns:1fr}.room-frame{min-height:340px;height:65vh}.topbar h1{font-size:18px}}
-
-/* Separate Quiz Studio launch card */
-.quiz-launch-panel{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;overflow:hidden;padding:30px 34px;border:1px solid #e7ebf2;border-radius:20px;background:linear-gradient(115deg,#10243e 0%,#1c3657 72%,#263f60 100%);color:#fff;box-shadow:0 14px 34px rgba(16,36,62,.14)}
-.quiz-launch-copy{position:relative;z-index:1;max-width:680px}
-.quiz-launch-kicker{display:inline-flex;align-items:center;gap:8px;color:#ffc629;font-size:10px;font-weight:900;letter-spacing:1.3px}
-.quiz-launch-copy h2{margin:12px 0 7px;font-size:clamp(23px,3vw,30px);font-weight:900;letter-spacing:-.7px}
-.quiz-launch-copy p{max-width:590px;margin:0;color:#d2dbe7;font-size:13px;line-height:1.65}
-.quiz-studio-launch{display:inline-flex;align-items:center;gap:13px;margin-top:22px;padding:12px 17px;border-radius:13px;background:#ffc629;color:#10243e;text-decoration:none;box-shadow:0 7px 20px rgba(255,198,41,.2);transition:transform .18s ease,box-shadow .18s ease}
-.quiz-studio-launch:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(255,198,41,.28)}
-.quiz-launch-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:10px;background:#10243e;color:#ffc629;font-size:25px;font-weight:700}
-.quiz-studio-launch strong,.quiz-studio-launch small{display:block}
-.quiz-studio-launch strong{font-size:13px;font-weight:900}
-.quiz-studio-launch small{margin-top:2px;font-size:10px;font-weight:700;opacity:.72}
-.quiz-launch-arrow{margin-left:12px;font-size:21px;font-weight:900}
-.quiz-launch-art{position:relative;display:grid;place-items:center;flex:0 0 150px;width:150px;height:150px;margin-right:5%;border:1px solid rgba(255,198,41,.24);border-radius:38px;background:rgba(255,255,255,.07);transform:rotate(-8deg)}
-.quiz-launch-art span{font-size:83px;font-weight:950;color:#ffc629}
-.quiz-launch-art i,.quiz-launch-art b{position:absolute;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#fff;color:#10243e;font-style:normal;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.15)}
-.quiz-launch-art i{right:-12px;top:12px;color:#b27c00}
-.quiz-launch-art b{left:-12px;bottom:12px;color:#1c5235}
-@media(max-width:650px){.quiz-launch-panel{padding:24px 20px}.quiz-launch-art{display:none}.quiz-studio-launch{width:100%}.quiz-launch-arrow{margin-left:auto}}
-/* Mac&Talk Quiz Center — refreshed, compact and responsive */
-#page-quizzes .welcome{align-items:center;margin-bottom:20px}
-#page-quizzes .welcome h2{letter-spacing:-.5px}
-#page-quizzes .panel{border-radius:18px}
-#page-quizzes .quiz-import{padding:22px;background:linear-gradient(135deg,#fff 0%,#fbfcff 100%)}
-#page-quizzes .quiz-import h3{font-size:17px;display:flex;align-items:center;gap:9px}
-#page-quizzes .quiz-form{padding:22px}
-#page-quizzes .quiz-form h3{font-size:16px;margin-bottom:18px}
-#page-quizzes .form-field input:focus,#page-quizzes .form-field textarea:focus,#page-quizzes .form-field select:focus{border-color:#d7a900;box-shadow:0 0 0 3px rgba(255,198,41,.17)}
-#page-quizzes .quiz-item{padding:18px;border-radius:15px;transition:transform .15s ease,box-shadow .15s ease}
-#page-quizzes .quiz-item:hover{transform:translateY(-1px);box-shadow:0 9px 24px rgba(16,36,62,.07)}
-#page-quizzes .quiz-actions .btn{min-height:36px}
-.quiz-wifi-settings{margin-top:18px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:#fff}
-.quiz-wifi-settings summary{cursor:pointer;font-weight:800;font-size:14px;list-style:none;display:flex;align-items:center;gap:9px}
-.quiz-wifi-settings summary::-webkit-details-marker{display:none}
-.quiz-wifi-settings summary:after{content:'＋';margin-left:auto;color:var(--muted);font-size:18px}
-.quiz-wifi-settings[open] summary:after{content:'−'}
-.quiz-wifi-settings .wifi-fields{padding-top:15px}
-.quiz-start-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}.quiz-wifi-settings .form-field input{min-height:46px;font-size:14px}.quiz-wifi-settings .wifi-fields>p{margin:0 0 15px}.quiz-wifi-settings .tag{margin-left:auto}
-@media(max-width:650px){#page-quizzes .quiz-import,#page-quizzes .quiz-form{padding:16px}#page-quizzes .quiz-item{padding:14px}.quiz-wifi-settings{padding:15px}}
-.quiz-toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.quiz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.quiz-form{padding:20px}
-.quiz-form h3{margin:0 0 15px;font-size:16px}
-.quiz-form .form-field{margin-bottom:12px}
-.quiz-question-editor{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#fbfcfe}
-.quiz-question-editor .form-grid{gap:10px}
-.quiz-list{display:grid;gap:12px;padding:18px}
-.quiz-item{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fff}
-.quiz-item-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
-.quiz-item h3{margin:0 0 5px;font-size:15px}
-.quiz-meta{font-size:12px;color:var(--muted);margin:5px 0 12px}
-.quiz-actions{display:flex;gap:7px;flex-wrap:wrap}
-.quiz-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.quiz-qr-box{border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center;background:#fff}
-.quiz-qr-box canvas,.quiz-qr-box img{margin:12px auto;max-width:100%}
-.quiz-pin{font-size:30px;font-weight:900;letter-spacing:5px;color:var(--navy);background:#fff4cf;border-radius:10px;padding:9px 15px;display:inline-block}
-.quiz-help{font-size:12px;color:var(--muted);line-height:1.6}
-.quiz-answer-option{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
-.quiz-answer-option input{min-width:0}
-@media(max-width:850px){.quiz-grid,.quiz-modal-grid{grid-template-columns:1fr}}
-
-
-.quiz-import{margin:0 0 18px;padding:20px}.quiz-import h3{margin:0 0 8px}.quiz-import .import-help{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 14px}.import-preview{display:grid;gap:12px;margin-top:14px}.import-question{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fbfcfe}.import-question h4{margin:0 0 10px;font-size:13px}.import-question .form-grid{gap:9px}.import-status{font-size:12px;margin-top:10px;color:var(--muted)}.import-status.error{color:#a52d3a}.import-status.success{color:#146c49}.import-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-
-/* Class-wide grade entry */
-.bulk-grade-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.bulk-grade-btn{padding:13px 18px!important;font-size:14px!important;font-weight:850!important}
-.bulk-grade-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
-.bulk-grade-stat{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}
-.bulk-grade-stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-.bulk-grade-stat strong{font-size:20px;color:var(--navy)}
-.trimester-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-.trimester-tab{border:1px solid var(--line);background:#fff;color:var(--navy);padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer}
-.trimester-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.bulk-grade-table{width:100%;min-width:650px;border-collapse:collapse}
-.bulk-grade-table th,.bulk-grade-table td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:12px;text-align:left}
-.bulk-grade-table th{background:#f7f9fc;color:var(--navy);font-weight:850;position:sticky;top:0}
-.bulk-grade-table input{width:82px;max-width:100%;padding:9px 7px;border:1px solid var(--line);border-radius:8px;color:var(--navy)}
-.bulk-student-name{font-weight:800;color:var(--navy);min-width:150px}
-.bulk-letter-row td{background:#eef2f8;color:var(--navy);font-weight:900;padding:8px 10px}
-.bulk-row-average{font-weight:900;color:var(--navy);white-space:nowrap}
-.bulk-incomplete{color:#a15b00;font-weight:800}
-.bulk-complete{color:#16804a;font-weight:800}
-@media(max-width:700px){.bulk-grade-summary{grid-template-columns:1fr}.bulk-grade-table input{width:68px}.bulk-grade-table th,.bulk-grade-table td{padding:8px 6px}}
-/* Student Classes workspace */
-.classes-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.class-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:18px}.class-tile{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:12px}.class-tile h3{margin:0;font-size:16px}.class-tile p{margin:0;color:var(--muted);font-size:12px}.class-tile-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}.class-detail{padding:18px}.class-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.class-student-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 15px;border:1px solid var(--line);border-radius:12px;margin:9px 0}.class-student-name{font-weight:800;font-size:13px}.class-student-sub{font-size:11px;color:var(--muted);margin-top:4px}.student-id-prefix{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f7f9fc}.student-id-prefix span{padding:11px 10px;background:#eef2f8;font-weight:850;font-size:12px;white-space:nowrap}.student-id-prefix input{border:0!important;min-width:0;flex:1;background:#fff!important;outline:none}.grade-table{width:100%;min-width:680px;border-collapse:collapse}.grade-table th,.grade-table td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:12px}.grade-table input{width:88px;padding:9px;border:1px solid var(--line);border-radius:8px;color:var(--navy)}.grade-average{font-weight:900;color:var(--navy)}.grade-panel{padding:16px;margin-top:14px}.grade-panel h4{margin:0 0 12px}.record-header{display:flex;gap:12px;align-items:center;padding:17px;background:#f8fafc;border:1px solid var(--line);border-radius:13px;margin-bottom:14px}.record-header .student-avatar{width:48px;height:48px;flex-basis:48px}.record-header h3{margin:0 0 4px}.record-header p{margin:0;color:var(--muted);font-size:12px}
-@media(max-width:1000px){.class-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.class-grid{grid-template-columns:1fr}.class-student-row{align-items:flex-start}.grade-panel{padding:12px}}
-
-
-/* Academic class manager */
-.academic-form{padding:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.academic-form .wide{grid-column:1/-1}.class-tools{display:flex;gap:9px;flex-wrap:wrap}.import-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:16px;border-bottom:1px solid var(--line)}.import-preview-list{display:grid;gap:10px}.import-student{border:1px solid var(--line);border-radius:11px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.import-student strong{font-size:13px}.import-student small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.import-student select{max-width:240px}.group-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.group-chip{display:inline-flex;align-items:center;gap:6px;background:#eef2f8;padding:6px 9px;border-radius:999px;font-size:11px;margin:3px}.student-academic-line{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
-@media(max-width:650px){.academic-form{grid-template-columns:1fr}.academic-form .wide{grid-column:auto}.import-student{grid-template-columns:1fr}.import-student select{max-width:none;width:100%}}
+@media(max-width:1050px){.content{padding:25px 22px 35px}.topbar{padding:16px 22px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.sidebar{width:260px;transform:translateX(-110%);box-shadow:10px 0 30px #0002}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%}.menu-toggle{display:block}.topbar{min-height:75px;padding:13px 16px}.topbar h2{font-size:17px}.user-mini{display:none}.content{padding:20px 16px 32px}.welcome-banner{border-radius:16px;align-items:flex-start;flex-direction:column}.session-grid{grid-template-columns:1fr}.notification-label{display:none}.notification-button{width:43px;padding:0}.notification-panel{position:fixed;top:80px;right:12px}.section-heading{align-items:flex-start}.stat-card:hover,.session-card:hover{transform:none}}
+@media(max-width:440px){.stats-grid{grid-template-columns:1fr}.stat-card{padding:18px}.section-heading h2{font-size:17px}.profile-row{grid-template-columns:1fr;gap:7px}.topbar-right{gap:8px}.welcome-member-id{max-width:100%}.welcome-banner .primary-btn{white-space:normal}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+/* FINAL LAYOUT OVERRIDES: no gap, light workspace, yellow accents */
+:root {
+  --bg: #ffffff;
+  --white: #ffffff;
+  --yellow: #ffc629;
+  --border: #ece7d8;
+  --shadow: 0 5px 22px rgba(16, 36, 62, .06);
+}
+html, body { width: 100%; min-height: 100%; }
+body { background: #ffffff; }
+.app { width: 100%; min-height: 100vh; }
+#mtSharedSidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 260px;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  border-radius: 0;
+  z-index: 1000;
+}
+.main {
+  margin: 0 0 0 260px !important;
+  width: calc(100% - 260px);
+  min-width: 0;
+  min-height: 100vh;
+  background: #fff;
+}
+.topbar {
+  width: 100%;
+  background: rgba(255,255,255,.97);
+  box-shadow: none;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+.content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 28px;
+  background: #fff;
+}
+.welcome-banner {
+  background: linear-gradient(120deg, #fff9df 0%, #fffdf5 58%, #fff2bd 100%);
+  color: var(--navy);
+  border: 1px solid #f4df91;
+  box-shadow: 0 8px 24px rgba(16,36,62,.05);
+}
+.welcome-banner:after { background: rgba(255,198,41,.22); }
+.welcome-banner h1 { color: var(--navy); }
+.welcome-banner p { color: #586579; }
+.welcome-member-id {
+  color: #536176;
+  background: #fff;
+  border-color: #f0dfaa;
+}
+.welcome-member-id strong { color: var(--navy); }
+.welcome-member-id button { background: #fff0b6; color: var(--navy); }
+.primary-btn { box-shadow: 0 4px 12px rgba(255,198,41,.22); }
+.stat-card, .session-card, .profile-card, .settings-card {
+  background: #fff;
+  border-color: #eee8d9;
+  box-shadow: 0 4px 18px rgba(16,36,62,.045);
+}
+.section-heading { margin-top: 28px; }
+.join-btn { border-color: #e8c34d; }
+.join-btn:hover { background: var(--yellow); border-color: var(--yellow); color: var(--navy); }
+.page-panel { min-width: 0; }
+@media (max-width: 1050px) {
+  .content { padding: 22px; }
+  .topbar { padding-left: 22px; padding-right: 22px; }
+}
+@media (max-width: 800px) {
+  #mtSharedSidebar {
+    width: 260px;
+    height: 100vh;
+    height: 100dvh;
+    transform: translateX(-105%);
+    box-shadow: 10px 0 30px rgba(0,0,0,.18);
+  }
+  #mtSharedSidebar.open { transform: translateX(0); }
+  .main { margin-left: 0 !important; width: 100%; }
+  .content { padding: 18px 16px 30px; }
+  .topbar { padding: 13px 16px; }
+}
+@media (max-width: 440px) {
+  .content { padding: 15px 12px 26px; }
+  .welcome-banner { padding: 22px 18px; }
+}
 </style>
 </head>
 <body>
-<div class="loading" id="gate"><div class="loading-card"><div class="spinner" id="spinner"></div><h2 id="gateTitle">Opening Teacher Workspace</h2><p id="gateText">Checking your Mac&Talk account…</p><p id="gateActions" class="hidden"><a href="login.html">Return to login</a></p></div></div>
-<div class="layout hidden" id="teacherApp">
-<aside class="sidebar"><div class="brand"><div class="brand-mark">M</div><div class="brand-name">Mac<span>&</span>Talk</div></div><div class="eyebrow">TEACHER WORKSPACE</div>
-<nav class="nav"><button class="active" data-page="overview"><span class="ico">▦</span><span class="nav-text">Overview</span></button><button data-page="sessions"><span class="ico">🎙</span><span class="nav-text">My sessions</span></button><button data-page="students"><span class="ico">👥</span><span class="nav-text">Students</span></button><button data-page="quizzes"><span class="ico">📝</span><span class="nav-text">Quiz Center</span></button><button data-page="classes"><span class="ico">🎓</span><span class="nav-text">Student Classes</span></button><button data-page="room"><span class="ico">📹</span><span class="nav-text">Video room</span></button><button data-page="messages"><span class="ico">💬</span><span class="nav-text">Messages</span></button><button data-page="settings"><span class="ico">⚙</span><span class="nav-text">Settings</span></button></nav>
-<div class="side-bottom">Mac&Talk Teacher<br>Create sessions and teach your community.</div></aside>
-<main class="main"><header class="topbar"><div><h1 id="pageHeading">Teacher overview</h1><p id="todayLabel">Mac&Talk Teacher Workspace</p></div><div class="admin-chip"><div class="avatar" id="teacherAvatar">T</div><span class="admin-email" id="teacherEmail">Teacher</span><button class="btn btn-light btn-small" id="signOutBtn">Sign out</button></div></header>
-<div class="content"><div class="notice" id="notice" role="status" aria-live="polite"></div>
-<section class="page active" id="page-overview"><div class="welcome"><div><h2 id="welcomeTitle">Welcome to your workspace 👋</h2><p>Create sessions, meet students, and host live conversations. New sessions require admin approval.</p></div><button class="btn btn-primary" id="newSessionBtn">＋ Create session</button></div>
-<div class="stats"><div class="stat"><div class="stat-top">My sessions <span class="stat-icon">🎙</span></div><strong id="statTotal">—</strong><small>Sessions created by you</small></div><div class="stat"><div class="stat-top">Awaiting approval <span class="stat-icon">🕓</span></div><strong id="statPending">—</strong><small>Waiting for admin review</small></div><div class="stat"><div class="stat-top">Approved sessions <span class="stat-icon">✓</span></div><strong id="statApproved">—</strong><small>Available to members</small></div><div class="stat"><div class="stat-top">Permitted students <span class="stat-icon">👥</span></div><strong id="statStudents">—</strong><small>Students assigned by admin</small></div></div>
-<div class="panel"><div class="panel-head"><div><h3>Your next sessions</h3><p>Only approved sessions can be opened as live rooms.</p></div><button class="btn btn-light btn-small" data-goto="sessions">View all →</button></div><div id="upcomingSessions" class="session-cards"><p class="empty">Loading your sessions…</p></div></div></section>
-<section class="page" id="page-sessions"><div class="welcome"><div><h2>My live sessions</h2><p>Create sessions for admin approval, update your own sessions, and launch approved rooms.</p></div><button class="btn btn-primary" id="newSessionBtn2">＋ Create session</button></div><div class="panel"><div class="panel-head"><div><h3>Session library</h3><p>Pending sessions are not visible to students until approved.</p></div><button class="btn btn-light btn-small" id="refreshSessionsBtn">↻ Refresh</button></div><div id="mySessions" class="session-cards"><p class="empty">Loading…</p></div></div></section>
-
-<section class="page" id="page-quizzes">
- <div class="quiz-launch-panel">
-  <div class="quiz-launch-copy">
-   <span class="quiz-launch-kicker">MAC&TALK · QUIZ STUDIO</span>
-   <h2>Prepare your next quiz</h2>
-   <p>Create a new quiz, import questions, organize the question list and review everything in a dedicated workspace.</p>
-   <a class="quiz-studio-launch" href="quiz-create.html">
-    <span class="quiz-launch-icon">＋</span>
-    <span><strong>Create a New Quiz</strong><small>Open the separate Quiz Studio</small></span>
-    <span class="quiz-launch-arrow">→</span>
-   </a>
-  </div>
-  <div class="quiz-launch-art" aria-hidden="true"><span>Q</span><i>✦</i><b>✓</b></div>
- </div>
- <div class="panel" style="margin-top:20px">
-  <div class="panel-head">
-   <div><h3>My quizzes</h3><p>Manage, publish or launch quizzes saved to your teacher account.</p></div>
-   <button class="btn btn-light btn-small" id="teacherQuizRefresh">↻ Refresh</button>
-  </div>
-  <div id="teacherQuizList" class="quiz-list"><p class="empty">Loading quizzes…</p></div>
- </div>
- <details class="quiz-wifi-settings">
-  <summary><span>📶</span> Classroom Wi-Fi settings <span class="tag">Optional</span></summary>
-  <div class="wifi-fields"><p class="quiz-help">If students need classroom Wi-Fi, enter its details here. The Wi-Fi QR code will appear on the separate Join Quiz page after you start the quiz. These details are kept in this browser tab and are not added to the quiz URL.</p>
-   <div class="form-grid"><div class="form-field"><label for="quizWifiName">Wi-Fi network name (SSID)</label><input class="field-control" id="quizWifiName" autocomplete="off" name="classroom-wifi-ssid" placeholder="Classroom Wi-Fi"></div><div class="form-field"><label for="quizWifiPassword">Wi-Fi password</label><input class="field-control" id="quizWifiPassword" type="password" autocomplete="new-password" name="classroom-wifi-password" placeholder="Wi-Fi password"></div></div>
-  </div>
- </details>
- <p class="quiz-start-note">When you select <strong>Start this quiz</strong>, Mac&Talk opens a separate Join Quiz screen with the quiz QR code, PIN and optional Wi-Fi QR code.</p>
-</section>
-
-<section class="page" id="page-students"><div class="welcome"><div><h2>My permitted students</h2><p>Only students explicitly assigned to you by a Mac&Talk administrator appear here.</p></div></div><div class="panel"><div class="search-row"><input class="field-control" id="studentSearch" placeholder="Search students by name or email…"><span class="tag" id="studentCount">Loading…</span></div><div id="studentsList" class="student-list"><p class="empty">Loading students…</p></div></div></section>
-<section class="page" id="page-classes">
- <div class="welcome"><div><h2>Student Classes</h2><p>Manage your classes and students from simple actions.</p></div><button class="btn btn-primary" id="createClassBtn">＋ Create a class</button></div>
- <div id="classListView">
-  <div class="student-action-grid">
-   <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">＋</div><div><h3>Add quick student</h3><p>Enter one student ID, view the student's academic profile and choose the right class.</p></div></div><button class="btn btn-primary" id="openStudentImportBtn">Add student →</button></article>
-   <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">👥</div><div><h3>Students without a class</h3><p>Open the list, review each student's profile and assign them to any of your classes.</p></div></div><button class="count-button" id="unassignedCount" type="button"><span id="unassignedCountNumber">0</span><small>VIEW LIST</small></button></article>
-   <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">📄</div><div><h3>Import student IDs</h3><p>Upload a class list document. Student IDs with 3, 4 or 5 digits will be detected and checked automatically.</p></div></div><input id="studentIdsDocument" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" hidden><button class="btn btn-primary" id="uploadStudentIdsBtn" type="button">Upload document →</button><p class="muted-note" id="studentIdsImportStatus" style="margin:8px 0 0">PDF, DOCX, TXT, CSV and Excel files</p></article>
-  </div>
-  <div class="classes-guide"><strong>Class setup</strong><span>Open a class to manage its students, groups and academic records.</span></div>
-  <div class="panel"><div class="panel-head"><div><h3>My classes</h3><p>Classes created by your teacher account.</p></div><button class="btn btn-light btn-small" id="refreshClassesBtn">↻ Refresh</button></div><div id="teacherClassList" class="class-grid"><p class="empty">Loading classes…</p></div></div>
- </div>
- <div id="classDetailView" class="hidden">
-  <div class="panel"><div class="class-detail">
-   <div class="class-detail-head"><div><button class="btn btn-light btn-small" id="backToClassesBtn">← All classes</button><h2 id="activeClassName" style="margin:12px 0 4px">Class</h2><p class="muted-note" id="activeClassMeta">Students in this class</p></div><div class="bulk-grade-actions"><button class="btn btn-primary bulk-grade-btn" id="openBulkGradesBtn">＋ Enter grades for the whole class</button><button class="btn btn-light btn-small" id="refreshClassStudentsBtn">↻ Refresh</button></div></div>
-   <div class="panel" style="box-shadow:none;margin-bottom:16px"><div class="panel-head"><div><h3>Class groups</h3><p>Create groups inside this class and assign students to them.</p></div></div><div style="padding:15px"><div class="group-tools"><input id="newClassGroupName" class="field-control" placeholder="Group name, e.g. Groupe A"><button class="btn btn-primary btn-small" id="createClassGroupBtn">＋ Add group</button></div><div id="classGroupsList" style="margin-top:10px"></div></div></div>
-   <div class="panel" style="box-shadow:none;margin-bottom:16px"><div class="panel-head"><div><h3>Students in this class</h3><p>Add a student using their Lear Academy ID. Their profile and suggested class appear in a modal.</p></div><button class="btn btn-primary" id="addStudentToActiveClassBtn" type="button">＋ Add student</button></div></div>
-   <div class="panel" id="classStudentsPanel" style="box-shadow:none"><div class="panel-head"><div><h3>Students in this class</h3><p id="classStudentCount">Loading…</p></div></div><div id="classStudentsList" style="padding:10px 16px"><p class="empty">Loading students…</p></div></div>
-   <div id="classBulkGradeView" class="panel hidden" style="box-shadow:none;margin-top:16px">
-    <div class="panel-head"><div><button class="btn btn-light btn-small" id="backFromBulkGradesBtn">← Back to student list</button><h3 style="margin:12px 0 4px">Enter grades for the whole class</h3><p id="bulkClassSubtitle">Only students in this class are shown.</p></div></div>
-    <div style="padding:16px">
-     <div class="trimester-tabs" id="bulkTrimesterTabs">
-      <button type="button" class="trimester-tab active" data-bulk-trimester="1">First trimester</button>
-      <button type="button" class="trimester-tab" data-bulk-trimester="2">Second trimester</button>
-      <button type="button" class="trimester-tab" data-bulk-trimester="3">Third trimester</button>
-     </div>
-     <div class="bulk-grade-summary">
-      <div class="bulk-grade-stat"><small>Students in class</small><strong id="bulkTotalStudents">0</strong></div>
-      <div class="bulk-grade-stat"><small>Students with all 3 marks</small><strong id="bulkCompleteStudents">0</strong></div>
-      <div class="bulk-grade-stat"><small>Students missing marks</small><strong id="bulkMissingStudents">0</strong></div>
-      <div class="bulk-grade-stat"><small>Class general average</small><strong id="bulkClassAverage">—</strong></div>
-     </div>
-     <p id="bulkMissingNotice" class="muted-note">Students without all three marks will be counted as incomplete. The class average appears when every student has all three marks. You can still save the marks entered.</p>
-     <div class="table-wrap" id="bulkGradesTableWrap"><p class="empty">Loading grades…</p></div>
-     <div style="display:flex;justify-content:flex-end;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px">
-      <span class="muted-note" id="bulkSaveStatus">Changes are not saved until you click Save all students.</span>
-      <button type="button" class="btn btn-primary bulk-grade-btn" id="saveAllClassGradesBtn">Save all students</button>
-     </div>
+<div class="loading-screen" id="loadingScreen"><div class="loading-box"><strong>Mac&amp;Talk</strong><p id="loadingMessage">Checking your account...</p></div></div>
+<div class="app" id="app" hidden>
+<aside class="sidebar" id="mtSharedSidebar" aria-label="Main sidebar">
+  <div class="brand"><div class="brand-icon" aria-label="Mac&Talk logo">M&amp;T</div><div class="brand-name">Mac<span>&amp;</span>Talk</div></div>
+  <div class="nav-label">WORKSPACE</div>
+  <nav class="nav" aria-label="Workspace navigation">
+    <a class="nav-link active" data-page="user.html" href="user.html" aria-current="page"><span class="nav-icon">⌂</span>Dashboard</a>
+    <a class="nav-link" data-page="sessions.html" href="sessions.html"><span class="nav-icon">🎙️</span>Live Sessions</a>
+    <a class="nav-link" data-page="studio.html" href="studio.html"><span class="nav-icon">🎛️</span>Creator Studio</a>
+    <a class="nav-link" data-page="podcasts.html" href="podcasts.html"><span class="nav-icon">🎧</span>Podcasts</a>
+    <a class="nav-link" data-page="profile.html" href="profile.html"><span class="nav-icon">♙</span>My Profile</a>
+    <a class="nav-link" data-page="settings.html" href="settings.html"><span class="nav-icon">⚙</span>Settings</a>
+  </nav>
+  <div class="sidebar-spacer"></div>
+  <div class="sidebar-footer"><strong>🗨️ Keep talking!</strong><p>Share ideas, discover conversations, and connect with your community.</p></div>
+  <button class="signout" id="sidebarSignOut" type="button">↪ &nbsp; Sign out</button>
+</aside>
+<main class="main">
+<header class="topbar">
+  <div class="topbar-left"><button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-controls="mtSharedSidebar" aria-expanded="false">☰</button><div><h2 id="pageTitle">Dashboard</h2><p id="currentDate">Welcome to Mac&amp;Talk</p></div></div>
+  <div class="topbar-right">
+    <button type="button" class="results-top-button" id="openResultsButton" aria-label="Open my results" aria-haspopup="dialog" aria-expanded="false"><span class="results-button-icon">📊</span><span>My Results</span></button>
+    <div class="notification-wrap" id="notificationWrap">
+      <button type="button" class="notification-button" id="notificationButton" aria-label="Open notifications" aria-expanded="false" aria-controls="notificationPanel"><span class="notification-bell" aria-hidden="true">🔔</span><span class="notification-label">Notifications</span><span class="notification-badge" id="notificationBadge" hidden>0</span></button>
+      <div class="notification-panel" id="notificationPanel" role="region" aria-label="Notifications" hidden>
+        <div class="notification-panel-header"><div><h3>Notifications</h3><p>Discover what's happening on Mac&amp;Talk.</p></div><button type="button" id="closeNotifications" class="notification-close" aria-label="Close notifications">×</button></div>
+        <div class="notification-tabs"><span class="notification-tab">New sessions</span><span class="notification-count" id="notificationCount">0 sessions</span></div>
+        <div id="notificationList" class="notification-list"><div class="notification-empty"><span>🎙️</span><p>Loading sessions...</p></div></div>
+        <button type="button" class="notification-view-all" id="notificationViewAll">Explore all sessions →</button>
+      </div>
     </div>
-   </div>
-  </div></div>
- </div>
- <div class="modal-backdrop create-class-backdrop" id="createClassModal" aria-hidden="true">
-  <form id="createClassForm" class="modal create-class-modal" role="dialog" aria-modal="true" aria-labelledby="createClassTitle">
-   <div class="panel-head"><div><h3 id="createClassTitle">Create a class</h3><p>Set up your class using the Tunisian secondary-school structure.</p></div><button type="button" class="btn btn-light btn-small" id="closeCreateClassBtn" aria-label="Close">✕</button></div>
-   <div class="modal-body"><div class="form-grid">
-    <div class="form-field full"><label for="newClassLevel">1. School level *</label><select id="newClassLevel" required><option value="">Choose school level</option><option>1ère année secondaire</option><option>2ème année secondaire</option><option>3ème année secondaire</option><option>4ème année secondaire (Bac)</option></select></div>
-    <div class="form-field full"><label for="newClassTrack">2. Track *</label><select id="newClassTrack" required disabled><option value="">Choose level first</option></select><small class="field-hint">Sport is available only for the levels configured in the academic profile.</small></div>
-    <div class="form-field full" id="newClassStreamWrap"><label for="newClassStream">3. Stream / Section *</label><select id="newClassStream" required disabled><option value="">Choose track first</option></select></div>
-   </div><div class="class-name-preview" id="classNamePreview"><span>Class name preview</span><strong>Choose your academic options</strong></div><p class="muted-note">The class name is generated automatically. You can create and manage groups inside the class later.</p></div>
-   <div class="modal-foot"><button class="btn btn-light" id="cancelCreateClassBtn" type="button">Cancel</button><button class="btn btn-primary" id="saveClassBtn" type="submit">＋ Create class</button></div>
-  </form>
- </div>
- <div class="modal-backdrop" id="studentImportModal" aria-hidden="true"><div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="studentImportTitle"><div class="panel-head"><div><h3 id="studentImportTitle">Add quick student</h3><p>Enter the student's ID to load their saved academic information.</p></div><button class="btn btn-light btn-small" id="closeStudentImportBtn" type="button">✕</button></div><div class="modal-body"><div class="student-lookup"><div class="form-field"><label for="quickStudentIdInput">Lear Academy Student ID</label><div class="student-id-prefix"><span>MT-STU-</span><input id="quickStudentIdInput" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Enter 3–6 digits"></div></div><button class="btn btn-primary" id="lookupQuickStudentBtn" type="button">Find student</button></div><div id="studentImportPreview" class="import-preview-list"><p class="empty">Student information will appear here after you enter an ID.</p></div><p class="muted-note" style="margin-top:12px">The class matching the student's academic profile is selected automatically when available. You can change it before confirming.</p></div><div class="modal-foot"><button class="btn btn-light" id="cancelStudentImportBtn" type="button">Cancel</button><button class="btn btn-primary" id="confirmStudentImportBtn" type="button" disabled>Confirm and add student</button></div></div></div>
- <div class="modal-backdrop" id="unassignedStudentsModal" aria-hidden="true"><div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="unassignedStudentsTitle"><div class="panel-head"><div><h3 id="unassignedStudentsTitle">Students without a class</h3><p>Select a student to view their academic information and assign a class.</p></div><button class="btn btn-light btn-small" id="closeUnassignedStudentsBtn" type="button">✕</button></div><div class="modal-body"><div id="unassignedStudents" class="unassigned-list"><p class="empty">Loading students…</p></div></div><div class="modal-foot"><button class="btn btn-light" id="closeUnassignedStudentsFooter" type="button">Close</button></div></div></div>
-<div id="studentRecordView" class="hidden" style="margin-top:16px"><div class="panel"><div class="class-detail"><div class="class-detail-head"><div><button class="btn btn-light btn-small" id="backToClassStudentsBtn">← Back to class</button><h2 style="margin:12px 0 4px">Academic record</h2><p class="muted-note">Manage each trimester's marks separately.</p></div></div><div id="studentRecordHeader"></div><div id="studentGradesArea"></div></div></div></div>
+    <div class="results-modal" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsModalTitle" hidden>
+      <section class="results-modal-card">
+        <header class="results-modal-header">
+          <div><h2 id="resultsModalTitle">📊 My Academic Results</h2><p>Only your own results are shown here.</p></div>
+          <button type="button" class="results-modal-close" id="closeResultsButton" aria-label="Close results">×</button>
+        </header>
+        <div class="results-trimester-tabs" role="tablist" aria-label="Choose trimester">
+          <button type="button" class="results-trimester-tab active" data-trimester="first" role="tab" aria-selected="true">First Trimester</button>
+          <button type="button" class="results-trimester-tab" data-trimester="second" role="tab" aria-selected="false">Second Trimester</button>
+          <button type="button" class="results-trimester-tab" data-trimester="third" role="tab" aria-selected="false">Third Trimester</button>
+        </div>
+        <div class="results-content" id="resultsContent" aria-live="polite"><div class="results-empty">Loading your results…</div></div>
+      </section>
+    </div>
+    <div class="user-mini"><strong id="headerName">Member</strong><span>Mac&amp;Talk Member</span></div><div class="avatar" id="headerAvatar">M</div>
+  </div>
+</header>
+<div class="content"><div id="notice" class="notice" role="status" aria-live="polite"></div>
+<section class="page-panel active" id="dashboardPage">
+  <section class="your-grades-section" aria-labelledby="yourGradesTitle">
+    <div class="your-grades-heading"><div><h2 id="yourGradesTitle">📚 Your Grades</h2><p>Your marks for all three trimesters</p></div><button class="join-btn" type="button" id="dashboardOpenResults">View details</button></div>
+    <div class="your-grades-grid" id="dashboardGradeCards" aria-live="polite">
+      <article class="your-trimester-card"><h3>First Trimester</h3><div class="your-grade-empty">Loading your grades…</div></article>
+      <article class="your-trimester-card"><h3>Second Trimester</h3><div class="your-grade-empty">Loading your grades…</div></article>
+      <article class="your-trimester-card"><h3>Third Trimester</h3><div class="your-grade-empty">Loading your grades…</div></article>
+    </div>
+  </section>
+  <div class="welcome-banner"><div><h1>Welcome back, <span id="welcomeName">Member</span>! 👋</h1><div class="welcome-member-id"><span class="member-id-icon">✦</span><span>MEMBER ID</span><strong id="welcomeMemberId">Loading...</strong><button type="button" id="copyMemberId" aria-label="Copy member ID" title="Copy member ID">⧉</button></div><p>Your voice matters. Discover conversations, listen to live sessions, and connect with people through Mac&amp;Talk.</p></div><button class="primary-btn" type="button" data-go="sessions">🎙️ Explore Sessions</button></div>
+  <div class="section-heading"><div><h2>Your Overview</h2><p>Your account at a glance</p></div></div>
+  <div class="stats-grid">
+    <article class="stat-card"><div class="stat-top"><div class="stat-icon">🎙️</div><span class="live-indicator"><span class="live-dot"></span>Explore</span></div><h3 id="sessionCount">0</h3><p>Available approved sessions</p></article>
+    <article class="stat-card"><div class="stat-top"><div class="stat-icon">👤</div></div><h3 id="accountStatus">Active</h3><p>Your account status</p></article>
+    <article class="stat-card"><div class="stat-top"><div class="stat-icon">📅</div></div><h3 id="memberSince">Today</h3><p>Member since</p></article>
+  </div>
+  <div class="section-heading"><div><h2>Discover Sessions</h2><p>Explore conversations from the Mac&amp;Talk community</p></div><button class="join-btn" type="button" data-go="sessions">View all</button></div>
+  <div class="session-grid" id="dashboardSessions"><div class="empty-state">Loading sessions...</div></div>
 </section>
-
-<section class="page" id="page-room"><div class="welcome"><div><h2>Live video room</h2><p>Choose one of your approved sessions to start or join its embedded video room.</p></div></div><div class="panel"><div class="panel-head"><div><h3 id="roomTitle">Choose a session</h3><p id="roomStatus">The room opens inside Mac&Talk.</p></div><button class="btn btn-light btn-small" id="leaveRoomBtn">Leave room</button></div><div style="padding:18px"><div class="video-controls"><select id="roomSessionSelect" class="field-control"><option value="">Choose approved session…</option></select><button class="btn btn-primary" id="launchRoomBtn">Open video room</button></div><div id="roomContainer"><div class="room-placeholder"><div style="font-size:42px;margin-bottom:12px">📹</div><strong>Your classroom, in one place</strong><p class="muted-note" style="color:#b9c7d9">Select an approved session and open its room. Allow microphone and camera access when prompted.</p></div></div><p class="muted-note">Video rooms are embedded using Jitsi Meet. It is an external video service displayed inside this page; production use should review its privacy and service terms.</p></div></div></section>
-<section class="page" id="page-messages"><div class="welcome"><div><h2>Messages</h2><p>Quick access to Mac&Talk conversations, when a compatible messaging page is installed.</p></div></div><div class="panel info-card"><h3>💬 Student communication</h3><p id="messageInfo">Messaging is not connected in this project bundle yet.</p><p class="muted-note">The supplied files do not include a chat/messages page or a confirmed messaging database schema. This section is intentionally read-only until those are added.</p></div></section>
-<section class="page" id="page-settings"><div class="welcome"><div><h2>Account & settings</h2><p>Your signed-in teacher account.</p></div></div><div class="grid-two"><div class="panel info-card"><h3>Teacher profile</h3><p><strong>Name:</strong> <span id="profileName">—</span></p><p><strong>Email:</strong> <span id="profileEmail">—</span></p><p><strong>Role:</strong> Teacher</p></div><div class="panel info-card"><h3>Security</h3><p>Sessions are linked to your signed-in Supabase account. Admin approval is required before members can access new sessions.</p><button class="btn btn-danger" id="settingsSignOutBtn">Sign out</button></div></div></section>
-</div></main></div>
-<div class="modal-backdrop" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><form class="modal" id="sessionForm"><div class="panel-head"><h3 id="modalTitle">Create session</h3><button type="button" class="btn btn-light btn-small" id="closeModal">×</button></div><div class="modal-body"><div class="form-grid"><div class="form-field full"><label for="sessionTitle">Session title *</label><input id="sessionTitle" required maxlength="100" placeholder="e.g. English Conversation Club"></div><div class="form-field"><label for="sessionDate">Date and time *</label><input id="sessionDate" type="datetime-local" required></div><div class="form-field"><label for="sessionEmoji">Session icon</label><input id="sessionEmoji" maxlength="8" value="🎙️"></div><div class="form-field full"><label for="sessionDescription">Description</label><textarea id="sessionDescription" maxlength="1000" placeholder="What will students learn or discuss?"></textarea></div></div><p class="muted-note">All sessions are submitted as <strong>Pending approval</strong>. An admin must approve your session before its room becomes available to students.</p></div><div class="modal-foot"><button type="button" class="btn btn-light" id="cancelModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveSessionBtn">Submit for approval</button></div></form></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<section class="page-panel" id="sessionsPage"><div class="section-heading" style="margin-top:0"><div><h2>Live Sessions</h2><p>Join live conversations or see what's scheduled.</p></div><button class="join-btn" id="refreshSessions" type="button">↻ Refresh</button></div><div class="session-grid" id="allSessions"><div class="empty-state">Loading sessions...</div></div></section>
+<section class="page-panel" id="profilePage"><div class="section-heading" style="margin-top:0"><div><h2>My Profile</h2><p>Your signed-in account information</p></div></div><div class="profile-card"><div class="profile-header"><div class="avatar" id="profileAvatar">M</div><div><h3 id="profileName">Member</h3><p id="profileEmail">Loading email...</p></div></div><div class="profile-row"><span>Full name</span><strong id="profileFullName">—</strong></div><div class="profile-row"><span>Email address</span><strong id="profileEmailRow">—</strong></div><div class="profile-row"><span>Account status</span><strong>Active</strong></div><div class="profile-row"><span>Email verified</span><strong id="profileVerified">Not verified</strong></div><div class="profile-row"><span>Mac&amp;Talk ID</span><strong id="profileUid">Loading...</strong></div></div></section>
+<section class="page-panel" id="settingsPage"><div class="section-heading" style="margin-top:0"><div><h2>Settings</h2><p>Manage your current session</p></div></div><div class="settings-card"><h3>Account and security</h3><p>You are signed in with Supabase Authentication. Sign out when you have finished using this device.</p><button class="signout" id="settingsSignOut" type="button">↪ &nbsp; Sign out of Mac&amp;Talk</button></div></section>
+<footer class="page-footer">© <span id="footerYear"></span> Mac&amp;Talk · Made for conversations.</footer>
+</div>
+</main>
+</div>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const SUPABASE_URL="https://gprdmwjqgyrvqrgjkycc.supabase.co";
-const SUPABASE_KEY="sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
-const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=id=>document.getElementById(id); let user=null,profile=null,sessions=[],students=[],editingId=null,noticeTimer=null,roomFrame=null,teacherClasses=[],activeClass=null,classGroups=[],classStudents=[],activeStudent=null,studentGrades=[],bulkTrimester=1,bulkClassGrades=[];
-let pendingStudentImport=[];
-const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function notice(msg,type="success"){const n=$("notice");n.textContent=msg;n.className="notice show "+(type==="error"?"error":"success");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>n.className="notice",6000)}
-function gate(title,msg,showLink=true){$("gateTitle").textContent=title;$("gateText").textContent=msg;$("spinner").classList.add("hidden");if(showLink)$("gateActions").classList.remove("hidden")}
 
-/* ================= MAC&TALK TEACHER QUIZ CENTER ================= */
-let teacherQuizzes=[];
-async function loadTeacherQuizzes(){
- const {data,error}=await supabase.from("quizzes").select("id,title,description,subject,status,created_at,quiz_questions(id)").order("created_at",{ascending:false});
- if(error)throw error;teacherQuizzes=data||[];
- if($("teacherQuestionQuiz"))$("teacherQuestionQuiz").innerHTML=teacherQuizzes.map(q=>`<option value="${esc(q.id)}">${esc(q.title)} · ${q.quiz_questions?.length||0} questions</option>`).join("")||'<option value="">Create a quiz first</option>';
- $("teacherQuizList").innerHTML=teacherQuizzes.length?teacherQuizzes.map(q=>`<article class="quiz-item"><div class="quiz-item-head"><div><h3>${esc(q.title)}</h3><div class="quiz-meta">${esc(q.subject||"No subject")} · ${q.quiz_questions?.length||0} questions</div></div><span class="pill ${q.status==="published"?"pill-approved":"pill-pending"}">${esc(q.status)}</span></div><div class="quiz-actions"><button class="btn btn-primary btn-small" data-teacher-quiz-launch="${esc(q.id)}">Start this quiz</button><button class="btn btn-light btn-small" data-teacher-quiz-publish="${esc(q.id)}">Publish</button><button class="btn btn-danger btn-small" data-teacher-quiz-delete="${esc(q.id)}">Delete</button></div></article>`).join(""):'<p class="empty">You have not created any quizzes yet.</p>';
-}
-async function createTeacherQuiz(){
- const title=$("teacherQuizTitle").value.trim();if(!title)return notice("Enter a quiz title.","error");
- const {data,error}=await supabase.from("quizzes").insert({owner_id:user.id,title,subject:$("teacherQuizSubject").value.trim(),description:$("teacherQuizDescription").value.trim(),status:$("teacherQuizStatus").value}).select("id").single();
- if(error)throw error;$("teacherQuizTitle").value="";$("teacherQuizSubject").value="";$("teacherQuizDescription").value="";await loadTeacherQuizzes();$("teacherQuestionQuiz").value=data.id;notice("Quiz created.");
-}
-async function addTeacherQuestion(){
- const id=$("teacherQuestionQuiz").value,question=$("teacherQuestionText").value.trim(),keys=["A","B","C","D"],options=keys.map(k=>({id:k,text:$("teacherOpt"+k).value.trim()}));
- if(!id||!question||options.some(o=>!o.text))return notice("Choose a quiz and complete the question and all four options.","error");
- const q=teacherQuizzes.find(x=>x.id===id);
- const {error}=await supabase.from("quiz_questions").insert({quiz_id:id,position:(q?.quiz_questions?.length||0)+1,question_text:question,options,correct_option_id:$("teacherCorrect").value,explanation:$("teacherExplanation").value.trim(),points:Math.max(1,Number($("teacherPoints").value)||1),timer_seconds:Math.min(600,Math.max(5,Number($("teacherTimer").value)||30))});
- if(error)throw error;$("teacherQuestionText").value="";keys.forEach(k=>$("teacherOpt"+k).value="");$("teacherExplanation").value="";await loadTeacherQuizzes();notice("Question added.");
-}
-async function startTeacherQuiz(id){
- const q=teacherQuizzes.find(x=>x.id===id);if(!q)return notice("Quiz not found.","error");
- if(!q.quiz_questions?.length)return notice("Add at least one question before starting.","error");
- const {data,error}=await supabase.rpc("quiz_create_session",{p_quiz_id:id});if(error)throw error;
- // Keep Wi-Fi data in this tab only; never expose the password in the URL.
- const wifi={ssid:$("quizWifiName").value.trim(),password:$("quizWifiPassword").value};
- sessionStorage.setItem("mactalk_quiz_wifi_"+data.session_id,JSON.stringify(wifi));
- const joinUrl=new URL("join.html",location.href);joinUrl.searchParams.set("pin",data.pin);joinUrl.searchParams.set("session",data.session_id);joinUrl.searchParams.set("host","1");
- location.href=`quiz-live.html?session=${encodeURIComponent(data.session_id)}&pin=${encodeURIComponent(data.pin)}&host=1`;
-}
-async function teacherQuizAction(action,id){
- if(action==="delete"&&!confirm("Delete this quiz and all its questions?"))return;
- if(action==="publish"){const {error}=await supabase.from("quizzes").update({status:"published"}).eq("id",id);if(error)throw error;await loadTeacherQuizzes();notice("Quiz published.");}
- if(action==="delete"){const {error}=await supabase.from("quizzes").delete().eq("id",id);if(error)throw error;await loadTeacherQuizzes();notice("Quiz deleted.");}
- if(action==="launch")await startTeacherQuiz(id);
-}
+const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+// Keep the results overlay at the document root so it always covers the entire page.
+const resultsOverlay = $("resultsModal");
+if (resultsOverlay) document.body.appendChild(resultsOverlay);
+let currentUser = null;
+let noticeTimeout = null;
+let signingOut = false;
+let sessions = [];
+let notificationInitialized = false;
+let creatorNotifications = [];
+let studentResults = [];
+let activeResultsTrimester = "first";
+let authListenerRegistered = false;
+const SEEN_KEY = "mactalk_seen_sessions_v1";
+const pageTitles = {dashboard:"Dashboard",sessions:"Live Sessions",profile:"My Profile",settings:"Settings"};
 
-function switchPage(name){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id==="page-"+name));document.querySelectorAll(".nav button[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===name));const names={overview:"Teacher overview",sessions:"My live sessions",students:"My permitted students",classes:"Student Classes",room:"Live video room",messages:"Messages",settings:"Account & settings",quizzes:"Quiz Center"};$("pageHeading").textContent=names[name]||"Teacher workspace";if(name==="students")loadStudents();if(name==="classes")loadTeacherClasses();if(name==="sessions"||name==="overview")loadSessions();if(name==="quizzes")loadTeacherQuizzes().catch(e=>notice("Quiz Center: "+e.message,"error"));}
-function pill(s){return s.approved?'<span class="tag approved">Approved</span>':'<span class="tag">Pending approval</span>'}
-function sessionCard(s){const when=s.scheduled_at?new Date(s.scheduled_at).toLocaleString():"Time not set";return `<article class="session-card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><h3>${esc(s.emoji||"🎙️")} ${esc(s.title)}</h3>${pill(s)}</div><p>${esc(s.description||"No description added.")}</p><p>📅 ${esc(when)} · <span class="pill pill-${esc(s.status||"scheduled")}">${esc(s.status||"scheduled")}</span></p><div class="session-actions">${s.approved?`<button class="btn btn-primary btn-small" data-room="${esc(s.id)}">📹 Open room</button><span class="muted-note">Ask admin to change approved details</span>`:`<button class="btn btn-light btn-small" data-edit="${esc(s.id)}">✎ Edit details</button>`}<button class="btn btn-danger btn-small" data-delete="${esc(s.id)}">Delete</button></div></article>`}
-function renderSessions(){const cards=sessions.length?sessions.map(sessionCard).join(""):'<p class="empty">You have not created any sessions yet. Click “Create session” to start.</p>';$("mySessions").innerHTML=cards;const next=[...sessions].sort((a,b)=>new Date(a.scheduled_at||a.created_at)-new Date(b.scheduled_at||b.created_at)).slice(0,4);$("upcomingSessions").innerHTML=next.length?next.map(sessionCard).join(""):'<p class="empty">No sessions yet. Create your first session.</p>';$("statTotal").textContent=sessions.length;$("statPending").textContent=sessions.filter(s=>!s.approved).length;$("statApproved").textContent=sessions.filter(s=>s.approved).length;const sel=$("roomSessionSelect"),old=sel.value;sel.innerHTML='<option value="">Choose approved session…</option>'+sessions.filter(s=>s.approved&&s.status!=="ended").map(s=>`<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("");if([...sel.options].some(o=>o.value===old))sel.value=old}
-async function loadSessions(){if(!user)return;try{const {data,error}=await supabase.from("live_sessions").select("id,owner_id,title,host,emoji,status,description,approved,scheduled_at,created_at,updated_at").eq("owner_id",user.id).order("created_at",{ascending:false});if(error)throw error;sessions=data||[];renderSessions()}catch(e){console.error(e);$("mySessions").innerHTML=`<p class="empty">Could not load sessions: ${esc(e.message)}. Run the teacher SQL setup and verify RLS.</p>`;$("upcomingSessions").innerHTML='<p class="empty">Session data unavailable.</p>'}}
-async function loadStudents(){try{const {data,error}=await supabase.rpc("teacher_list_registered_students");if(error)throw error;students=data||[];$("statStudents").textContent=students.length;renderStudents()}catch(e){console.error(e);$("studentsList").innerHTML=`<p class="empty">Could not load students: ${esc(e.message)}. Run the teacher SQL setup.</p>`;$("studentCount").textContent="Unavailable"}}
-function renderStudents(){const q=$("studentSearch").value.trim().toLowerCase();const filtered=students.filter(s=>`${s.display_name||""} ${s.email||""}`.toLowerCase().includes(q));$("studentCount").textContent=`${filtered.length} student${filtered.length===1?"":"s"}`;$("studentsList").innerHTML=filtered.length?filtered.map(s=>`<article class="student-card"><div class="student-avatar">${esc((s.display_name||s.email||"S").slice(0,1).toUpperCase())}</div><div class="student-meta"><strong>${esc(s.display_name||"Student")}</strong><span>${esc(s.email||"No email")}</span><span>Joined ${s.created_at?esc(new Date(s.created_at).toLocaleDateString()):"—"}</span></div></article>`).join(""):'<p class="empty">No students match your search.</p>'}
-
-function classStudentName(id){const s=students.find(x=>String(x.id||x.student_id||x.user_id||x.auth_user_id)===String(id));return s?.display_name||s?.full_name||s?.email||"Student"}
-function classStudentEmail(id){const s=students.find(x=>String(x.id||x.student_id||x.user_id||x.auth_user_id)===String(id));return s?.email||"Lear Academy student"}
-const CLASS_STREAMS={
- "1ère année secondaire":["Tronc commun"],
- "2ème année secondaire":["Lettres","Sciences","Économie et Services","Technologies de l'information"],
- "3ème année secondaire":["Lettres","Mathématiques","Sciences expérimentales","Sciences techniques","Informatique","Économie et Gestion"],
- "4ème année secondaire (Bac)":["Lettres","Mathématiques","Sciences expérimentales","Sciences techniques","Informatique","Économie et Gestion"]
-};
-function updateClassStreamOptions(){
- const level=$("newClassLevel").value,trackSel=$("newClassTrack"),oldTrack=trackSel.value;
- trackSel.innerHTML=level?'<option value="Normal">Normal</option>'+(["1ère année secondaire","2ème année secondaire","3ème année secondaire"].includes(level)?'<option value="Sport">Sport</option>':""):'<option value="">Choose level first</option>';
- if(level&&[...trackSel.options].some(o=>o.value===oldTrack))trackSel.value=oldTrack;else if(level)trackSel.value="Normal";
- trackSel.disabled=!level;
- const track=trackSel.value,sel=$("newClassStream"),wrap=$("newClassStreamWrap");
- if(track==="Sport"){wrap.classList.add("hidden");sel.required=false;sel.disabled=true;sel.innerHTML='<option value="">Sport</option>';}
- else{wrap.classList.remove("hidden");sel.required=!!level;sel.disabled=!level;sel.innerHTML='<option value="">Choose section</option>'+(CLASS_STREAMS[level]||[]).map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");}
- updateClassNamePreview();
+function showNotice(message,type="success"){
+  const el=$("notice");
+  if(!el)return;
+  el.textContent=message;
+  el.className=`notice show ${type}`;
+  clearTimeout(noticeTimeout);
+  noticeTimeout=setTimeout(()=>el.className="notice",4500);
 }
-function updateClassNamePreview(){const level=$("newClassLevel").value,track=$("newClassTrack").value,stream=$("newClassStream").value;const name=[level,track,track==="Sport"?null:stream].filter(Boolean).join(" · ");$("classNamePreview").querySelector("strong").textContent=name||"Choose your academic options";}
-function classMetaText(c){return [c.school_level,c.school_track,c.school_stream].filter(Boolean).join(" · ")||c.class_name;}
-async function loadTeacherClasses(){
- const root=$("teacherClassList");root.innerHTML='<p class="empty">Loading classes…</p>';
- try{const {data,error}=await supabase.from("teacher_classes").select("id,teacher_id,class_name,school_level,school_track,school_stream,created_at").eq("teacher_id",user.id).order("created_at",{ascending:false});if(error)throw error;teacherClasses=data||[];renderTeacherClasses();await loadUnassignedStudents();}
- catch(e){console.error(e);root.innerHTML=`<p class="empty">Could not load classes: ${esc(e.message)}. Run the Teacher Classes SQL update first.</p>`;}
+function showFatal(message){
+  $("loadingMessage").textContent=message;
+  let link=$("loadingScreen").querySelector("a");
+  if(!link){
+    link=document.createElement("a");
+    link.href="login.html";
+    link.textContent="Return to login";
+    $("loadingScreen").querySelector(".loading-box").append(link);
+  }
 }
-async function renderTeacherClasses(){
- const root=$("teacherClassList");if(!teacherClasses.length){root.innerHTML='<p class="empty">No classes yet. Create your first class to get started.</p>';return;}
- const counts={};for(const c of teacherClasses){const {count,error}=await supabase.from("class_students").select("id",{count:"exact",head:true}).eq("class_id",c.id);counts[c.id]=error?null:count;}
- root.innerHTML=teacherClasses.map(c=>`<article class="class-tile"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tag approved">Your class</span><span style="font-size:20px">🎓</span></div><h3>${esc(c.class_name)}</h3><p>${esc(classMetaText(c))}</p><p>${counts[c.id]===null?"Student count unavailable":`${counts[c.id]} student${counts[c.id]===1?"":"s"}`}</p><div class="class-tile-foot"><span class="muted-note">Created ${c.created_at?esc(new Date(c.created_at).toLocaleDateString()):"—"}</span><button class="btn btn-primary btn-small" data-open-class="${esc(c.id)}">Open class →</button></div></article>`).join("");
+function initials(name){
+  return String(name||"Member").trim().split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join("").toUpperCase()||"M";
 }
-function openCreateClassModal(){const form=$("createClassForm");form.reset();updateClassStreamOptions();$("createClassModal").classList.add("open");$("createClassModal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";setTimeout(()=>$("newClassLevel").focus(),40);}
-function closeCreateClassModal(){const modal=$("createClassModal");if(!modal)return;modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.style.overflow="";$("createClassForm")?.reset();updateClassStreamOptions();}
-async function createTeacherClass(e){
- e.preventDefault();const level=$("newClassLevel").value,track=$("newClassTrack").value,stream=track==="Sport"?null:$("newClassStream").value;
- if(!level||(!stream&&track!=="Sport"))return notice("Choose the level, track, and section.","error");
- const name=[level,track,stream].filter(Boolean).join(" · ");const btn=$("saveClassBtn");btn.disabled=true;btn.textContent="Creating…";
- try{const {data,error}=await supabase.from("teacher_classes").insert({teacher_id:user.id,class_name:name,school_level:level,school_track:track,school_stream:stream}).select("id,teacher_id,class_name,school_level,school_track,school_stream,created_at").single();if(error)throw error;teacherClasses.unshift(data);closeCreateClassModal();await renderTeacherClasses();notice("Class created successfully.");}
- catch(e){notice(e.message||"Could not create class.","error");}finally{btn.disabled=false;btn.textContent="Create class";}
+function formatDate(value,options={}){
+  if(!value)return "Unknown";
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())?"Unknown":new Intl.DateTimeFormat(undefined,options).format(date);
 }
-async function openTeacherClass(id){
- activeClass=teacherClasses.find(c=>String(c.id)===String(id));if(!activeClass)return;
- $("classListView").classList.add("hidden");$("studentRecordView").classList.add("hidden");$("classBulkGradeView").classList.add("hidden");$("classStudentsPanel").classList.remove("hidden");$("classDetailView").classList.remove("hidden");$("activeClassName").textContent=activeClass.class_name;$("activeClassMeta").textContent=classMetaText(activeClass);await loadClassGroups();await loadClassStudents();
+function readSeen(){
+  try{return new Set(JSON.parse(localStorage.getItem(SEEN_KEY)||"[]").map(String));}
+  catch{return new Set();}
 }
-function extractStudentDigitsFromDocument(text){
- const found=new Set();
- // Prefer explicit Lear Academy/student ID labels first.
- const explicit=/(?:MT\s*[- ]?\s*STU\s*[- ]?|STU\s*[- ]?|student\s*(?:id|number|no\.?|#)\s*[:#-]?|\bID\s*[:#-])\s*(\d{3,5})/gi;
- let m;while((m=explicit.exec(text))!==null)found.add(m[1]);
- // Also accept plain 3–5 digit IDs in lists where the document contains only the digits.
- const plain=/(?:^|[^\d])(?:MT\s*[- ]?\s*STU\s*[- ]?)?(\d{3,5})(?!\d)/gim;
- while((m=plain.exec(text))!==null)found.add(m[1]);
- return [...found];
-}
-async function readStudentIdDocument(file){
- const name=file.name.toLowerCase(),ext=name.split('.').pop();
- if(ext==='txt'||ext==='csv')return await file.text();
- if(ext==='pdf'){
-  if(!window.pdfjsLib)throw new Error('PDF reader did not load. Refresh the page and try again.');
-  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let pages=[];
-  for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();pages.push(content.items.map(x=>x.str).join(' '));}
-  return pages.join('\n');
- }
- if(ext==='docx'){
-  if(!window.mammoth)throw new Error('Word document reader did not load. Refresh the page and try again.');
-  return (await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()})).value;
- }
- if(ext==='xlsx'||ext==='xls'){
-  if(!window.XLSX)throw new Error('Excel reader did not load. Refresh the page and try again.');
-  const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});return wb.SheetNames.map(n=>XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n');
- }
- throw new Error('Unsupported file. Upload PDF, DOCX, TXT, CSV, XLSX or XLS.');
-}
-async function importStudentIdsDocument(){
- const file=$('studentIdsDocument')?.files?.[0];if(!file)return notice('Choose a document first.','error');
- const status=$('studentIdsImportStatus'),btn=$('uploadStudentIdsBtn');btn.disabled=true;btn.textContent='Reading document…';status.textContent='Reading the document and detecting student IDs…';
- try{
-  const text=await readStudentIdDocument(file);const ids=extractStudentDigitsFromDocument(text);
-  if(!ids.length)throw new Error('No 3, 4 or 5 digit student IDs were detected. Check that the document contains selectable text, not only scanned images.');
-  status.textContent=`Detected ${ids.length} unique ID(s) in ${file.name}. Checking student accounts…`;
-  activeClass=null;await showStudentPreview(ids);
-  const autoRows=pendingStudentImport.filter(r=>r.found&&r.matched_class_id);let autoAdded=0,autoFailed=[];
-  for(const r of autoRows){try{const {error}=await supabase.rpc("teacher_add_student_to_class",{p_class_id:r.matched_class_id,p_student_digits:r.student_digits});if(error)throw error;autoAdded++;r._autoAdded=true;}catch(err){autoFailed.push(r);r._autoError=err.message||"Could not add automatically";}}
-  // Keep successfully auto-added rows visible as a result, but prevent a second submission.
-  pendingStudentImport=pendingStudentImport.filter(r=>!r._autoAdded);
-  renderStudentImportPreview();
-  if(autoAdded){const summary=`<div class="import-status success" style="margin-bottom:12px">✓ ${autoAdded} student(s) automatically added to the class matched with their academic profile.</div>`;$('studentImportPreview').insertAdjacentHTML('afterbegin',summary);}
-  if(!pendingStudentImport.length&&autoAdded){$('studentImportPreview').innerHTML=`<div class="import-status success">✓ All ${autoAdded} matched student(s) were added automatically. No manual class selection is needed.</div>`;}
-  await loadStudents();await loadTeacherClasses();
-  const needsClass=pendingStudentImport.filter(r=>r.found).length;
-  status.textContent=`${ids.length} ID(s) detected. ${autoAdded} student(s) automatically added to their matched class. ${needsClass} student(s) need a class selection.`;
-  if(!needsClass){$('confirmStudentImportBtn').disabled=true;$('confirmStudentImportBtn').textContent='All matched students added';}
-  if(autoFailed.length)notice(`${autoFailed.length} matched student(s) could not be added automatically. Review and assign them manually.`,'error');
- }catch(e){status.textContent=e.message;notice(e.message,'error');}
- finally{btn.disabled=false;btn.textContent='Upload document →';$('studentIdsDocument').value='';}
-}
-async function showStudentPreview(digitsList){
- const unique=[...new Set(digitsList.map(x=>String(x).replace(/\D/g,"")).filter(x=>/^\d{3,6}$/.test(x)))];if(!unique.length)throw new Error("Enter a valid 3–6 digit student ID.");
- const {data,error}=await supabase.rpc("teacher_preview_class_students",{p_student_digits:unique});if(error)throw error;
- pendingStudentImport=(data||[]).map(r=>({...r,selectedClass:r.matched_class_id||(activeClass?.id||"")}));
- const found=new Set(pendingStudentImport.map(x=>String(x.student_digits)));for(const d of unique)if(!found.has(d))pendingStudentImport.push({student_digits:d,found:false,display_name:"Student not found",academic_status:"Account not found",matched_class_id:null,selectedClass:""});
- renderStudentImportPreview();$("studentImportModal").classList.add("open");$("studentImportModal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
-}
-function renderStudentImportPreview(){
- const root=$("studentImportPreview");root.innerHTML=pendingStudentImport.map((r,i)=>{const academic=[r.school_level,r.school_track,r.school_stream,r.school_class].filter(Boolean).join(" · ");const choices=teacherClasses.map(c=>`<option value="${esc(c.id)}" ${String(r.selectedClass)===String(c.id)?"selected":""}>${esc(c.class_name)}</option>`).join("");return `<article class="import-student"><div><strong>${esc(r.display_name||"Student")} · MT-STU-${esc(r.student_digits)}</strong><small>${esc(r.email||"")}<br><b>Academic profile:</b> ${esc(academic||r.academic_status||"Not completed")}<br><b>Suggested class:</b> ${esc(teacherClasses.find(c=>String(c.id)===String(r.matched_class_id))?.class_name||"No automatic match")}</small></div><div><label class="field-hint" for="import-class-${i}">Choose class</label><select id="import-class-${i}" class="field-control" data-import-class="${i}" ${!r.found?"disabled":""}><option value="">Choose a class</option>${choices}</select></div></article>`;}).join("")||'<p class="empty">No student information found.</p>';
- const valid=pendingStudentImport.some(r=>r.found);$("confirmStudentImportBtn").disabled=!valid;
-}
-function openQuickStudentModal(){pendingStudentImport=[];$("quickStudentIdInput").value="";$("studentImportPreview").innerHTML='<p class="empty">Student information will appear here after you enter an ID.</p>';$("confirmStudentImportBtn").disabled=true;$("studentImportModal").classList.add("open");$("studentImportModal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";setTimeout(()=>$("quickStudentIdInput").focus(),40);}
-function closeStudentImport(){$("studentImportModal").classList.remove("open");$("studentImportModal").setAttribute("aria-hidden","true");pendingStudentImport=[];document.body.style.overflow="";}
-async function lookupQuickStudent(){const digits=$("quickStudentIdInput").value.replace(/\D/g,"");if(!/^\d{3,6}$/.test(digits))return notice("Enter a valid 3–6 digit student ID.","error");const btn=$("lookupQuickStudentBtn");btn.disabled=true;btn.textContent="Searching…";try{await showStudentPreview([digits]);}catch(e){notice(e.message||"Could not find this student.","error");}finally{btn.disabled=false;btn.textContent="Find student";}}
-async function confirmStudentImport(){
- const selects=[...document.querySelectorAll("[data-import-class]")];for(const sel of selects){const i=Number(sel.dataset.importClass);if(pendingStudentImport[i])pendingStudentImport[i].selectedClass=sel.value||pendingStudentImport[i].matched_class_id||"";}
- const candidates=pendingStudentImport.filter(r=>r.found&&r.selectedClass);if(!candidates.length)return notice("Choose a class for this student.","error");
- const btn=$("confirmStudentImportBtn");btn.disabled=true;btn.textContent="Adding…";let ok=0,failed=[];
- try{for(const r of candidates){const {error}=await supabase.rpc("teacher_add_student_to_class",{p_class_id:r.selectedClass,p_student_digits:r.student_digits});if(error)failed.push(`MT-STU-${r.student_digits}: ${error.message}`);else ok++;}
-  closeStudentImport();await loadStudents();await loadTeacherClasses();if(activeClass)await loadClassStudents();notice(`${ok} student${ok===1?"":"s"} added.${failed.length?" Some could not be added: "+failed.join("; "):""}`,failed.length?"error":"success");
- }finally{btn.disabled=false;btn.textContent="Confirm and add student";}
-}
-function openUnassignedStudentsModal(){$("unassignedStudentsModal").classList.add("open");$("unassignedStudentsModal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";loadUnassignedStudents().catch(e=>notice(e.message,"error"));}
-function closeUnassignedStudentsModal(){$("unassignedStudentsModal").classList.remove("open");$("unassignedStudentsModal").setAttribute("aria-hidden","true");document.body.style.overflow="";}
-async function loadClassStudents(){
- const root=$("classStudentsList");root.innerHTML='<p class="empty">Loading students…</p>';
- try{const {data:links,error}=await supabase.from("class_students").select("id,class_id,student_id,added_at,group_id").eq("class_id",activeClass.id).order("added_at",{ascending:false});if(error)throw error;classStudents=links||[];await loadStudents();classStudents.sort((a,b)=>classStudentName(a.student_id).localeCompare(classStudentName(b.student_id),undefined,{sensitivity:"base"}));
-  $("classStudentCount").textContent=`${classStudents.length} student${classStudents.length===1?"":"s"}`;
-  root.innerHTML=classStudents.length?classStudents.map(link=>{const st=students.find(x=>String(x.id||x.student_id)===String(link.student_id))||{};const g=classGroups.find(x=>String(x.id)===String(link.group_id));return `<div class="class-student-row"><div style="display:flex;gap:11px;align-items:center;min-width:0"><div class="student-avatar">${esc(classStudentName(link.student_id).slice(0,1).toUpperCase())}</div><div style="min-width:0"><div class="class-student-name">${esc(classStudentName(link.student_id))}</div><div class="class-student-sub">${esc(st.mac_talk_id||"")} · ${esc(classStudentEmail(link.student_id))}</div></div></div><div class="actions"><select class="field-control" style="min-width:125px" data-student-group="${esc(link.student_id)}"><option value="">No group</option>${classGroups.map(g=>`<option value="${esc(g.id)}" ${String(g.id)===String(link.group_id)?"selected":""}>${esc(g.group_name)}</option>`).join("")}</select><button class="btn btn-primary btn-small" data-open-record="${esc(link.student_id)}">Academic record</button><button class="btn btn-danger btn-small" data-remove-class-student="${esc(link.student_id)}">Remove</button></div></div>`;}).join(""):'<p class="empty">This class is empty. Use Add quick student to add a student.</p>';
- }catch(e){console.error(e);root.innerHTML=`<p class="empty">Could not load class students: ${esc(e.message)}</p>`;$("classStudentCount").textContent="Unavailable";}
-}
-async function addStudentToClass(e){e.preventDefault();const digits=$("studentDigits").value.trim();if(!/^\d{3,6}$/.test(digits))return notice("Enter 3–6 digits.","error");try{await showStudentPreview([digits]);$("studentDigits").value="";}catch(e){notice(e.message,"error");}}
-async function loadClassGroups(){const {data,error}=await supabase.from("teacher_class_groups").select("id,class_id,group_name,created_at").eq("class_id",activeClass.id).order("created_at");if(error)throw error;classGroups=data||[];$("classGroupsList").innerHTML=classGroups.length?classGroups.map(g=>`<span class="group-chip">${esc(g.group_name)} <button type="button" class="btn btn-light btn-small" data-delete-class-group="${esc(g.id)}">×</button></span>`).join(""):'<span class="muted-note">No groups created yet.</span>';}
-async function createClassGroup(){const name=$("newClassGroupName").value.trim();if(!name)return notice("Enter a group name.","error");const {error}=await supabase.rpc("teacher_create_class_group",{p_class_id:activeClass.id,p_group_name:name});if(error)throw error;$("newClassGroupName").value="";await loadClassGroups();await loadClassStudents();notice("Group created.");}
-async function deleteClassGroup(id){if(!confirm("Delete this group? Students will remain in the class without a group."))return;const {error}=await supabase.rpc("teacher_delete_class_group",{p_group_id:id});if(error)throw error;await loadClassGroups();await loadClassStudents();}
-async function assignStudentGroup(studentId,groupId){const {error}=await supabase.rpc("teacher_assign_student_group",{p_class_id:activeClass.id,p_student_id:studentId,p_group_id:groupId||null});if(error){notice(error.message,"error");await loadClassStudents();}}
-async function loadUnassignedStudents(){
- const root=$("unassignedStudents");if(root)root.innerHTML='<p class="empty">Loading students…</p>';
- const {data,error}=await supabase.rpc("teacher_list_unassigned_class_students");if(error)throw error;const rows=data||[];
- $("unassignedCountNumber").textContent=rows.length;
- if(root)root.innerHTML=rows.length?rows.map(r=>`<article class="unassigned-row"><div><div class="class-student-name">${esc(r.display_name||"Student")} · ${esc(r.mac_talk_id||("MT-STU-"+(r.student_digits||"")))}</div><div class="student-academic-line">${esc([r.school_level,r.school_track,r.school_stream,r.school_class].filter(Boolean).join(" · ")||"Academic profile missing")}</div></div><button class="btn btn-primary btn-small" data-assign-unassigned="${esc(r.student_digits)}">View student & assign →</button></article>`).join(""):'<p class="empty">All students are assigned to a class.</p>';
-}
-async function assignUnassignedStudent(digits){closeUnassignedStudentsModal();$("quickStudentIdInput").value=digits;await showStudentPreview([digits]);}
-async function removeStudentFromClass(studentId){
- if(!confirm("Remove this student from the class? Their grades for this class will also be removed."))return;
- try{const {error}=await supabase.from("class_students").delete().eq("class_id",activeClass.id).eq("student_id",studentId);if(error)throw error;const {error:gradeError}=await supabase.from("class_student_grades").delete().eq("class_id",activeClass.id).eq("student_id",studentId);if(gradeError)throw gradeError;notice("Student removed from this class.");await loadClassStudents();}
- catch(e){notice("Could not remove student: "+e.message,"error");}
-}
-async function openStudentRecord(studentId){
- activeStudent=studentId;$("studentRecordView").classList.remove("hidden");$("classDetailView").classList.add("hidden");
- const name=classStudentName(studentId),email=classStudentEmail(studentId);$("studentRecordHeader").innerHTML=`<div class="record-header"><div class="student-avatar">${esc(name.slice(0,1).toUpperCase())}</div><div><h3>${esc(name)}</h3><p>${esc(email)} · ${esc(activeClass.class_name)}</p></div></div>`;
- await loadStudentGrades();
-}
-async function loadStudentGrades(){
- const root=$("studentGradesArea");root.innerHTML='<p class="empty">Loading academic record…</p>';
- try{const {data,error}=await supabase.from("class_student_grades").select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average").eq("class_id",activeClass.id).eq("student_id",activeStudent).order("trimester");if(error)throw error;studentGrades=data||[];renderStudentGrades();}
- catch(e){console.error(e);root.innerHTML=`<p class="empty">Could not load grades: ${esc(e.message)}</p>`;}
-}
-function renderStudentGrades(){
- const root=$("studentGradesArea");root.innerHTML=[1,2,3].map(t=>{const g=studentGrades.find(x=>Number(x.trimester)===t)||{};const avg=g.average===null||g.average===undefined?"—":Number(g.average).toFixed(2);return `<div class="panel grade-panel" style="box-shadow:none"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h4>Trimester ${t}</h4><span class="tag">Average: <strong style="margin-left:5px">${avg}</strong></span></div><div class="table-wrap"><table class="grade-table"><thead><tr><th>Control Note</th><th>Oral Note</th><th>Synthèse Note</th><th>Average</th><th></th></tr></thead><tbody><tr><td><input type="number" min="0" max="20" step="0.01" id="grade-control-${t}" value="${g.control_note??""}" placeholder="—"></td><td><input type="number" min="0" max="20" step="0.01" id="grade-oral-${t}" value="${g.oral_note??""}" placeholder="—"></td><td><input type="number" min="0" max="20" step="0.01" id="grade-synthese-${t}" value="${g.synthese_note??""}" placeholder="—"></td><td class="grade-average">${avg}</td><td><button class="btn btn-primary btn-small" data-save-trimester="${t}">Save</button></td></tr></tbody></table></div><p class="muted-note">Average = (Control + Oral + Synthèse × 2) ÷ 4. Fill in all three marks to calculate it.</p></div>`;}).join("");
-}
-async function saveTrimesterGrades(t){
- const read=id=>$(id).value.trim();const values={control_note:read(`grade-control-${t}`),oral_note:read(`grade-oral-${t}`),synthese_note:read(`grade-synthese-${t}`)};
- for(const [key,val] of Object.entries(values)){if(val!==""&&(!Number.isFinite(Number(val))||Number(val)<0||Number(val)>20))return notice("Marks must be between 0 and 20.","error");}
- const payload={class_id:activeClass.id,student_id:activeStudent,trimester:t,control_note:values.control_note===""?null:Number(values.control_note),oral_note:values.oral_note===""?null:Number(values.oral_note),synthese_note:values.synthese_note===""?null:Number(values.synthese_note),updated_at:new Date().toISOString()};
- try{const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});if(error)throw error;notice(`Trimester ${t} grades saved.`);await loadStudentGrades();}
- catch(e){notice("Could not save grades: "+e.message,"error");}
+function writeSeen(ids){
+  try{localStorage.setItem(SEEN_KEY,JSON.stringify([...ids].slice(-300)));}
+  catch(error){console.warn("Unable to save notification state",error);}
 }
 
-function getBulkStudentName(id){return classStudentName(id)||"Student"}
-function getBulkAverage(row){
- const vals=[row.control_note,row.oral_note,row.synthese_note];
- if(vals.some(v=>v===null||v===undefined||v===""))return null;
- const [control,oral,synthese]=vals.map(Number);
- if(vals.some(v=>!Number.isFinite(Number(v))))return null;
- return (control+oral+(synthese*2))/4;
+async function loadMacTalkMemberId(user){
+  if(!user?.id)return "Not assigned";
+  // Public member ID only; do not expose the Supabase Auth UUID as a member ID.
+  try{
+    const {data,error}=await supabase.from("profiles").select("mac_talk_id").eq("id",user.id).maybeSingle();
+    if(!error&&data?.mac_talk_id)return String(data.mac_talk_id);
+    if(error)console.warn("Could not load mac_talk_id by profiles.id:",error.message);
+  }catch(error){console.warn("Could not load mac_talk_id:",error);}
+  // Some schemas use user_id as the profile foreign key.
+  try{
+    const {data,error}=await supabase.from("profiles").select("mac_talk_id").eq("user_id",user.id).maybeSingle();
+    if(!error&&data?.mac_talk_id)return String(data.mac_talk_id);
+    if(error)console.warn("Could not load mac_talk_id by profiles.user_id:",error.message);
+  }catch(error){console.warn("Could not load mac_talk_id:",error);}
+  return "Not assigned";
 }
-async function openBulkGrades(){
- if(!activeClass)return;
- $("classStudentsPanel").classList.add("hidden");
- $("classBulkGradeView").classList.remove("hidden");
- $("bulkClassSubtitle").textContent=`${activeClass.class_name} · Only students assigned to this class`;
- bulkTrimester=1;
- document.querySelectorAll("[data-bulk-trimester]").forEach(b=>b.classList.toggle("active",Number(b.dataset.bulkTrimester)===1));
- await loadBulkClassGrades();
+async function renderProfile(user){
+  const meta=user.user_metadata||{};
+  const name=meta.full_name||meta.display_name||meta.name||user.email?.split("@")[0]||"Member";
+  const email=user.email||"No email available";
+  const avatar=initials(name);
+  $("welcomeName").textContent=name;
+  $("welcomeMemberId").textContent="Loading...";
+  $("profileUid").textContent="Loading...";
+  const memberId=await loadMacTalkMemberId(user);
+  if(currentUser?.id===user.id){
+    $("welcomeMemberId").textContent=memberId;
+    $("profileUid").textContent=memberId;
+  }
+  $("headerName").textContent=name;
+  $("headerAvatar").textContent=avatar;
+  $("profileAvatar").textContent=avatar;
+  $("profileName").textContent=name;
+  $("profileEmail").textContent=email;
+  $("profileFullName").textContent=name;
+  $("profileEmailRow").textContent=email;
+  $("profileVerified").textContent=user.email_confirmed_at?"Verified":"Not verified";
+  $("accountStatus").textContent="Active";
+  $("memberSince").textContent=user.created_at?formatDate(user.created_at,{month:"short",year:"numeric"}):"Unknown";
 }
-async function loadBulkClassGrades(){
- const wrap=$("bulkGradesTableWrap");wrap.innerHTML='<p class="empty">Loading grades…</p>';
- try{
-  const {data,error}=await supabase.from("class_student_grades").select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average").eq("class_id",activeClass.id).eq("trimester",bulkTrimester);
-  if(error)throw error;
-  bulkClassGrades=data||[];
-  renderBulkClassGrades();
- }catch(e){console.error(e);wrap.innerHTML=`<p class="empty">Could not load class grades: ${esc(e.message)}</p>`;}
-}
-function renderBulkClassGrades(){
- const wrap=$("bulkGradesTableWrap");
- const rows=classStudents.map(link=>{
-  const old=bulkClassGrades.find(g=>String(g.student_id)===String(link.student_id))||{};
-  return {student_id:link.student_id,name:getBulkStudentName(link.student_id),control_note:old.control_note??"",oral_note:old.oral_note??"",synthese_note:old.synthese_note??""};
- }).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:"base"}));
- if(!rows.length){wrap.innerHTML='<p class="empty">Add students to this class before entering grades.</p>';updateBulkSummary();return;}
- const groups={};
- rows.forEach(row=>{const letter=(row.name.trim().charAt(0)||"#").toLocaleUpperCase();const key=/^[A-ZÀ-ÖØ-Þ]$/i.test(letter)?letter:"#";(groups[key]??=[]).push(row);});
- let body="";
- Object.keys(groups).sort((a,b)=>a==="#"?1:b==="#"?-1:a.localeCompare(b)).forEach(letter=>{
-  body+=`<tr class="bulk-letter-row"><td colspan="5">${esc(letter)}</td></tr>`;
-  groups[letter].forEach(row=>{
-   const avg=getBulkAverage(row);
-   body+=`<tr data-bulk-student-row="${esc(row.student_id)}">
-    <td class="bulk-student-name">${esc(row.name)}</td>
-    <td><input aria-label="Control note for ${esc(row.name)}" type="number" min="0" max="20" step="0.01" data-bulk-field="control_note" data-student-id="${esc(row.student_id)}" value="${row.control_note}" placeholder="—"></td>
-    <td><input aria-label="Oral note for ${esc(row.name)}" type="number" min="0" max="20" step="0.01" data-bulk-field="oral_note" data-student-id="${esc(row.student_id)}" value="${row.oral_note}" placeholder="—"></td>
-    <td><input aria-label="Synthèse note for ${esc(row.name)}" type="number" min="0" max="20" step="0.01" data-bulk-field="synthese_note" data-student-id="${esc(row.student_id)}" value="${row.synthese_note}" placeholder="—"></td>
-    <td class="bulk-row-average" data-bulk-average="${esc(row.student_id)}">${avg===null?'<span class="bulk-incomplete">Incomplete</span>':avg.toFixed(2)}</td>
-   </tr>`;
+function showPage(page){
+  if(!pageTitles[page])return;
+  document.querySelectorAll(".page-panel").forEach(panel=>{
+    panel.classList.toggle("active",panel.id===`${page}Page`);
   });
- });
- wrap.innerHTML=`<table class="bulk-grade-table"><thead><tr><th>Student name</th><th>Control</th><th>Oral</th><th>Synthèse</th><th>Average</th></tr></thead><tbody>${body}</tbody></table>`;
- $("bulkTotalStudents").textContent=rows.length;
- updateBulkSummary();
+  document.querySelectorAll("#mtSharedSidebar .nav-link[data-page]").forEach(link=>{
+    const active=link.dataset.page===`${page}.html`;
+    link.classList.toggle("active",active);
+    if(active)link.setAttribute("aria-current","page");
+    else link.removeAttribute("aria-current");
+  });
+  $("pageTitle").textContent=pageTitles[page];
+  $("mtSharedSidebar")?.classList.remove("open");
+  $("menuToggle")?.setAttribute("aria-expanded","false");
+  window.scrollTo({top:0,behavior:"smooth"});
 }
-function readBulkRows(){
- return classStudents.map(link=>{
-  const id=String(link.student_id);
-  const read=field=>{const el=document.querySelector(`[data-bulk-field="${field}"][data-student-id="${CSS.escape(id)}"]`);return el?el.value.trim():"";};
-  return {student_id:link.student_id,control_note:read("control_note"),oral_note:read("oral_note"),synthese_note:read("synthese_note")};
- });
-}
-function updateBulkSummary(){
- const rows=readBulkRows();
- const complete=rows.map(r=>getBulkAverage(r)).filter(v=>v!==null);
- const incomplete=rows.length-complete.length;
- $("bulkTotalStudents").textContent=rows.length;
- $("bulkCompleteStudents").textContent=complete.length;
- $("bulkMissingStudents").textContent=incomplete;
- $("bulkClassAverage").textContent=rows.length>0&&incomplete===0?(complete.reduce((a,b)=>a+b,0)/rows.length).toFixed(2):"—";
- $("bulkMissingNotice").textContent=incomplete===0
-  ? "All students have Control, Oral, and Synthèse marks for this trimester."
-  : `${incomplete} student${incomplete===1?" is":"s are"} missing at least one mark. Their average will remain incomplete until all three marks are entered. You can still save the marks already entered.`;
-}
-function updateBulkRowAverage(studentId){
- const row=document.querySelector(`[data-bulk-student-row="${CSS.escape(String(studentId))}"]`);
- if(!row)return;
- const get=field=>row.querySelector(`[data-bulk-field="${field}"]`)?.value.trim()??"";
- const avg=getBulkAverage({control_note:get("control_note"),oral_note:get("oral_note"),synthese_note:get("synthese_note")});
- const cell=row.querySelector("[data-bulk-average]");
- cell.innerHTML=avg===null?'<span class="bulk-incomplete">Incomplete</span>':avg.toFixed(2);
- updateBulkSummary();
-}
-async function saveAllClassGrades(){
- if(!activeClass)return;
- const rows=readBulkRows();
- for(const row of rows){
-  for(const [field,value] of Object.entries(row).filter(([k])=>k!=="student_id")){
-   if(value!==""&&(!Number.isFinite(Number(value))||Number(value)<0||Number(value)>20)){
-    notice(`Every mark must be between 0 and 20. Check ${getBulkStudentName(row.student_id)}.`,"error");return;
-   }
+document.querySelectorAll("[data-go]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    const page=button.dataset.go;
+    if(pageTitles[page])showPage(page);
+    else if(page==="studio")location.href="studio.html";
+    else if(page==="podcasts")location.href="podcasts.html";
+  });
+});
+$("menuToggle").addEventListener("click",()=>{
+  const sidebar=$("mtSharedSidebar");
+  const isOpen=sidebar.classList.toggle("open");
+  $("menuToggle").setAttribute("aria-expanded",String(isOpen));
+});
+document.addEventListener("click",event=>{
+  const sidebar=$("mtSharedSidebar");
+  const toggle=$("menuToggle");
+  if(innerWidth<=800&&sidebar.classList.contains("open")&&!sidebar.contains(event.target)&&!toggle.contains(event.target)){
+    sidebar.classList.remove("open");
+    toggle.setAttribute("aria-expanded","false");
   }
- }
- const existingIds=new Set(bulkClassGrades.map(g=>String(g.student_id)));
- const toSave=rows.filter(r=>existingIds.has(String(r.student_id))||r.control_note!==""||r.oral_note!==""||r.synthese_note!=="");
- if(!toSave.length){notice("Enter at least one mark before saving.","error");return;}
- const btn=$("saveAllClassGradesBtn");btn.disabled=true;btn.textContent="Saving…";
- let saved=0;
- try{
-  for(const row of toSave){
-   const payload={
-    class_id:activeClass.id,
-    student_id:row.student_id,
-    trimester:bulkTrimester,
-    control_note:row.control_note===""?null:Number(row.control_note),
-    oral_note:row.oral_note===""?null:Number(row.oral_note),
-    synthese_note:row.synthese_note===""?null:Number(row.synthese_note),
-    updated_at:new Date().toISOString()
-   };
-   const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});
-   if(error)throw new Error(`${getBulkStudentName(row.student_id)}: ${error.message}`);
-   saved++;
+});
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape"){
+    $("notificationPanel").hidden=true;
+    $("notificationButton").setAttribute("aria-expanded","false");
+    closeResultsModal();
+    $("mtSharedSidebar").classList.remove("open");
+    $("menuToggle").setAttribute("aria-expanded","false");
   }
-  $("bulkSaveStatus").textContent=`Saved ${saved} student record${saved===1?"":"s"} for trimester ${bulkTrimester}.`;
-  notice(`Saved marks for ${saved} student${saved===1?"":"s"}.`);
-  await loadBulkClassGrades();
- }catch(e){console.error(e);notice("Could not save all grades: "+e.message,"error");}
- finally{btn.disabled=false;btn.textContent="Save all students";}
-}
-function closeBulkGrades(){
- $("classBulkGradeView").classList.add("hidden");
- $("classStudentsPanel").classList.remove("hidden");
-}
-function showClassList(){activeClass=null;activeStudent=null;$("studentRecordView").classList.add("hidden");$("classDetailView").classList.add("hidden");$("classListView").classList.remove("hidden");loadTeacherClasses();}
-
-function openModal(s=null){editingId=s?.id||null;$("modalTitle").textContent=editingId?"Edit session":"Create session";$("sessionTitle").value=s?.title||"";$("sessionEmoji").value=s?.emoji||"🎙️";$("sessionDescription").value=s?.description||"";if(s?.scheduled_at){const d=new Date(s.scheduled_at);$("sessionDate").value=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}else $("sessionDate").value="";$("saveSessionBtn").textContent=editingId?"Save changes":"Submit for approval";$("sessionModal").classList.add("open")}
-function closeModal(){$("sessionModal").classList.remove("open");editingId=null}
-async function saveSession(e){e.preventDefault();const title=$("sessionTitle").value.trim();if(!title)return;const scheduled=new Date($("sessionDate").value);if(!$("sessionDate").value||Number.isNaN(scheduled.getTime()))return notice("Choose a valid date and time.","error");const payload={title,host:profile?.display_name||user.email||"Mac&Talk Teacher",emoji:$("sessionEmoji").value.trim()||"🎙️",description:$("sessionDescription").value.trim(),scheduled_at:scheduled.toISOString(),status:"scheduled",approved:false,updated_at:new Date().toISOString()};const b=$("saveSessionBtn");b.disabled=true;b.textContent="Saving…";try{let q=editingId?supabase.from("live_sessions").update(payload).eq("id",editingId).eq("owner_id",user.id):supabase.from("live_sessions").insert({...payload,owner_id:user.id,created_at:new Date().toISOString()});const {error}=await q;if(error)throw error;closeModal();notice(editingId?"Changes saved. The session is pending admin approval.":"Session submitted for admin approval.");await loadSessions()}catch(e){console.error(e);notice("Could not save session: "+e.message,"error")}finally{b.disabled=false;b.textContent=editingId?"Save changes":"Submit for approval"}}
-async function deleteSession(id){const s=sessions.find(x=>String(x.id)===String(id));if(!s||!confirm(`Delete “${s.title}”? This cannot be undone.`))return;try{const {error}=await supabase.from("live_sessions").delete().eq("id",id).eq("owner_id",user.id);if(error)throw error;notice("Session deleted.");leaveRoom();await loadSessions()}catch(e){notice("Could not delete session: "+e.message,"error")}}
-function launchRoom(id){const s=sessions.find(x=>String(x.id)===String(id));if(!s||!s.approved)return notice("This session must be approved by an admin before its room can open.","error");if(s.status==="ended")return notice("This session has ended. Change its status from the admin panel before reopening.","error");switchPage("room");$("roomSessionSelect").value=s.id;$("roomTitle").textContent=s.title;$("roomStatus").textContent="Room is open for “"+s.title+"”. Allow camera and microphone access in the room.";const roomName="MacTalk-"+String(s.id).replace(/[^a-zA-Z0-9]/g,"");$("roomContainer").innerHTML=`<iframe class="room-frame" title="Mac&Talk video room: ${esc(s.title)}" allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write" referrerpolicy="no-referrer" src="https://meet.jit.si/${encodeURIComponent(roomName)}#config.prejoinPageEnabled=true&config.startWithAudioMuted=false&config.startWithVideoMuted=false"></iframe>`;roomFrame=$("roomContainer").querySelector("iframe")}
-function leaveRoom(){$("roomContainer").innerHTML='<div class="room-placeholder"><div style="font-size:42px;margin-bottom:12px">📹</div><strong>Your classroom, in one place</strong><p class="muted-note" style="color:#b9c7d9">Select an approved session and open its room. Allow microphone and camera access when prompted.</p></div>';$ ("roomTitle").textContent="Choose a session";$("roomStatus").textContent="The room opens inside Mac&Talk.";roomFrame=null}
-async function signOut(){await supabase.auth.signOut();location.href="login.html"}
-async function init(){try{const {data:{session},error}=await supabase.auth.getSession();if(error)throw error;if(!session){gate("Sign in required","Please sign in with your Mac&Talk teacher account.");return}user=session.user;const {data:p,error:pe}=await supabase.from("profiles").select("id,display_name,role").eq("id",user.id).maybeSingle();if(pe)throw pe;profile=p;if(!p||String(p.role||"").toLowerCase()!=="teacher"){gate("Teacher access required","This account does not have the teacher role. Ask an administrator to update your role.");return}$("gate").classList.add("hidden");$("teacherApp").classList.remove("hidden");const name=p.display_name||user.user_metadata?.full_name||user.email?.split("@")[0]||"Teacher";$("welcomeTitle").textContent=`Welcome back, ${name} 👋`;$("teacherEmail").textContent=user.email||name;$("teacherAvatar").textContent=name.slice(0,1).toUpperCase();$("profileName").textContent=name;$("profileEmail").textContent=user.email||"—";$("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});await Promise.all([loadSessions(),loadStudents()]);checkMessagePages()}catch(e){console.error(e);gate("Could not open Teacher Workspace",e.message||"Check your Supabase configuration and try again.")}}
-function checkMessagePages(){$("messageInfo").textContent="Messaging is not connected in this project bundle yet. Add a messages page and a verified messaging schema before enabling this feature."}
-document.querySelectorAll(".nav button[data-page]").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.page)));document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.goto)));$("newSessionBtn").addEventListener("click",()=>openModal());$("newSessionBtn2").addEventListener("click",()=>openModal());$("closeModal").addEventListener("click",closeModal);$("cancelModal").addEventListener("click",closeModal);$("sessionModal").addEventListener("click",e=>{if(e.target===$("sessionModal"))closeModal()});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});$("sessionForm").addEventListener("submit",saveSession);$("refreshSessionsBtn").addEventListener("click",loadSessions);$("studentSearch").addEventListener("input",renderStudents);$("signOutBtn").addEventListener("click",signOut);$("settingsSignOutBtn").addEventListener("click",signOut);$("leaveRoomBtn").addEventListener("click",leaveRoom);$("launchRoomBtn").addEventListener("click",()=>launchRoom($("roomSessionSelect").value));document.addEventListener("click",e=>{const room=e.target.closest("[data-room]");if(room)return launchRoom(room.dataset.room);const edit=e.target.closest("[data-edit]");if(edit){const s=sessions.find(x=>String(x.id)===edit.dataset.edit);if(s)openModal(s);return}const del=e.target.closest("[data-delete]");if(del)deleteSession(del.dataset.delete)});
-/* File-to-quiz importer: review and validate before inserting into Supabase. */
-let teacherImportedQuestions=[];
-function teacherImportStatus(message,type=''){const el=$("teacherImportStatus");el.textContent=message;el.className='import-status '+type;}
-function teacherParseQuizText(raw){
- const lines=raw.replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean),out=[];let cur=null,mode='';
- const finish=()=>{if(cur){cur.question=cur.question.trim();out.push(cur);cur=null;mode='';}};
- for(const line of lines){
-  const qmatch=line.match(/^(?:Q(?:uestion)?\s*)?(\d{1,3})[.)\-:]\s*(.+)$/i);
-  const opt=line.match(/^([A-D])\s*[).:\-]\s*(.+)$/i);
-  const ans=line.match(/^(?:correct\s*)?(?:answer|ans|correct\s*option)\s*[:\-]\s*([A-D])(?:\b.*)?$/i);
-  const exp=line.match(/^(?:explanation|rationale)\s*[:\-]\s*(.*)$/i);
-  if(qmatch){finish();cur={question:qmatch[2],options:{},correct:'',explanation:''};mode='question';continue;}
-  if(!cur)continue;
-  if(opt){cur.options[opt[1].toUpperCase()]=opt[2].trim();mode='option';continue;}
-  if(ans){cur.correct=ans[1].toUpperCase();mode='';continue;}
-  if(exp){cur.explanation=exp[1].trim();mode='explanation';continue;}
-  if(mode==='question')cur.question+=' '+line;else if(mode==='explanation')cur.explanation+=' '+line;else if(mode==='option'){const last=Object.keys(cur.options).slice(-1)[0];if(last)cur.options[last]+=' '+line;}
- }finish();return out;
-}
-async function teacherReadImportFile(){
- const file=$("teacherImportFile").files[0];if(!file)throw new Error('Choose a PDF, DOCX or TXT file first.');
- let text='';const name=file.name.toLowerCase();
- if(name.endsWith('.txt'))text=await file.text();
- else if(name.endsWith('.pdf')){
-  if(!window.pdfjsLib)throw new Error('PDF reader could not load. Check your internet connection and try again.');
-  const data=new Uint8Array(await file.arrayBuffer());const pdf=await pdfjsLib.getDocument({data}).promise;let pages=[];
-  for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();const lineMap=new Map();for(const item of content.items){const y=Math.round(item.transform?.[5]||0);if(!lineMap.has(y))lineMap.set(y,[]);lineMap.get(y).push(item.str);}pages.push([...lineMap.entries()].sort((a,b)=>b[0]-a[0]).map(([,parts])=>parts.join(' ')).join('\n'));}text=pages.join('\n');
- }else if(name.endsWith('.docx')){
-  if(!window.mammoth)throw new Error('DOCX reader could not load. Check your internet connection and try again.');
-  const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});text=result.value;
- }else throw new Error('Unsupported file type. Please use PDF, DOCX or TXT.');
- const parsed=teacherParseQuizText(text);
- if(!parsed.length)throw new Error('No questions were detected. Use numbered questions and options labelled A), B), C), D), plus a line such as Answer: B.');
- teacherImportedQuestions=parsed;$("teacherImportTitle").value=$("teacherImportTitle").value||file.name.replace(/\.[^.]+$/,'');
- teacherRenderImportPreview();teacherImportStatus(`Detected ${parsed.length} question(s). Review every question and correct answer before saving.`, 'success');
-}
-function teacherRenderImportPreview(){
- const root=$("teacherImportPreview");root.innerHTML='';
- teacherImportedQuestions.forEach((q,i)=>{const card=document.createElement('div');card.className='import-question';card.dataset.index=i;
-  card.innerHTML=`<h4>Question ${i+1}</h4><div class="form-field"><label>Question text</label><textarea class="field-control iq-question"></textarea></div><div class="form-grid">${['A','B','C','D'].map(k=>`<div class="form-field"><label>Option ${k}</label><input class="field-control iq-option" data-option="${k}"></div>`).join('')}</div><div class="form-grid"><div class="form-field"><label>Correct answer</label><select class="field-control iq-correct"><option value="">Choose correct option</option>${['A','B','C','D'].map(k=>`<option value="${k}">${k}</option>`).join('')}</select></div><div class="form-field"><label>Explanation (optional)</label><input class="field-control iq-explanation"></div></div><div class="import-status iq-validation"></div>`;
-  card.querySelector('.iq-question').value=q.question;card.querySelectorAll('.iq-option').forEach(el=>el.value=q.options[el.dataset.option]||'');card.querySelector('.iq-correct').value=q.correct||'';card.querySelector('.iq-explanation').value=q.explanation||'';root.appendChild(card);
- });
- $("teacherImportSaveRow").style.display='flex';$("teacherImportReviewed").checked=false;teacherValidateImportedQuiz();
-}
-function teacherCollectImportedQuiz(){return [...$("teacherImportPreview").querySelectorAll('.import-question')].map(card=>({question:card.querySelector('.iq-question').value.trim(),options:['A','B','C','D'].map(k=>({id:k,text:card.querySelector(`.iq-option[data-option="${k}"]`).value.trim()})),correct:card.querySelector('.iq-correct').value,explanation:card.querySelector('.iq-explanation').value.trim()}));}
-function teacherValidateImportedQuiz(){
- const questions=teacherCollectImportedQuiz();let errors=0;
- [...$("teacherImportPreview").querySelectorAll('.import-question')].forEach((card,i)=>{const q=questions[i],issues=[];if(!q.question)issues.push('Question text is missing');if(q.options.some(o=>!o.text))issues.push('All four options are required');if(new Set(q.options.map(o=>o.text.toLowerCase())).size!==4)issues.push('Options must be different');if(!q.correct)issues.push('Correct answer is not identified');if(q.correct&&!q.options.find(o=>o.id===q.correct)?.text)issues.push('Correct option is empty');const el=card.querySelector('.iq-validation');el.textContent=issues.length?'Needs attention: '+issues.join('; '):'Structure looks complete — please verify the answer is factually correct.';el.className='import-status iq-validation '+(issues.length?'error':'success');if(issues.length)errors++;});
- const valid=questions.length>0&&errors===0;$("teacherImportSave").disabled=!valid;return valid;
-}
-async function teacherSaveImportedQuiz(){
- const title=$("teacherImportTitle").value.trim();if(!title)throw new Error('Enter a title for this quiz.');if(!teacherValidateImportedQuiz())throw new Error('Fix all highlighted questions before saving.');if(!$("teacherImportReviewed").checked)throw new Error('Confirm that you reviewed the questions and correct answers.');
- const questions=teacherCollectImportedQuiz();const button=$("teacherImportSave");button.disabled=true;button.textContent='Saving…';let quizId=null;
- try{const {data,error}=await supabase.from('quizzes').insert({owner_id:user.id,title,subject:$("teacherImportSubject").value.trim(),description:'Imported from '+($("teacherImportFile").files[0]?.name||'file'),status:'draft'}).select('id').single();if(error)throw error;quizId=data.id;
-  const rows=questions.map((q,i)=>({quiz_id:quizId,position:i+1,question_text:q.question,options:q.options,correct_option_id:q.correct,explanation:q.explanation,points:1,timer_seconds:30}));
-  const {error:insertError}=await supabase.from('quiz_questions').insert(rows);if(insertError)throw insertError;
-  await loadTeacherQuizzes();$("teacherQuestionQuiz").value=quizId;$("teacherImportPreview").innerHTML='';$("teacherImportSaveRow").style.display='none';$("teacherImportFile").value='';$("teacherImportReviewed").checked=false;teacherImportedQuestions=[];teacherImportStatus('Quiz saved as a draft. You can review it, then publish it when ready.','success');notice('Imported quiz saved as draft.');
- }catch(error){if(quizId){await supabase.from('quizzes').delete().eq('id',quizId);}throw error;}
- finally{button.disabled=false;button.textContent='Save imported quiz';}
-}
-function teacherClearImport(){teacherImportedQuestions=[];$("teacherImportFile").value='';$("teacherImportTitle").value='';$("teacherImportSubject").value='';$("teacherImportPreview").innerHTML='';$("teacherImportSaveRow").style.display='none';teacherImportStatus('Nothing uploaded yet.');}
-$("teacherImportRead")?.addEventListener('click',()=>teacherReadImportFile().catch(e=>teacherImportStatus(e.message,'error')));
-$("teacherImportClear")?.addEventListener('click',teacherClearImport);
-$("teacherImportSave")?.addEventListener('click',()=>teacherSaveImportedQuiz().catch(e=>teacherImportStatus(e.message,'error')));
-$("teacherImportPreview")?.addEventListener('input',()=>teacherValidateImportedQuiz());
-$("teacherImportPreview")?.addEventListener('change',()=>teacherValidateImportedQuiz());
-
-$("teacherQuizRefresh")?.addEventListener("click",()=>loadTeacherQuizzes().catch(e=>notice(e.message,"error")));
-$("teacherQuizCreate")?.addEventListener("click",()=>createTeacherQuiz().catch(e=>notice(e.message,"error")));
-$("teacherQuestionAdd")?.addEventListener("click",()=>addTeacherQuestion().catch(e=>notice(e.message,"error")));
-document.addEventListener("click",e=>{
- const b=e.target.closest("[data-teacher-quiz-launch],[data-teacher-quiz-publish],[data-teacher-quiz-delete]");if(!b)return;
- const id=b.dataset.teacherQuizLaunch||b.dataset.teacherQuizPublish||b.dataset.teacherQuizDelete;
- const action=b.hasAttribute("data-teacher-quiz-launch")?"launch":b.hasAttribute("data-teacher-quiz-publish")?"publish":"delete";
- teacherQuizAction(action,id).catch(err=>notice(err.message,"error"));
 });
 
+function createSessionCard(session){
+  const card=document.createElement("article");card.className="session-card";
+  const top=document.createElement("div");top.className="session-card-top";
+  const emoji=document.createElement("div");emoji.className="session-emoji";emoji.textContent=session.emoji||"🎙️";
+  const tag=document.createElement("span");tag.className="session-tag"+(session.status==="live"?" live":"");tag.textContent=session.status==="live"?"● Live now":"Scheduled";top.append(emoji,tag);
+  const title=document.createElement("h3");title.textContent=session.title||"Untitled session";
+  const desc=document.createElement("p");desc.textContent=session.description||"Join the Mac&Talk community.";
+  const footer=document.createElement("div");footer.className="session-footer";
+  const host=document.createElement("span");host.className="host";host.textContent=`Hosted by ${session.host||session.host_name||"Mac&Talk Community"}`;
+  const btn=document.createElement("button");btn.type="button";btn.className="join-btn";btn.textContent=session.status==="live"?"Join live":"View session";
+  btn.addEventListener("click",()=>{
+    if(session.status==="live")joinLiveSession(session);
+    else showNotice("This session is scheduled. Check back when the host starts broadcasting.");
+  });
+  footer.append(host,btn);card.append(top,title,desc,footer);return card;
+}
+function renderSessions(containerId,list){
+  const container=$(containerId);container.replaceChildren();
+  if(!list.length){
+    const empty=document.createElement("div");empty.className="empty-state";
+    empty.textContent="No approved sessions are available right now. Check back later!";
+    container.append(empty);return;
+  }
+  list.forEach(session=>container.append(createSessionCard(session)));
+}
 
-$("createClassBtn")?.addEventListener("click",openCreateClassModal);
-$("closeCreateClassBtn")?.addEventListener("click",closeCreateClassModal);
-$("cancelCreateClassBtn")?.addEventListener("click",closeCreateClassModal);
-$("createClassModal")?.addEventListener("click",e=>{if(e.target===$("createClassModal"))closeCreateClassModal();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("createClassModal")?.classList.contains("open"))closeCreateClassModal();});
-$("newClassLevel")?.addEventListener("change",updateClassStreamOptions);
-$("newClassTrack")?.addEventListener("change",updateClassStreamOptions);
-$("newClassStream")?.addEventListener("change",updateClassNamePreview);
-updateClassStreamOptions();
-$("createClassForm")?.addEventListener("submit",e=>createTeacherClass(e).catch(err=>notice(err.message,"error")));
-$("refreshClassesBtn")?.addEventListener("click",()=>loadTeacherClasses());
-$("backToClassesBtn")?.addEventListener("click",showClassList);
-$("refreshClassStudentsBtn")?.addEventListener("click",()=>loadClassStudents());
-$("openBulkGradesBtn")?.addEventListener("click",()=>openBulkGrades().catch(err=>notice(err.message,"error")));
-$("backFromBulkGradesBtn")?.addEventListener("click",closeBulkGrades);
-$("saveAllClassGradesBtn")?.addEventListener("click",saveAllClassGrades);
-$("bulkTrimesterTabs")?.addEventListener("click",e=>{
- const tab=e.target.closest("[data-bulk-trimester]");if(!tab)return;
- bulkTrimester=Number(tab.dataset.bulkTrimester);
- document.querySelectorAll("[data-bulk-trimester]").forEach(b=>b.classList.toggle("active",b===tab));
- $("bulkSaveStatus").textContent="Changes are not saved until you click Save all students.";
- loadBulkClassGrades();
+const RESULT_SEEN_KEY = "mactalk_seen_result_updates_v1";
+function readSeenResults(){
+  try{return new Set(JSON.parse(localStorage.getItem(RESULT_SEEN_KEY)||"[]").map(String));}
+  catch{return new Set();}
+}
+function writeSeenResults(ids){
+  try{localStorage.setItem(RESULT_SEEN_KEY,JSON.stringify([...ids].slice(-500)));}
+  catch(error){console.warn("Unable to save result notification state:",error);}
+}
+const TRIMESTER_NUMBERS = {first:1, second:2, third:3};
+const TRIMESTER_LABELS = {1:"First", 2:"Second", 3:"Third"};
+function resultUpdateKey(result){
+  return `${result.id||result.class_id+":"+result.student_id+":"+result.trimester}:${result.updated_at||""}`;
+}
+function gradeClassName(row){
+  return row.class?.class_name || row.class_name || "Your class";
+}
+function hasGradeValue(value){
+  return value!==null&&value!==undefined&&String(value).trim()!==""&&Number.isFinite(Number(value));
+}
+function calculateTeacherAverage(row){
+  // Match the Teacher page exactly: (Control + Oral + Synthèse × 2) ÷ 4.
+  const values=[row.control_note,row.oral_note,row.synthese_note];
+  if(!values.every(hasGradeValue))return null;
+  const [control,oral,synthese]=values.map(Number);
+  return (control+oral+(synthese*2))/4;
+}
+function renderDashboardGradeCards(){
+  const root=$("dashboardGradeCards");
+  if(!root)return;
+  root.replaceChildren();
+  const trimesterNames={1:"First Trimester",2:"Second Trimester",3:"Third Trimester"};
+  [1,2,3].forEach(trimester=>{
+    const card=document.createElement("article");card.className="your-trimester-card";
+    const heading=document.createElement("h3");heading.textContent=trimesterNames[trimester];card.append(heading);
+    const rows=studentResults.filter(row=>Number(row.trimester)===trimester);
+    if(!rows.length){
+      const empty=document.createElement("div");empty.className="your-grade-empty";empty.textContent="No grades available yet.";card.append(empty);
+    }else{
+      rows.forEach(row=>{
+        const entry=document.createElement("div");entry.className="your-grade-entry";
+        const className=document.createElement("div");className.className="your-grade-class";className.textContent=gradeClassName(row);entry.append(className);
+        const marks=document.createElement("div");marks.className="your-grade-marks";
+        [["Control",row.control_note],["Oral",row.oral_note],["Synthèse",row.synthese_note]].forEach(([label,value])=>{
+          if(!hasGradeValue(value))return;
+          const mark=document.createElement("div");mark.className="your-grade-mark";
+          const type=document.createElement("span");type.textContent=label;
+          const score=document.createElement("strong");score.textContent=Number(value).toString();
+          mark.append(type,score);marks.append(mark);
+        });
+        if(marks.childElementCount)entry.append(marks);
+        const average=calculateTeacherAverage(row);
+        if(average!==null){
+          const averageBox=document.createElement("div");averageBox.className="your-grade-average";
+          const label=document.createElement("span");label.textContent="Average";
+          const score=document.createElement("strong");score.textContent=average.toFixed(2)+" / 20";
+          averageBox.append(label,score);entry.append(averageBox);
+        }else{
+          const pending=document.createElement("p");pending.className="your-grade-pending";
+          pending.textContent="Average appears when Control, Oral and Synthèse are all available.";entry.append(pending);
+        }
+        card.append(entry);
+      });
+    }
+    root.append(card);
+  });
+}
+async function loadStudentResults(){
+  if(!currentUser?.id){studentResults=[];renderDashboardGradeCards();return;}
+  // The student_id filter is intentional; database RLS must enforce the same restriction.
+  const {data,error}=await supabase.from("class_student_grades")
+    .select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average,updated_at,class:teacher_classes(class_name)")
+    .eq("student_id",currentUser.id)
+    .order("updated_at",{ascending:false});
+  if(error){
+    console.warn("Could not load class_student_grades. Check its SELECT RLS policy for students:",error);
+    studentResults=[];
+    renderDashboardGradeCards();
+    if(!$("resultsModal").hidden)renderStudentResults(activeResultsTrimester);
+    return;
+  }
+  studentResults=data||[];
+  renderDashboardGradeCards();
+  if(!$("resultsModal").hidden)renderStudentResults(activeResultsTrimester);
+}
+function renderStudentResults(trimester){
+  activeResultsTrimester=trimester;
+  document.querySelectorAll(".results-trimester-tab").forEach(tab=>{
+    const active=tab.dataset.trimester===trimester;
+    tab.classList.toggle("active",active);
+    tab.setAttribute("aria-selected",String(active));
+  });
+  const content=$("resultsContent");
+  content.replaceChildren();
+  const trimesterNumber=TRIMESTER_NUMBERS[trimester];
+  const rows=studentResults.filter(row=>Number(row.trimester)===trimesterNumber);
+  if(!rows.length){
+    const empty=document.createElement("div");empty.className="results-empty";
+    empty.textContent="No results have been published for this trimester yet. Your teacher's updates will appear here.";
+    content.append(empty);return;
+  }
+  const list=document.createElement("div");list.className="result-list";
+  rows.forEach(row=>{
+    const card=document.createElement("article");card.className="result-card";
+    const top=document.createElement("div");top.className="result-card-top";
+    const subject=document.createElement("h3");subject.textContent=gradeClassName(row);
+    const score=document.createElement("span");score.className="result-score";
+    score.textContent=row.average!==null&&row.average!==undefined?`Average: ${row.average}`:"Average: pending";
+    top.append(subject,score);card.append(top);
+    const notes=document.createElement("div");notes.className="grade-notes-grid";
+    [
+      ["Control",row.control_note],
+      ["Oral",row.oral_note],
+      ["Synthèse",row.synthese_note]
+    ].forEach(([label,value])=>{
+      const note=document.createElement("div");note.className="grade-note";
+      const name=document.createElement("span");name.textContent=label;
+      const mark=document.createElement("strong");mark.textContent=value===null||value===undefined?"—":String(value);
+      note.append(name,mark);notes.append(note);
+    });
+    card.append(notes);
+    const date=document.createElement("small");
+    date.textContent="Last updated: "+formatDate(row.updated_at,{year:"numeric",month:"short",day:"numeric"});
+    card.append(date);list.append(card);
+  });
+  content.append(list);
+}
+function openResultsModal(){
+  $("resultsModal").hidden=false;
+  document.body.classList.add("results-modal-open");
+  $("openResultsButton").setAttribute("aria-expanded","true");
+  renderStudentResults(activeResultsTrimester);
+  loadStudentResults().catch(error=>console.error("Load results:",error));
+}
+function closeResultsModal(){
+  $("resultsModal").hidden=true;
+  document.body.classList.remove("results-modal-open");
+  $("openResultsButton").setAttribute("aria-expanded","false");
+}
+$("openResultsButton").addEventListener("click",openResultsModal);
+$("dashboardOpenResults")?.addEventListener("click",openResultsModal);
+$("closeResultsButton").addEventListener("click",closeResultsModal);
+$("resultsModal").addEventListener("click",event=>{if(event.target===$("resultsModal"))closeResultsModal();});
+document.querySelectorAll(".results-trimester-tab").forEach(tab=>{
+  tab.addEventListener("click",()=>renderStudentResults(tab.dataset.trimester));
 });
-$("bulkGradesTableWrap")?.addEventListener("input",e=>{
- const input=e.target.closest("[data-bulk-field]");if(input)updateBulkRowAverage(input.dataset.studentId);
+
+async function loadLiveSessions(){
+  const {data,error}=await supabase.from("live_sessions").select("*").eq("approved",true).in("status",["live","scheduled"]);
+  if(error){
+    console.error("live_sessions:",error);
+    ["dashboardSessions","allSessions"].forEach(id=>{
+      const empty=document.createElement("div");empty.className="empty-state";
+      empty.textContent="Could not load sessions. Check the live_sessions table and its Row Level Security SELECT policy.";
+      $(id).replaceChildren(empty);
+    });
+    $("sessionCount").textContent="—";
+    return;
+  }
+  sessions=(data||[]).map(row=>({...row,host:row.host||row.host_name||"Mac&Talk Community"}));
+  sessions.sort((a,b)=>(a.status==="live"?-1:0)-(b.status==="live"?-1:0)||String(a.title||"").localeCompare(String(b.title||"")));
+  renderSessions("dashboardSessions",sessions.slice(0,2));
+  renderSessions("allSessions",sessions);
+  $("sessionCount").textContent=String(sessions.length);
+  creatorNotifications = [];
+  await loadStudentResults();
+  if(currentUser){
+    const {data:notices,error:noticeError}=await supabase.from("creator_notifications")
+      .select("id,title,message,is_read,created_at,related_episode_id")
+      .eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
+    if(noticeError){
+      if(noticeError.code!=="42P01") console.warn("Creator notifications (check table/RLS):",noticeError);
+    } else creatorNotifications = notices || [];
+  }
+  renderNotifications(sessions);
+}
+function renderNotifications(list){
+  const seen=readSeen();
+  if(!notificationInitialized){
+    if(!seen.size){list.forEach(session=>seen.add(String(session.id)));writeSeen(seen);}
+    notificationInitialized=true;
+  }
+  const unreadCreator=creatorNotifications.filter(n=>!n.is_read);
+  const fresh=list.filter(session=>!seen.has(String(session.id)));
+  const seenResults=readSeenResults();
+  const freshResults=studentResults.filter(result=>!seenResults.has(resultUpdateKey(result)));
+  const unreadCount=fresh.length+unreadCreator.length+freshResults.length;
+  $("notificationBadge").textContent=unreadCount>99?"99+":String(unreadCount);
+  $("notificationBadge").hidden=unreadCount===0;
+  const total=list.length+creatorNotifications.length+studentResults.length;
+  $("notificationCount").textContent=`${total} notification${total===1?"":"s"}`;
+  const container=$("notificationList");container.replaceChildren();
+  if(!total){
+    const empty=document.createElement("div");empty.className="notification-empty";
+    const icon=document.createElement("span");icon.textContent="🎙️";
+    const p=document.createElement("p");p.textContent="No new notifications yet. Check back soon!";
+    empty.append(icon,p);container.append(empty);return;
+  }
+  const entries=[
+    ...list.map(session=>({_kind:"session",data:session,unread:!seen.has(String(session.id)),sort:session.created_at||session.scheduled_at||""})),
+    ...creatorNotifications.map(notice=>({_kind:"creator",data:notice,unread:!notice.is_read,sort:notice.created_at||""})),
+    ...studentResults.map(result=>({_kind:"result",data:result,unread:!seenResults.has(resultUpdateKey(result)),sort:result.updated_at||result.created_at||""}))
+  ].sort((a,b)=>Number(b.unread)-Number(a.unread)||new Date(b.sort||0)-new Date(a.sort||0));
+  entries.slice(0,15).forEach(entry=>{
+    const isCreator=entry._kind==="creator", isResult=entry._kind==="result", session=entry.data;
+    const item=document.createElement("div");item.className="notification-item"+(entry.unread?" is-unread":"");item.tabIndex=0;item.setAttribute("role","button");
+    const icon=document.createElement("div");icon.className="notification-item-icon"+(!isCreator&&!isResult&&session.status==="live"?" is-live":"");icon.textContent=isResult?"📊":(isCreator?"📩":(session.emoji||"🎙️"));
+    const content=document.createElement("div");content.className="notification-item-content";
+    const heading=document.createElement("h4");
+    heading.textContent=(entry.unread?"● ":"")+(isResult?("Grade updated: "+gradeClassName(session)):(isCreator?(session.title||"Podcast update"):(session.title||"New live session")));
+    const desc=document.createElement("p");
+    desc.textContent=isResult?(`${TRIMESTER_LABELS[Number(session.trimester)]||"Trimester"} trimester · Average: ${session.average??"Pending"} · Control ${session.control_note??"—"} · Oral ${session.oral_note??"—"} · Synthèse ${session.synthese_note??"—"}`):(isCreator?(session.message||"You have an update from the Mac&Talk team."):((session.status==="live"?"🔴 Live now":"📅 Scheduled")+" · Hosted by "+(session.host||session.host_name||"Mac&Talk Community")));
+    const time=document.createElement("span");time.className="notification-item-time";time.textContent=session.created_at?formatDate(session.created_at,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Recently added";
+    content.append(heading,desc,time);item.append(icon,content);
+    const open=async()=>{
+      $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");
+      if(isResult){
+        const updatedResults=readSeenResults();updatedResults.add(resultUpdateKey(session));writeSeenResults(updatedResults);
+        renderNotifications(sessions);openResultsModal();renderStudentResults(({1:"first",2:"second",3:"third"})[Number(session.trimester)]||"first");
+        return;
+      }
+      if(isCreator){
+        try{
+          const {error}=await supabase.from("creator_notifications").update({is_read:true}).eq("id",session.id).eq("user_id",currentUser.id);
+          if(error)throw error;
+          session.is_read=true;renderNotifications(sessions);
+        }catch(error){console.error("Could not mark notification as read:",error);}
+        if(session.related_episode_id){showPage("profile");showNotice("Podcast update: "+(session.message||session.title||"Your submission has an update."));}
+        else showNotice(session.message||session.title||"You have an update from Mac&Talk.");
+        return;
+      }
+      const updated=readSeen();updated.add(String(session.id));writeSeen(updated);
+      renderNotifications(sessions);showPage("sessions");
+      if(session.status==="live")joinLiveSession(session);
+      else showNotice("This session is scheduled. Return when the host goes live.");
+    };
+    item.addEventListener("click",open);
+    item.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open();}});
+    container.append(item);
+  });
+}
+$("notificationButton").addEventListener("click",()=>{
+  const panel=$("notificationPanel");const open=panel.hidden;
+  panel.hidden=!open;$("notificationButton").setAttribute("aria-expanded",String(open));
+  if(open)loadLiveSessions().catch(error=>console.error("Refresh notifications:",error));
+});
+$("closeNotifications").addEventListener("click",()=>{
+  $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");
+});
+$("notificationViewAll").addEventListener("click",()=>{
+  $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");showPage("sessions");
+});
+document.addEventListener("click",event=>{
+  if(!$("notificationPanel").hidden&&!$("notificationWrap").contains(event.target)){
+    $("notificationPanel").hidden=true;$("notificationButton").setAttribute("aria-expanded","false");
+  }
+});
+$("refreshSessions").addEventListener("click",async()=>{
+  const button=$("refreshSessions");button.disabled=true;button.textContent="Refreshing…";
+  try{await loadLiveSessions();showNotice("Sessions refreshed.");}
+  catch(error){console.error(error);showNotice("Could not refresh sessions.","error");}
+  finally{button.disabled=false;button.textContent="↻ Refresh";}
+});
+$("copyMemberId").addEventListener("click",async()=>{
+  const id=$("welcomeMemberId").textContent.trim();
+  if(!id||id==="Loading..."||id==="Not assigned"){showNotice("Your member ID is not available yet.","error");return;}
+  try{
+    if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(id);
+    else{
+      const temp=document.createElement("textarea");temp.value=id;temp.style.position="fixed";temp.style.opacity="0";document.body.append(temp);temp.select();
+      const copied=document.execCommand("copy");temp.remove();if(!copied)throw new Error("Copy failed");
+    }
+    showNotice("Your member ID has been copied!");
+  }catch{showNotice("Clipboard access is unavailable. Select and copy your ID from My Profile.","error");}
 });
 
-$("backToClassStudentsBtn")?.addEventListener("click",()=>{$("studentRecordView").classList.add("hidden");$("classDetailView").classList.remove("hidden");$("classStudentsPanel").classList.remove("hidden");$("classBulkGradeView").classList.add("hidden");});
+/* WebRTC listener. Creator Studio must use the same live-room-{sessionId}
+   broadcast channel and send compatible offer/candidate signaling events. */
+const listenerConnections=new Map();
+async function joinLiveSession(session){
+  if(!session?.id){showNotice("This session has no valid ID.","error");return;}
+  if(session.host_user_id&&session.host_user_id===currentUser?.id){showNotice("You are hosting this session. Open Creator Studio to manage it.");return;}
+  if(!session.host_user_id){showNotice("This session does not have a host account linked, so live audio cannot connect yet.","error");return;}
+  if(listenerConnections.has(session.id)){document.body.append(listenerConnections.get(session.id).modal);return;}
+  const channel=supabase.channel(`live-room-${session.id}`,{config:{broadcast:{self:false}}});
+  const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+  const modal=document.createElement("div");modal.className="live-modal";
+  const box=document.createElement("div");box.className="live-modal-box";
+  const heading=document.createElement("h2");heading.textContent="🎙️ Live: "+(session.title||"Mac&Talk live");
+  const info=document.createElement("p");info.textContent="Connecting to the host… If you hear nothing, check your device volume.";
+  const audio=document.createElement("audio");audio.autoplay=true;audio.controls=true;audio.playsInline=true;
+  const actions=document.createElement("div");actions.className="modal-actions";
+  const close=document.createElement("button");close.type="button";close.className="modal-btn";close.textContent="Leave live";
+  const retry=document.createElement("button");retry.type="button";retry.className="modal-btn secondary";retry.textContent="Try audio again";
+  actions.append(close,retry);box.append(heading,info,audio,actions);modal.append(box);document.body.append(modal);
+  const state={pc,channel,modal};listenerConnections.set(session.id,state);
+  const cleanup=async()=>{
+    if(!listenerConnections.has(session.id))return;
+    listenerConnections.delete(session.id);
+    pc.ontrack=null;pc.onicecandidate=null;pc.close();
+    try{await supabase.removeChannel(channel);}catch(error){console.warn(error);}
+    modal.remove();
+  };
+  close.addEventListener("click",cleanup);
+  retry.addEventListener("click",()=>audio.play().then(()=>{info.textContent="Audio playback started."}).catch(()=>{info.textContent="Tap play on the audio control and check your device volume."}));
+  modal.addEventListener("click",event=>{if(event.target===modal)cleanup();});
+  pc.ontrack=event=>{
+    audio.srcObject=event.streams?.[0]||new MediaStream([event.track]);
+    info.textContent="Connected. You are listening live.";
+    audio.play().catch(()=>{info.textContent="Connected. Press play to hear the live.";});
+  };
+  pc.onicecandidate=event=>{
+    if(event.candidate)channel.send({type:"broadcast",event:"signal",payload:{kind:"candidate",from:currentUser.id,to:session.host_user_id,candidate:event.candidate}});
+  };
+  channel.on("broadcast",{event:"signal"},async({payload})=>{
+    if(!payload||payload.to!==currentUser.id||payload.from!==session.host_user_id)return;
+    try{
+      if(payload.kind==="offer"){
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+        const answer=await pc.createAnswer();await pc.setLocalDescription(answer);
+        await channel.send({type:"broadcast",event:"signal",payload:{kind:"answer",from:currentUser.id,to:session.host_user_id,sdp:pc.localDescription}});
+      }else if(payload.kind==="candidate"&&payload.candidate){
+        await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+      }
+    }catch(error){console.error("Live signaling error",error);info.textContent="Could not establish the audio connection. Please try again.";}
+  });
+  try{
+    const status=await channel.subscribe();
+    if(status!=="SUBSCRIBED"){
+      await cleanup();showNotice("Could not connect to the live room. Check Supabase Realtime permissions and try again.","error");return;
+    }
+    await channel.send({type:"broadcast",event:"signal",payload:{kind:"join",from:currentUser.id,to:session.host_user_id}});
+  }catch(error){
+    console.error("Live channel error:",error);await cleanup();showNotice("Could not connect to the live room. Please try again.","error");
+  }
+}
 
-document.addEventListener("click",e=>{
- const open=e.target.closest("[data-open-class]");if(open){openTeacherClass(open.dataset.openClass).catch(err=>notice(err.message,"error"));return;}
- const record=e.target.closest("[data-open-record]");if(record){openStudentRecord(record.dataset.openRecord).catch(err=>notice(err.message,"error"));return;}
- const remove=e.target.closest("[data-remove-class-student]");if(remove){removeStudentFromClass(remove.dataset.removeClassStudent);return;}
- const save=e.target.closest("[data-save-trimester]");if(save){saveTrimesterGrades(Number(save.dataset.saveTrimester));return;}
-});
+async function handleSignOut(){
+  if(signingOut)return;
+  signingOut=true;
+  $("sidebarSignOut").disabled=true;$("settingsSignOut").disabled=true;
+  try{
+    const {error}=await supabase.auth.signOut();
+    if(error)throw error;
+    for(const [,connection] of listenerConnections){
+      try{connection.pc.close();await supabase.removeChannel(connection.channel);connection.modal.remove();}catch(error){console.warn(error);}
+    }
+    listenerConnections.clear();
+    location.replace("login.html");
+  }catch(error){
+    console.error("Sign out error:",error);
+    signingOut=false;$("sidebarSignOut").disabled=false;$("settingsSignOut").disabled=false;
+    showNotice("Could not sign out. Please try again.","error");
+  }
+}
+$("sidebarSignOut").addEventListener("click",handleSignOut);
+$("settingsSignOut").addEventListener("click",handleSignOut);
 
-
-$("openStudentImportBtn")?.addEventListener("click",()=>{activeClass=null;openQuickStudentModal();});
-$("uploadStudentIdsBtn")?.addEventListener("click",()=>$("studentIdsDocument").click());
-$("studentIdsDocument")?.addEventListener("change",()=>importStudentIdsDocument());
-$("addStudentToActiveClassBtn")?.addEventListener("click",openQuickStudentModal);
-$("lookupQuickStudentBtn")?.addEventListener("click",lookupQuickStudent);
-$("quickStudentIdInput")?.addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,6)});
-$("quickStudentIdInput")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookupQuickStudent();}});
-$("unassignedCount")?.addEventListener("click",openUnassignedStudentsModal);
-$("closeUnassignedStudentsBtn")?.addEventListener("click",closeUnassignedStudentsModal);
-$("closeUnassignedStudentsFooter")?.addEventListener("click",closeUnassignedStudentsModal);
-$("closeStudentImportBtn")?.addEventListener("click",closeStudentImport);$("cancelStudentImportBtn")?.addEventListener("click",closeStudentImport);$("confirmStudentImportBtn")?.addEventListener("click",()=>confirmStudentImport().catch(e=>notice(e.message,"error")));
-$("createClassGroupBtn")?.addEventListener("click",()=>createClassGroup().catch(e=>notice(e.message,"error")));
-document.addEventListener("change",e=>{const sel=e.target.closest("[data-student-group]");if(sel)assignStudentGroup(sel.dataset.studentGroup,sel.value);const imp=e.target.closest("[data-import-class]");if(imp)pendingStudentImport[Number(imp.dataset.importClass)].selectedClass=imp.value;});
-document.addEventListener("click",e=>{const del=e.target.closest("[data-delete-class-group]");if(del)deleteClassGroup(del.dataset.deleteClassGroup).catch(err=>notice(err.message,"error"));const assign=e.target.closest("[data-assign-unassigned]");if(assign)assignUnassignedStudent(assign.dataset.assignUnassigned).catch(err=>notice(err.message,"error"));});
-
-init();
+async function handleSession(authSession){
+  if(signingOut)return;
+  if(!authSession?.user){
+    currentUser=null;
+    location.replace("login.html");
+    return;
+  }
+  currentUser=authSession.user;
+  $("currentDate").textContent=new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date());
+  $("footerYear").textContent=String(new Date().getFullYear());
+  $("loadingScreen").hidden=true;$("app").hidden=false;
+  await renderProfile(currentUser);
+  await loadLiveSessions();
+  const route=location.pathname.split("/").pop().toLowerCase();
+  const pageForFile={"user.html":"dashboard","sessions.html":"sessions","profile.html":"profile","settings.html":"settings"};
+  showPage(pageForFile[route]||"dashboard");
+}
+try{
+  const {data,error}=await supabase.auth.getSession();
+  if(error)throw error;
+  if(!data.session){location.replace("login.html");}
+  else await handleSession(data.session);
+  if(!authListenerRegistered){
+    authListenerRegistered=true;
+    supabase.auth.onAuthStateChange((_event,session)=>{
+      if(!signingOut)setTimeout(()=>handleSession(session).catch(error=>{
+        console.error("Auth state update:",error);showNotice("Could not refresh your account.","error");
+      }),0);
+    });
+  }
+  document.addEventListener("visibilitychange",async()=>{
+    if(document.visibilityState!=="visible"||!currentUser)return;
+    try{
+      const {data,error}=await supabase.auth.getUser();
+      if(error)throw error;
+      if(data?.user){
+        currentUser=data.user;
+        $("profileVerified").textContent=currentUser.email_confirmed_at?"Verified":"Not verified";
+      }
+    }catch(error){console.warn("Could not refresh user verification state:",error);}
+  });
+  window.setInterval(()=>{
+    if(document.visibilityState==="visible"&&currentUser)loadLiveSessions().catch(console.error);
+  },30000);
+}catch(error){
+  console.error("Mac&Talk dashboard error:",error);
+  showFatal(error?.message||"Could not initialize Supabase. Check your project URL, publishable key, and connection.");
+}
 </script>
-</body></html>
+</body>
+</html>
