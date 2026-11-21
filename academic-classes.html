@@ -86,6 +86,7 @@ let selected = null;
 let cachedUsers = [];
 let selectedStudentIds = new Set();
 let bulkMode = false;
+let teacherNamesByStudent = new Map();
 
 const toast = message => {
   $('toast').textContent = message;
@@ -184,7 +185,7 @@ function renderUsers(rows) {
       <td><span class="student-name">${esc(user.display_name || 'Student')}</span><span class="student-code">${esc(studentCode(user))}</span></td>
       <td>${esc(user.school_level || '—')}</td>
       <td>${esc(user.school_stream || '—')}</td>
-      <td>${esc(user.teacher_name || user.teacher_display_name || user.assigned_teacher_name || user.teacher || '—')}</td>
+      <td>${esc((teacherNamesByStudent.get(user.user_id) || []).join(', ') || 'No teacher assigned')}</td>
       <td><span class="pill">${user.edit_allowed ? 'Allowed' : 'Locked'}</span></td>
       <td><button class="btn light" data-edit-index="${index}">Edit</button></td>
     </tr>`).join('') : '<tr><td colspan="7" class="empty">No students found.</td></tr>';
@@ -223,9 +224,47 @@ function openBulkEditor() {
   $('saveStudent').textContent = `Save for ${users.length} students`;
   openStudentModal();
 }
+async function loadTeacherAssignments(students) {
+  teacherNamesByStudent = new Map();
+  const studentIds = [...new Set((students || []).map(user => user.user_id).filter(Boolean))];
+  if (!studentIds.length) return;
+
+  // The permissions table is the source of truth for student-to-teacher assignments.
+  const {data: permissions, error: permissionError} = await db
+    .from('teacher_student_permissions')
+    .select('teacher_id, student_id')
+    .in('student_id', studentIds);
+  if (permissionError) throw new Error(`Could not load teacher assignments: ${permissionError.message}`);
+
+  const teacherIds = [...new Set((permissions || []).map(row => row.teacher_id).filter(Boolean))];
+  if (!teacherIds.length) return;
+
+  // teacher_id references auth.users(id); public.users.auth_id links that UUID
+  // to the teacher's public profile and display name.
+  const {data: teacherProfiles, error: profileError} = await db
+    .from('users')
+    .select('*')
+    .in('auth_id', teacherIds);
+  if (profileError) throw new Error(`Teacher assignments were found, but teacher profiles could not be loaded: ${profileError.message}`);
+
+  const profileByAuthId = new Map((teacherProfiles || []).map(profile => [profile.auth_id, profile]));
+  for (const permission of permissions || []) {
+    const profile = profileByAuthId.get(permission.teacher_id);
+    const teacherName = profile && (
+      profile.display_name || profile.full_name ||
+      [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
+      profile.username || profile.email || profile.mac_talk_id
+    );
+    if (!teacherNamesByStudent.has(permission.student_id)) teacherNamesByStudent.set(permission.student_id, []);
+    if (teacherName && !teacherNamesByStudent.get(permission.student_id).includes(teacherName)) {
+      teacherNamesByStudent.get(permission.student_id).push(teacherName);
+    }
+  }
+}
 async function loadUsers() {
   const query = $('search').value.trim();
   const rows = await rpc('admin_search_academic_users', {p_search:query});
+  await loadTeacherAssignments(Array.isArray(rows) ? rows : []);
   renderUsers(rows);
 }
 async function selectStudent(user) {
