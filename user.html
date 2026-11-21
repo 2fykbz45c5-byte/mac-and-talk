@@ -26,6 +26,27 @@ button,input,textarea,select{font:inherit}button,a{-webkit-tap-highlight-color:t
 .notification-wrap{position:relative}.notification-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:9px;position:relative;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:white;color:var(--navy);cursor:pointer;font-size:12px;font-weight:700}.notification-button:hover,.notification-button[aria-expanded=true]{background:#f5f7fb;border-color:#cbd5e1}.notification-bell{font-size:17px;line-height:1}.notification-badge{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#e5484d;color:white;font-size:10px;font-weight:800}.notification-panel{position:absolute;top:calc(100% + 12px);right:0;z-index:100;width:min(365px,calc(100vw - 28px));overflow:hidden;border:1px solid #e4e9f1;border-radius:17px;background:white;box-shadow:0 18px 55px #10243e2b;animation:notificationAppear .18s ease-out}@keyframes notificationAppear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}.notification-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:19px 18px 15px}.notification-panel-header h3{font-size:16px;font-weight:800}.notification-panel-header p{margin-top:5px;color:var(--muted);font-size:11px;line-height:1.5}.notification-close{width:29px;height:29px;border:0;border-radius:8px;background:#f1f4f8;color:var(--navy);cursor:pointer;font-size:21px}.notification-tabs{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 18px 12px;border-bottom:1px solid #edf0f5}.notification-tab{padding-bottom:9px;border-bottom:2px solid var(--yellow);font-size:12px;font-weight:800}.notification-count{color:var(--muted);font-size:10px}.notification-list{max-height:330px;overflow-y:auto}.notification-item{display:flex;align-items:flex-start;gap:12px;padding:14px 17px;border-bottom:1px solid #f0f2f6;cursor:pointer;transition:background .15s}.notification-item:hover,.notification-item:focus{background:#f7f9fc}.notification-item-icon{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#fff4ce;font-size:20px}.notification-item-icon.is-live{background:#e7f8ef}.notification-item-content{flex:1;min-width:0}.notification-item-content h4{font-size:12px;line-height:1.5;overflow-wrap:anywhere}.notification-item-content p{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.55;overflow-wrap:anywhere}.notification-item-time{display:block;margin-top:6px;color:#8792a3;font-size:10px}.notification-empty{padding:28px 18px;text-align:center}.notification-empty>span{display:block;margin-bottom:9px;font-size:27px}.notification-empty p{color:var(--muted);font-size:12px;line-height:1.7}.notification-view-all{width:100%;padding:14px;border:0;border-top:1px solid #edf0f5;background:#fafbfe;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}.notification-view-all:hover{background:#f0f4fa}
 .live-modal{position:fixed;inset:0;z-index:2000;background:#071221c7;display:grid;place-items:center;padding:20px}.live-modal-box{width:min(100%,460px);background:white;border-radius:18px;padding:24px;color:var(--navy);box-shadow:0 20px 70px #0003}.live-modal-box h2{font-size:19px;overflow-wrap:anywhere}.live-modal-box p{font-size:13px;color:var(--muted);margin:12px 0;line-height:1.6}.live-modal-box audio{width:100%;margin-top:8px}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.modal-btn{border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff}.modal-btn.secondary{background:#eef2f7;color:var(--navy)}
 
+/* Dashboard academic grade cards */
+.your-grades-section{margin:0 0 26px}
+.your-grades-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 14px}
+.your-grades-heading h2{font-size:19px;font-weight:850;letter-spacing:-.3px}
+.your-grades-heading p{margin-top:4px;color:var(--muted);font-size:12px}
+.your-grades-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.your-trimester-card{min-width:0;padding:17px;border:1px solid #eee8d9;border-radius:15px;background:#fff;box-shadow:0 4px 18px rgba(16,36,62,.045)}
+.your-trimester-card h3{font-size:14px;font-weight:850;margin-bottom:12px}
+.your-grade-entry{padding:11px 0;border-top:1px solid var(--border)}
+.your-grade-entry:first-of-type{border-top:0;padding-top:0}
+.your-grade-class{font-size:12px;font-weight:800;margin-bottom:9px;overflow-wrap:anywhere}
+.your-grade-marks{display:flex;gap:7px;flex-wrap:wrap}
+.your-grade-mark{display:flex;flex-direction:column;gap:3px;min-width:64px;padding:7px 9px;border-radius:9px;background:#f7f9fc;border:1px solid var(--border)}
+.your-grade-mark span{font-size:9px;color:var(--muted);font-weight:750}
+.your-grade-mark strong{font-size:13px;font-weight:850}
+.your-grade-average{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:10px 11px;border-radius:10px;background:#fff4c9;border:1px solid #f4df91}
+.your-grade-average span{font-size:11px;font-weight:800;color:#586579}
+.your-grade-average strong{font-size:20px;font-weight:950;color:var(--navy);font-variant-numeric:tabular-nums}
+.your-grade-pending{font-size:10px;color:var(--muted);margin-top:8px}
+.your-grade-empty{padding:12px;border:1px dashed #d9e0e9;border-radius:10px;color:var(--muted);font-size:11px;line-height:1.6}
+@media(max-width:900px){.your-grades-grid{grid-template-columns:1fr}}
 /* Student results */
 .results-top-button{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 13px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;font-size:12px;font-weight:800}
 .results-top-button:hover,.results-top-button[aria-expanded=true]{background:#fff9e5;border-color:#e8c34d}
@@ -205,6 +226,14 @@ body { background: #ffffff; }
 </header>
 <div class="content"><div id="notice" class="notice" role="status" aria-live="polite"></div>
 <section class="page-panel active" id="dashboardPage">
+  <section class="your-grades-section" aria-labelledby="yourGradesTitle">
+    <div class="your-grades-heading"><div><h2 id="yourGradesTitle">📚 Your Grades</h2><p>Your marks for all three trimesters</p></div><button class="join-btn" type="button" id="dashboardOpenResults">View details</button></div>
+    <div class="your-grades-grid" id="dashboardGradeCards" aria-live="polite">
+      <article class="your-trimester-card"><h3>First Trimester</h3><div class="your-grade-empty">Loading your grades…</div></article>
+      <article class="your-trimester-card"><h3>Second Trimester</h3><div class="your-grade-empty">Loading your grades…</div></article>
+      <article class="your-trimester-card"><h3>Third Trimester</h3><div class="your-grade-empty">Loading your grades…</div></article>
+    </div>
+  </section>
   <div class="welcome-banner"><div><h1>Welcome back, <span id="welcomeName">Member</span>! 👋</h1><div class="welcome-member-id"><span class="member-id-icon">✦</span><span>MEMBER ID</span><strong id="welcomeMemberId">Loading...</strong><button type="button" id="copyMemberId" aria-label="Copy member ID" title="Copy member ID">⧉</button></div><p>Your voice matters. Discover conversations, listen to live sessions, and connect with people through Mac&amp;Talk.</p></div><button class="primary-btn" type="button" data-go="sessions">🎙️ Explore Sessions</button></div>
   <div class="section-heading"><div><h2>Your Overview</h2><p>Your account at a glance</p></div></div>
   <div class="stats-grid">
@@ -409,20 +438,81 @@ function resultUpdateKey(result){
 function gradeClassName(row){
   return row.class?.class_name || row.class_name || "Your class";
 }
+function publishedGradeAverage(row){
+  if(row.average!==null&&row.average!==undefined&&row.average!=="")return Number(row.average);
+  const values=[row.control_note,row.oral_note,row.synthese_note];
+  if(values.some(v=>v===null||v===undefined||v===""))return null;
+  const [control,oral,synthese]=values.map(Number);
+  if(![control,oral,synthese].every(Number.isFinite))return null;
+  return (control+oral+(synthese*2))/4;
+}
+function hasGradeValue(value){
+  return value!==null&&value!==undefined&&String(value).trim()!==""&&Number.isFinite(Number(value));
+}
+function calculateTeacherAverage(row){
+  // Match the Teacher page exactly: (Control + Oral + Synthèse × 2) ÷ 4.
+  const values=[row.control_note,row.oral_note,row.synthese_note];
+  if(!values.every(hasGradeValue))return null;
+  const [control,oral,synthese]=values.map(Number);
+  return (control+oral+(synthese*2))/4;
+}
+function renderDashboardGradeCards(){
+  const root=$("dashboardGradeCards");
+  if(!root)return;
+  root.replaceChildren();
+  const trimesterNames={1:"First Trimester",2:"Second Trimester",3:"Third Trimester"};
+  [1,2,3].forEach(trimester=>{
+    const card=document.createElement("article");card.className="your-trimester-card";
+    const heading=document.createElement("h3");heading.textContent=trimesterNames[trimester];card.append(heading);
+    const rows=studentResults.filter(row=>Number(row.trimester)===trimester);
+    if(!rows.length){
+      const empty=document.createElement("div");empty.className="your-grade-empty";empty.textContent="No grades available yet.";card.append(empty);
+    }else{
+      rows.forEach(row=>{
+        const entry=document.createElement("div");entry.className="your-grade-entry";
+        const className=document.createElement("div");className.className="your-grade-class";className.textContent=gradeClassName(row);entry.append(className);
+        const marks=document.createElement("div");marks.className="your-grade-marks";
+        [["Control",row.control_note],["Oral",row.oral_note],["Synthèse",row.synthese_note]].forEach(([label,value])=>{
+          if(!hasGradeValue(value))return;
+          const mark=document.createElement("div");mark.className="your-grade-mark";
+          const type=document.createElement("span");type.textContent=label;
+          const score=document.createElement("strong");score.textContent=Number(value).toString();
+          mark.append(type,score);marks.append(mark);
+        });
+        if(marks.childElementCount)entry.append(marks);
+        const average=calculateTeacherAverage(row);
+        if(average!==null){
+          const averageBox=document.createElement("div");averageBox.className="your-grade-average";
+          const label=document.createElement("span");label.textContent="Average";
+          const score=document.createElement("strong");score.textContent=average.toFixed(2)+" / 20";
+          averageBox.append(label,score);entry.append(averageBox);
+        }else{
+          const pending=document.createElement("p");pending.className="your-grade-pending";
+          pending.textContent="Average appears when Control, Oral and Synthèse are all available.";entry.append(pending);
+        }
+        card.append(entry);
+      });
+    }
+    root.append(card);
+  });
+}
 async function loadStudentResults(){
-  if(!currentUser?.id){studentResults=[];return;}
+  if(!currentUser?.id){studentResults=[];renderDashboardGradeCards();return;}
   // The student_id filter is intentional; database RLS must enforce the same restriction.
   const {data,error}=await supabase.from("class_student_grades")
-    .select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average,updated_at,class:teacher_classes(class_name)")
+    .select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average,updated_at,is_published,published_at,class:teacher_classes(class_name)")
     .eq("student_id",currentUser.id)
+    .eq("is_published",true)
     .order("updated_at",{ascending:false});
   if(error){
     console.warn("Could not load class_student_grades. Check its SELECT RLS policy for students:",error);
     studentResults=[];
+    renderDashboardGradeCards();
     if(!$("resultsModal").hidden)renderStudentResults(activeResultsTrimester);
     return;
   }
   studentResults=data||[];
+  renderDashboardGradeCards();
   if(!$("resultsModal").hidden)renderStudentResults(activeResultsTrimester);
 }
 function renderStudentResults(trimester){
@@ -447,17 +537,18 @@ function renderStudentResults(trimester){
     const top=document.createElement("div");top.className="result-card-top";
     const subject=document.createElement("h3");subject.textContent=gradeClassName(row);
     const score=document.createElement("span");score.className="result-score";
-    score.textContent=row.average!==null&&row.average!==undefined?`Average: ${row.average}`:"Average: pending";
+    const calculatedAverage=publishedGradeAverage(row);
+    score.textContent=calculatedAverage!==null?`Average: ${calculatedAverage.toFixed(2)}/20`:"Average: pending";
     top.append(subject,score);card.append(top);
     const notes=document.createElement("div");notes.className="grade-notes-grid";
     [
       ["Control",row.control_note],
       ["Oral",row.oral_note],
       ["Synthèse",row.synthese_note]
-    ].forEach(([label,value])=>{
+    ].filter(([,value])=>value!==null&&value!==undefined&&value!=="").forEach(([label,value])=>{
       const note=document.createElement("div");note.className="grade-note";
       const name=document.createElement("span");name.textContent=label;
-      const mark=document.createElement("strong");mark.textContent=value===null||value===undefined?"—":String(value);
+      const mark=document.createElement("strong");mark.textContent=String(value)+"/20";
       note.append(name,mark);notes.append(note);
     });
     card.append(notes);
@@ -480,6 +571,7 @@ function closeResultsModal(){
   $("openResultsButton").setAttribute("aria-expanded","false");
 }
 $("openResultsButton").addEventListener("click",openResultsModal);
+$("dashboardOpenResults")?.addEventListener("click",openResultsModal);
 $("closeResultsButton").addEventListener("click",closeResultsModal);
 $("resultsModal").addEventListener("click",event=>{if(event.target===$("resultsModal"))closeResultsModal();});
 document.querySelectorAll(".results-trimester-tab").forEach(tab=>{
