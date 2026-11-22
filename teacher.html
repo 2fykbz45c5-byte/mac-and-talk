@@ -468,7 +468,7 @@ function renderStudentGrades(){
 async function saveTrimesterGrades(t){
  const read=id=>$(id).value.trim();const values={control_note:read(`grade-control-${t}`),oral_note:read(`grade-oral-${t}`),synthese_note:read(`grade-synthese-${t}`)};
  for(const [key,val] of Object.entries(values)){if(val!==""&&(!Number.isFinite(Number(val))||Number(val)<0||Number(val)>20))return notice("Marks must be between 0 and 20.","error");}
- const old=studentGrades.find(g=>Number(g.trimester)===t);const changed=!old||["control_note","oral_note","synthese_note"].some(k=>String(old[k]??"")!==String(values[k]??""));const payload={class_id:activeClass.id,student_id:activeStudent,trimester:t,is_published:changed?false:Boolean(old?.is_published),published_at:changed?null:(old?.published_at??null),control_note:values.control_note===""?null:Number(values.control_note),oral_note:values.oral_note===""?null:Number(values.oral_note),synthese_note:values.synthese_note===""?null:Number(values.synthese_note),average:getBulkAverage(values),updated_at:new Date().toISOString()};
+ const old=studentGrades.find(g=>Number(g.trimester)===t);const changed=!old||["control_note","oral_note","synthese_note"].some(k=>String(old[k]??"")!==String(values[k]??""));const payload={class_id:activeClass.id,student_id:activeStudent,trimester:t,is_published:changed?false:Boolean(old?.is_published),published_at:changed?null:(old?.published_at??null),control_note:values.control_note===""?null:Number(values.control_note),oral_note:values.oral_note===""?null:Number(values.oral_note),synthese_note:values.synthese_note===""?null:Number(values.synthese_note),updated_at:new Date().toISOString()};
  try{const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});if(error)throw error;notice(`Trimester ${t} grades saved.`);await loadStudentGrades();}
  catch(e){notice("Could not save grades: "+e.message,"error");}
 }
@@ -581,7 +581,7 @@ async function saveAllClassGrades(){
     control_note:row.control_note===""?null:Number(row.control_note),
     oral_note:row.oral_note===""?null:Number(row.oral_note),
     synthese_note:row.synthese_note===""?null:Number(row.synthese_note),
-    average:getBulkAverage(row),
+    
     is_published:changed?false:Boolean(old?.is_published),
     published_at:changed?null:(old?.published_at??null),
     updated_at:new Date().toISOString()
@@ -618,7 +618,7 @@ async function saveBulkRowsSilently(rows){
   const changed=!old||["control_note","oral_note","synthese_note"].some(k=>String(old[k]??"")!==String(row[k]??""));
   const payload={class_id:activeClass.id,student_id:row.student_id,trimester:bulkTrimester,
    control_note:row.control_note===""?null:Number(row.control_note),oral_note:row.oral_note===""?null:Number(row.oral_note),
-   synthese_note:row.synthese_note===""?null:Number(row.synthese_note),average:getBulkAverage(row),is_published:changed?false:Boolean(old?.is_published),
+   synthese_note:row.synthese_note===""?null:Number(row.synthese_note),is_published:changed?false:Boolean(old?.is_published),
    published_at:changed?null:(old?.published_at??null),updated_at:new Date().toISOString()};
   const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});
   if(error)throw new Error(`${getBulkStudentName(row.student_id)}: ${error.message}`);
