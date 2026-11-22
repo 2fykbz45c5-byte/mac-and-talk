@@ -166,7 +166,7 @@
 
 <section class="page" id="page-students"><div class="welcome"><div><h2>My permitted students</h2><p>Only students explicitly assigned to you by a Mac&Talk administrator appear here.</p></div></div><div class="panel"><div class="search-row"><input class="field-control" id="studentSearch" placeholder="Search students by name or email…"><span class="tag" id="studentCount">Loading…</span></div><div id="studentsList" class="student-list"><p class="empty">Loading students…</p></div></div></section>
 <section class="page" id="page-classes">
- <div class="welcome"><div><h2>Student Classes</h2><p>Manage your classes and students from simple actions.</p></div><button class="btn btn-primary" id="createClassBtn">＋ Create a class</button></div>
+ <div class="welcome"><div><h2>Student Classes</h2><p>Manage your classes and students from simple actions.</p></div><div class="bulk-grade-actions"><button class="btn btn-yellow" id="publishGradesMainBtn" type="button">Publish Grades</button><button class="btn btn-primary" id="createClassBtn">＋ Create a class</button></div></div>
  <div id="classListView">
   <div class="student-action-grid">
    <article class="student-action-card"><div style="display:flex;align-items:center;gap:16px"><div class="student-action-icon">＋</div><div><h3>Add quick student</h3><p>Enter one student ID, view the student's academic profile and choose the right class.</p></div></div><button class="btn btn-primary" id="openStudentImportBtn">Add student →</button></article>
@@ -206,6 +206,17 @@
     </div>
    </div>
   </div></div>
+ </div>
+ <div class="modal-backdrop" id="classGradePublishModal" aria-hidden="true">
+  <div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="classGradePublishTitle">
+   <div class="panel-head"><div><h3 id="classGradePublishTitle">Publish Grades</h3><p>Select one or more classes. Every student with saved marks in the selected trimester will receive the publication.</p></div><button type="button" class="btn btn-light btn-small" id="closeClassGradePublishBtn">✕</button></div>
+   <div class="modal-body">
+    <div class="form-grid" style="margin-bottom:16px"><div class="form-field"><label for="classPublishTrimester">Trimester</label><select id="classPublishTrimester" class="field-control"><option value="1">First trimester</option><option value="2">Second trimester</option><option value="3">Third trimester</option></select></div></div>
+    <div id="classGradePublishList" class="unassigned-list"><p class="empty">Loading your classes…</p></div>
+    <p class="muted-note" style="margin-top:12px">Students without any saved marks will be skipped. Students with partial marks will receive the marks currently available; the average is included only when all three marks exist.</p>
+   </div>
+   <div class="modal-foot"><button type="button" class="btn btn-light" id="cancelClassGradePublishBtn">Cancel</button><button type="button" class="btn btn-primary" id="continueClassGradePublishBtn">Continue</button></div>
+  </div>
  </div>
  <div class="modal-backdrop" id="confirmGradePublishModal" aria-hidden="true">
   <div class="modal grade-publish-modal" role="dialog" aria-modal="true" aria-labelledby="confirmGradePublishTitle">
@@ -337,7 +348,7 @@ async function loadTeacherClasses(){
 async function renderTeacherClasses(){
  const root=$("teacherClassList");if(!teacherClasses.length){root.innerHTML='<p class="empty">No classes yet. Create your first class to get started.</p>';return;}
  const counts={};for(const c of teacherClasses){const {count,error}=await supabase.from("class_students").select("id",{count:"exact",head:true}).eq("class_id",c.id);counts[c.id]=error?null:count;}
- root.innerHTML=teacherClasses.map(c=>`<article class="class-tile"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tag approved">Your class</span><span style="font-size:20px">🎓</span></div><h3>${esc(c.class_name)}</h3><p>${esc(classMetaText(c))}</p><p>${counts[c.id]===null?"Student count unavailable":`${counts[c.id]} student${counts[c.id]===1?"":"s"}`}</p><div class="class-tile-foot"><span class="muted-note">Created ${c.created_at?esc(new Date(c.created_at).toLocaleDateString()):"—"}</span><button class="btn btn-primary btn-small" data-open-class="${esc(c.id)}">Open class →</button></div></article>`).join("");
+ root.innerHTML=teacherClasses.map(c=>`<article class="class-tile"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tag approved">Your class</span><span style="font-size:20px">🎓</span></div><h3>${esc(c.class_name)}</h3><p>${esc(classMetaText(c))}</p><p>${counts[c.id]===null?"Student count unavailable":`${counts[c.id]} student${counts[c.id]===1?"":"s"}`}</p><div class="class-tile-foot"><span class="muted-note">Created ${c.created_at?esc(new Date(c.created_at).toLocaleDateString()):"—"}</span><div class="actions"><button class="btn btn-yellow btn-small" type="button" data-publish-class="${esc(c.id)}">Publish grades</button><button class="btn btn-primary btn-small" data-open-class="${esc(c.id)}">Open class →</button></div></div></article>`).join("");
 }
 function openCreateClassModal(){const form=$("createClassForm");form.reset();updateClassStreamOptions();$("createClassModal").classList.add("open");$("createClassModal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";setTimeout(()=>$("newClassLevel").focus(),40);}
 function closeCreateClassModal(){const modal=$("createClassModal");if(!modal)return;modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.style.overflow="";$("createClassForm")?.reset();updateClassStreamOptions();}
@@ -468,7 +479,7 @@ function renderStudentGrades(){
 async function saveTrimesterGrades(t){
  const read=id=>$(id).value.trim();const values={control_note:read(`grade-control-${t}`),oral_note:read(`grade-oral-${t}`),synthese_note:read(`grade-synthese-${t}`)};
  for(const [key,val] of Object.entries(values)){if(val!==""&&(!Number.isFinite(Number(val))||Number(val)<0||Number(val)>20))return notice("Marks must be between 0 and 20.","error");}
- const old=studentGrades.find(g=>Number(g.trimester)===t);const changed=!old||["control_note","oral_note","synthese_note"].some(k=>String(old[k]??"")!==String(values[k]??""));const payload={class_id:activeClass.id,student_id:activeStudent,trimester:t,is_published:changed?false:Boolean(old?.is_published),published_at:changed?null:(old?.published_at??null),control_note:values.control_note===""?null:Number(values.control_note),oral_note:values.oral_note===""?null:Number(values.oral_note),synthese_note:values.synthese_note===""?null:Number(values.synthese_note),average:getBulkAverage(values),updated_at:new Date().toISOString()};
+ const old=studentGrades.find(g=>Number(g.trimester)===t);const changed=!old||["control_note","oral_note","synthese_note"].some(k=>String(old[k]??"")!==String(values[k]??""));const payload={class_id:activeClass.id,student_id:activeStudent,trimester:t,is_published:changed?false:Boolean(old?.is_published),published_at:changed?null:(old?.published_at??null),control_note:values.control_note===""?null:Number(values.control_note),oral_note:values.oral_note===""?null:Number(values.oral_note),synthese_note:values.synthese_note===""?null:Number(values.synthese_note),updated_at:new Date().toISOString()};
  try{const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});if(error)throw error;notice(`Trimester ${t} grades saved.`);await loadStudentGrades();}
  catch(e){notice("Could not save grades: "+e.message,"error");}
 }
@@ -581,7 +592,6 @@ async function saveAllClassGrades(){
     control_note:row.control_note===""?null:Number(row.control_note),
     oral_note:row.oral_note===""?null:Number(row.oral_note),
     synthese_note:row.synthese_note===""?null:Number(row.synthese_note),
-    average:getBulkAverage(row),
     is_published:changed?false:Boolean(old?.is_published),
     published_at:changed?null:(old?.published_at??null),
     updated_at:new Date().toISOString()
@@ -618,7 +628,7 @@ async function saveBulkRowsSilently(rows){
   const changed=!old||["control_note","oral_note","synthese_note"].some(k=>String(old[k]??"")!==String(row[k]??""));
   const payload={class_id:activeClass.id,student_id:row.student_id,trimester:bulkTrimester,
    control_note:row.control_note===""?null:Number(row.control_note),oral_note:row.oral_note===""?null:Number(row.oral_note),
-   synthese_note:row.synthese_note===""?null:Number(row.synthese_note),average:getBulkAverage(row),is_published:changed?false:Boolean(old?.is_published),
+   synthese_note:row.synthese_note===""?null:Number(row.synthese_note),is_published:changed?false:Boolean(old?.is_published),
    published_at:changed?null:(old?.published_at??null),updated_at:new Date().toISOString()};
   const {error}=await supabase.from("class_student_grades").upsert(payload,{onConflict:"class_id,student_id,trimester"});
   if(error)throw new Error(`${getBulkStudentName(row.student_id)}: ${error.message}`);
@@ -647,6 +657,67 @@ async function startGradePublication(){
  }catch(error){console.error(error);notice("Could not prepare publication: "+error.message,"error");}
  finally{btn.disabled=false;btn.textContent="Save & Publish Grades";}
 }
+function openClassGradePublishModal(preselectedClassId=null){
+ const modal=$("classGradePublishModal");
+ const selected=preselectedClassId?new Set([String(preselectedClassId)]):new Set();
+ $("classGradePublishList").innerHTML=teacherClasses.length?teacherClasses.map(c=>`<label class="unassigned-row" style="cursor:pointer"><span style="display:flex;align-items:center;gap:12px"><input type="checkbox" data-publish-class-choice="${esc(c.id)}" ${selected.has(String(c.id))?'checked':''} style="width:18px;height:18px"><span><strong>${esc(c.class_name)}</strong><small class="muted-note" style="display:block">${esc(classMetaText(c))}</small></span></span><span class="tag">Class</span></label>`).join(""):'<p class="empty">No classes available. Create a class first.</p>';
+ modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+}
+function closeClassGradePublishModal(){const modal=$("classGradePublishModal");modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+function prepareClassGradePublication(){
+ const classIds=[...document.querySelectorAll('[data-publish-class-choice]:checked')].map(x=>x.dataset.publishClassChoice);
+ if(!classIds.length)return notice("Select at least one class to publish.","error");
+ const trimester=Number($("classPublishTrimester").value);
+ if(![1,2,3].includes(trimester))return notice("Choose a valid trimester.","error");
+ pendingGradePublication={mode:"classes",class_ids:classIds,trimester};
+ closeClassGradePublishModal();
+ $("confirmGradePublishTitle").textContent="Confirm Grade Publication";
+ const body=$("confirmGradePublishModal").querySelector(".modal-body");
+ body.innerHTML=`<h3 id="confirmGradePublishTitle">Confirm Grade Publication</h3><p>You are about to publish grades for <strong>${classIds.length}</strong> selected class${classIds.length===1?'':'es'}.</p><ul><li>Students with saved marks in the selected classes will see their grades on Mac&amp;Talk.</li><li>Each eligible student will receive an email notification.</li><li>Classes you did not select will not be included.</li></ul><p>Are you sure you want to continue?</p>`;
+ $("confirmGradePublishModal").classList.add("open");$("confirmGradePublishModal").setAttribute("aria-hidden","false");
+}
+async function confirmMultiClassGradePublication(publication){
+ let publishedStudents=0,sent=0,failed=0,skipped=0,alreadySent=0;
+ const oldActiveClass=activeClass;
+ try{
+  for(const classId of publication.class_ids){
+   const cls=teacherClasses.find(c=>String(c.id)===String(classId));
+   if(!cls)throw new Error("A selected class is no longer available. Refresh your classes and try again.");
+   const {data:links,error:linksError}=await supabase.from("class_students").select("student_id").eq("class_id",classId);
+   if(linksError)throw new Error(`${cls.class_name}: ${linksError.message}`);
+   const studentIds=[...new Set((links||[]).map(x=>String(x.student_id)))];
+   if(!studentIds.length){skipped++;continue;}
+   const {data:grades,error:gradesError}=await supabase.from("class_student_grades")
+    .select("id,class_id,student_id,trimester,control_note,oral_note,synthese_note,average")
+    .eq("class_id",classId).eq("trimester",publication.trimester).in("student_id",studentIds);
+   if(gradesError)throw new Error(`${cls.class_name}: ${gradesError.message}`);
+   const eligible=(grades||[]).filter(g=>[g.control_note,g.oral_note,g.synthese_note].some(v=>v!==null&&v!==undefined&&v!==""));
+   if(!eligible.length){skipped++;continue;}
+   const eligibleIds=eligible.map(g=>String(g.student_id));
+   const signature=JSON.stringify({class_id:classId,trimester:publication.trimester,grades:eligible.map(g=>({student_id:String(g.student_id),control_note:g.control_note,oral_note:g.oral_note,synthese_note:g.synthese_note})).sort((a,b)=>a.student_id.localeCompare(b.student_id))});
+   const rawPublicationId=(gradePublicationHash(signature)+gradePublicationHash(signature+"|mactalk-grade")).padEnd(32,"0").slice(0,32);
+   const publicationId=`${rawPublicationId.slice(0,8)}-${rawPublicationId.slice(8,12)}-4${rawPublicationId.slice(13,16)}-a${rawPublicationId.slice(17,20)}-${rawPublicationId.slice(20,32)}`;
+   const {error:publishError}=await supabase.from("class_student_grades").update({is_published:true,published_at:new Date().toISOString()})
+    .eq("class_id",classId).eq("trimester",publication.trimester).in("student_id",eligibleIds);
+   if(publishError)throw new Error(`${cls.class_name}: ${publishError.message}`);
+   publishedStudents+=eligible.length;
+   activeClass=cls;
+   for(const grade of eligible){
+    const student=findTeacherStudent(grade.student_id);
+    if(!student||!/^\S+@\S+\.\S+$/.test(String(student.email||""))){failed++;continue;}
+    let logId=null;
+    try{
+     logId=await claimGradeEmail({publication_id:publicationId,class_id:classId,trimester:publication.trimester,student_id:String(grade.student_id)});
+     if(!logId){alreadySent++;continue;}
+     await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_GRADE_TEMPLATE_ID,formatGradeEmailPayload(student,grade,publicationId),{publicKey:EMAILJS_PUBLIC_KEY});
+     await updateGradeEmailLog(logId,{status:"sent",sent_at:new Date().toISOString(),error_message:null});sent++;
+    }catch(emailError){failed++;if(logId){try{await updateGradeEmailLog(logId,{status:"failed",error_message:String(emailError?.message||emailError).slice(0,1000)});}catch(logError){console.error(logError);}}console.error("Grade email failed",grade.student_id,emailError);}
+   }
+  }
+ }finally{activeClass=oldActiveClass;}
+ closeGradePublishModal();
+ notice(`Publication complete. Students published: ${publishedStudents}. Emails sent: ${sent}${alreadySent?` · Already sent: ${alreadySent}`:""}${failed?` · Email issues: ${failed}`:""}${skipped?` · Empty classes skipped: ${skipped}`:""}.`,failed?"error":"success");
+}
 function closeGradePublishModal(){
  $("confirmGradePublishModal").classList.remove("open");$("confirmGradePublishModal").setAttribute("aria-hidden","true");
  pendingGradePublication=null;
@@ -659,12 +730,11 @@ function gradePublicationHash(value){
  return (h1>>>0).toString(16)+(h2>>>0).toString(16);
 }
 function gradeEmailSettingsReady(){
- return EMAILJS_SERVICE_ID!=="service_1tsuefo"&&EMAILJS_GRADE_TEMPLATE_ID!=="template_pi6g8sb"&&EMAILJS_PUBLIC_KEY!=="SvTx8lUUtNdlQFP2n";
+ return Boolean(EMAILJS_SERVICE_ID && EMAILJS_GRADE_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) && !["YOUR_EMAILJS_SERVICE_ID","YOUR_NEW_GRADE_TEMPLATE_ID","YOUR_EMAILJS_PUBLIC_KEY"].some(v=>[EMAILJS_SERVICE_ID,EMAILJS_GRADE_TEMPLATE_ID,EMAILJS_PUBLIC_KEY].includes(v));
 }
 function findTeacherStudent(studentId){
  return students.find(x=>String(x.id||x.student_id||x.user_id||x.auth_user_id)===String(studentId))||null;
 }
-
 function formatGradeEmailPayload(student, grade, publicationId) {
  const available = [];
 
@@ -698,7 +768,6 @@ function formatGradeEmailPayload(student, grade, publicationId) {
   publication_id: publicationId
  };
 }
-
 async function claimGradeEmail(publication){
  const {error:insertError}=await supabase.from("grade_publication_notifications").upsert({
   publication_id:publication.publication_id,class_id:publication.class_id,student_id:publication.student_id,
@@ -724,6 +793,10 @@ async function confirmGradePublication(){
  const btn=$("confirmGradePublishBtn");btn.disabled=true;btn.textContent="Publishing…";
  try{
   const publication={...pendingGradePublication};
+  if(publication.mode==="classes"){
+   await confirmMultiClassGradePublication(publication);
+   return;
+  }
   const selected=[...new Set(publication.student_ids.map(String))];
   if(!selected.length)throw new Error("Select at least one student.");
   const {data:grades,error:gradeError}=await supabase.from("class_student_grades")
@@ -860,6 +933,12 @@ document.addEventListener("click",e=>{
 });
 
 
+$("publishGradesMainBtn")?.addEventListener("click",()=>openClassGradePublishModal());
+$("closeClassGradePublishBtn")?.addEventListener("click",closeClassGradePublishModal);
+$("cancelClassGradePublishBtn")?.addEventListener("click",closeClassGradePublishModal);
+$("continueClassGradePublishBtn")?.addEventListener("click",prepareClassGradePublication);
+$("classGradePublishModal")?.addEventListener("click",e=>{if(e.target===$("classGradePublishModal"))closeClassGradePublishModal();});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-publish-class]");if(b){openClassGradePublishModal(b.dataset.publishClass);}});
 $("createClassBtn")?.addEventListener("click",openCreateClassModal);
 $("closeCreateClassBtn")?.addEventListener("click",closeCreateClassModal);
 $("cancelCreateClassBtn")?.addEventListener("click",closeCreateClassModal);
