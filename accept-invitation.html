@@ -344,7 +344,7 @@ async function redeemInvitation(session) {
 
   invitationAccepted = true;
   form.hidden = true;
-  say("Your account was created successfully and approved. You can now go to login.", "success");
+  say("Your Mac&Talk account was created successfully and is approved. You can now sign in.", "success");
   const loginLink = document.createElement("a");
   loginLink.className = "link-button";
   loginLink.href = "/login.html";
@@ -429,10 +429,12 @@ form.addEventListener("submit", async event => {
     if (data.session) {
       await redeemInvitation(data.session);
     } else {
+      // Immediate approval requires Supabase email confirmation to be disabled.
+      // Without a session, the invitation cannot be redeemed in this browser yet.
       form.hidden = true;
       say(
-        "Your account was created, but email confirmation is still enabled in Supabase. Confirm your email, then reopen this invitation link to finish approval.",
-        "success"
+        "Your account was created, but instant approval could not be completed. Please ask the administrator to disable email confirmation in Supabase Auth, then use a fresh invitation link.",
+        "error"
       );
     }
   } catch (error) {
