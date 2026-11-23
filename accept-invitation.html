@@ -129,7 +129,7 @@ button:disabled {
       minlength="3"
       maxlength="30"
       autocomplete="username"
-      pattern="[A-Za-z0-9_.-]{3,30}"
+      pattern="[A-Za-z0-9._\x2d]{3,30}"
       required
       placeholder="Letters, numbers, dots, _ or -"
     >
@@ -177,6 +177,31 @@ button:disabled {
     </button>
   </form>
 
+  <form id="existingAccountForm" hidden>
+    <label for="existingEmail">Invited email address</label>
+    <input id="existingEmail" type="email" readonly aria-readonly="true">
+
+    <label for="existingPassword">Your existing account password</label>
+    <input
+      id="existingPassword"
+      type="password"
+      minlength="8"
+      maxlength="128"
+      autocomplete="current-password"
+      required
+      placeholder="Enter the password you already use"
+    >
+
+    <p class="hint">
+      An account with this invited email already exists. Sign in with its
+      current password to accept this invitation and activate the invited role.
+    </p>
+
+    <button id="existingSignInButton" type="submit">
+      Sign in and accept invitation
+    </button>
+  </form>
+
   <a
     class="link-button"
     href="/login.html"
@@ -206,6 +231,8 @@ const $ = id => document.getElementById(id);
 const form = $("signupForm");
 const message = $("message");
 const button = $("submitButton");
+const existingAccountForm = $("existingAccountForm");
+const existingSignInButton = $("existingSignInButton");
 
 const params = new URLSearchParams(location.search);
 const token = (params.get("token") || "").trim();
@@ -215,6 +242,7 @@ let invitedName = "";
 let invitedRole = "";
 let submitting = false;
 let invitationAccepted = false;
+let redemptionInProgress = false;
 let authSubscription = null;
 
 function say(text, kind = "") {
@@ -291,7 +319,8 @@ async function validateInvitation() {
 }
 
 async function redeemInvitation(session) {
-  if (invitationAccepted) return;
+  if (invitationAccepted || redemptionInProgress) return;
+  existingAccountForm.hidden = true;
 
   if (!session?.user) {
     form.hidden = true;
@@ -302,10 +331,13 @@ async function redeemInvitation(session) {
     return;
   }
 
+  redemptionInProgress = true;
+
   const confirmedEmail =
     (session.user.email || "").trim().toLowerCase();
 
   if (!session.user.email_confirmed_at) {
+    redemptionInProgress = false;
     form.hidden = true;
     say(
       "Please confirm your email using the confirmation link we sent you.",
@@ -315,6 +347,7 @@ async function redeemInvitation(session) {
   }
 
   if (!invitedEmail || confirmedEmail !== invitedEmail) {
+    redemptionInProgress = false;
     form.hidden = true;
     say(
       "Please sign in with the email address used for this invitation.",
@@ -329,6 +362,7 @@ async function redeemInvitation(session) {
   );
 
   if (error) {
+    redemptionInProgress = false;
     // Print the full PostgREST/Postgres error instead of the collapsed "Object".
     console.error("INVITATION REDEMPTION ERROR:", {
       message: error.message || null,
@@ -347,12 +381,14 @@ async function redeemInvitation(session) {
   }
 
   if (data !== true) {
+    redemptionInProgress = false;
     invitationExpired();
     return;
   }
 
   invitationAccepted = true;
   form.hidden = true;
+  existingAccountForm.hidden = true;
   say("Your Mac&Talk account was created successfully and is approved. You can now sign in.", "success");
   const loginLink = document.createElement("a");
   loginLink.className = "link-button";
@@ -385,7 +421,7 @@ form.addEventListener("submit", async event => {
     return;
   }
 
-  if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username)) {
+  if (!/^[A-Za-z0-9._\x2d]{3,30}$/.test(username)) {
     say(
       "Choose a username with 3–30 letters, numbers, dots, underscores, or hyphens.",
       "error"
@@ -448,14 +484,70 @@ form.addEventListener("submit", async event => {
     }
   } catch (error) {
     console.error("Signup failed:", error);
-    say(
-      error.message || "Could not create your account. Please try again.",
-      "error"
-    );
+
+    const errorMessage = String(error?.message || "");
+    const errorCode = String(error?.code || "");
+    const accountAlreadyExists =
+      errorCode === "user_already_exists" ||
+      /already registered|already exists/i.test(errorMessage);
+
+    if (accountAlreadyExists) {
+      form.hidden = true;
+      existingAccountForm.hidden = false;
+      $("existingEmail").value = invitedEmail;
+      $("existingPassword").value = "";
+      say(
+        "An account with this invited email already exists. Enter that account's current password below to sign in and accept this invitation.",
+        "error"
+      );
+    } else {
+      say(
+        errorMessage || "Could not create your account. Please try again.",
+        "error"
+      );
+    }
   } finally {
     submitting = false;
     button.disabled = false;
     button.textContent = "Create Mac&Talk Account";
+  }
+});
+
+existingAccountForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (submitting || invitationAccepted) return;
+
+  const password = $("existingPassword").value;
+  if (!invitedEmail || password.length < 8) {
+    say("Enter the password for your existing account.", "error");
+    return;
+  }
+
+  submitting = true;
+  existingSignInButton.disabled = true;
+  existingSignInButton.textContent = "Signing in…";
+  say("Signing in and accepting your invitation…");
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: invitedEmail,
+      password
+    });
+
+    if (error) throw error;
+
+    await redeemInvitation(data.session);
+  } catch (error) {
+    console.error("Existing account sign-in failed:", error);
+    say(
+      error.message || "Could not sign in. Check your existing account password and try again.",
+      "error"
+    );
+  } finally {
+    submitting = false;
+    existingSignInButton.disabled = false;
+    existingSignInButton.textContent = "Sign in and accept invitation";
   }
 });
 
