@@ -168,9 +168,9 @@ button:disabled {
       required
     >
 
-    <p class="hint">
-      New student accounts receive the Student role.
-    </p>
+    <label for="invitedRole">Account role</label>
+    <input id="invitedRole" type="text" readonly aria-readonly="true">
+    <p class="hint">This role was selected by the administrator and cannot be changed.</p>
 
     <button id="submitButton" type="submit">
       Create Mac&Talk Account
@@ -212,6 +212,7 @@ const token = (params.get("token") || "").trim();
 
 let invitedEmail = "";
 let invitedName = "";
+let invitedRole = "";
 let submitting = false;
 let invitationAccepted = false;
 let authSubscription = null;
@@ -234,7 +235,8 @@ function validInvitationData(invitation) {
     invitation &&
     invitation.is_valid === true &&
     typeof invitation.invited_email === "string" &&
-    invitation.invited_email.trim()
+    invitation.invited_email.trim() &&
+    ["student", "teacher", "admin"].includes(String(invitation.invited_role || "").toLowerCase())
   );
 }
 
@@ -269,8 +271,10 @@ async function validateInvitation() {
 
     invitedEmail = invitation.invited_email.trim().toLowerCase();
     invitedName = (invitation.invited_name || "").trim();
+    invitedRole = String(invitation.invited_role).toLowerCase();
 
     $("email").value = invitedEmail;
+    $("invitedRole").value = invitedRole.charAt(0).toUpperCase() + invitedRole.slice(1);
     $("fullName").value = invitedName;
     form.hidden = false;
 
@@ -340,10 +344,16 @@ async function redeemInvitation(session) {
 
   invitationAccepted = true;
   form.hidden = true;
-  say(
-    "Your account is ready! Your invitation has been used. You can now sign in.",
-    "success"
-  );
+  say("Your account was created successfully and approved. You can now go to login.", "success");
+  const loginLink = document.createElement("a");
+  loginLink.className = "link-button";
+  loginLink.href = "/login.html";
+  loginLink.textContent = "Go to Login";
+  loginLink.style.marginTop = "12px";
+  message.insertAdjacentElement("afterend", loginLink);
+  try { await supabase.auth.signOut(); } catch (signOutError) {
+    console.warn("Could not clear the new session before login:", signOutError);
+  }
 }
 
 form.addEventListener("submit", async event => {
@@ -421,7 +431,7 @@ form.addEventListener("submit", async event => {
     } else {
       form.hidden = true;
       say(
-        "Your account registration has started. Check your email and click the confirmation link to finish registration.",
+        "Your account was created, but email confirmation is still enabled in Supabase. Confirm your email, then reopen this invitation link to finish approval.",
         "success"
       );
     }
