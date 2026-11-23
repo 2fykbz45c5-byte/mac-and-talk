@@ -329,9 +329,18 @@ async function redeemInvitation(session) {
   );
 
   if (error) {
-    console.error("Invitation redemption failed:", error);
+    // Print the full PostgREST/Postgres error instead of the collapsed "Object".
+    console.error("INVITATION REDEMPTION ERROR:", {
+      message: error.message || null,
+      details: error.details || null,
+      hint: error.hint || null,
+      code: error.code || null,
+      status: error.status || null,
+      fullError: JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
+    });
+
     say(
-      "Your email is confirmed, but we couldn't finish the invitation. Please contact the administrator.",
+      "Your email is confirmed, but we couldn't finish the invitation. Please open the browser console (F12) and share the INVITATION REDEMPTION ERROR details with the administrator.",
       "error"
     );
     return;
@@ -466,9 +475,15 @@ async function initialize() {
     try {
       await redeemInvitation(data.session);
     } catch (error) {
-      console.error(error);
+      console.error("INVITATION INITIALIZATION ERROR:", {
+        message: error?.message || null,
+        details: error?.details || null,
+        hint: error?.hint || null,
+        code: error?.code || null,
+        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
+      });
       say(
-        "Your email confirmation was received, but we couldn't finish the invitation. Please try again or contact the administrator.",
+        "Your email confirmation was received, but we couldn't finish the invitation. Check the browser console for INVITATION INITIALIZATION ERROR.",
         "error"
       );
     }
