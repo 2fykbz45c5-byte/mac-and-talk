@@ -174,6 +174,16 @@ body { background: #ffffff; }
   .welcome-banner { padding: 22px 18px; }
 }
 
+
+/* First-login email verification */
+.email-verify-overlay{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:20px;background:rgba(7,18,33,.82);backdrop-filter:blur(8px)}
+.email-verify-card{width:min(100%,510px);padding:30px;background:#fff;border:1px solid #eee8d9;border-radius:20px;box-shadow:0 25px 90px #0005;color:var(--navy)}
+.email-verify-icon{width:56px;height:56px;display:grid;place-items:center;margin-bottom:17px;border-radius:16px;background:#fff4c9;font-size:28px}
+.email-verify-card h2{font-size:23px;line-height:1.25;margin-bottom:9px}.email-verify-card p{font-size:13px;color:#647187;line-height:1.7;margin:10px 0}
+.email-verify-address{display:block;margin:14px 0;padding:13px 15px;border:1px solid #f0dfaa;border-radius:11px;background:#fffaf0;color:#10243e;font-weight:850;overflow-wrap:anywhere}
+.email-verify-actions{display:grid;gap:9px;margin-top:18px}.email-verify-btn{width:100%;border:0;border-radius:11px;padding:13px;background:#ffc629;color:#10243e;font-size:13px;font-weight:850;cursor:pointer}.email-verify-btn.secondary{background:#eef2f7;color:#10243e}.email-verify-btn:disabled{opacity:.55;cursor:not-allowed}
+.email-verify-status{min-height:22px;margin-top:12px!important;font-size:12px!important;font-weight:700}.email-verify-status.error{color:#b42318!important}.email-verify-status.success{color:#18865a!important}.email-verify-foot{font-size:10px!important;color:#8792a3!important;text-align:center}
+
 /* First-login trusted sender confirmation */
 .sender-trust-overlay{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:20px;background:rgba(7,18,33,.78);backdrop-filter:blur(7px)}
 .sender-trust-card{width:min(100%,500px);padding:30px;background:#fff;border:1px solid #eee8d9;border-radius:20px;box-shadow:0 25px 90px #0005;color:var(--navy)}
@@ -191,6 +201,23 @@ body { background: #ffffff; }
 </head>
 <body>
 <div class="loading-screen" id="loadingScreen"><div class="loading-box"><strong>Mac&amp;Talk</strong><p id="loadingMessage">Checking your account...</p></div></div>
+
+
+<div class="email-verify-overlay" id="emailVerifyModal" role="dialog" aria-modal="true" aria-labelledby="emailVerifyTitle" hidden>
+  <section class="email-verify-card">
+    <div class="email-verify-icon" aria-hidden="true">✉️</div>
+    <h2 id="emailVerifyTitle">Welcome to Mac&amp;Talk!</h2>
+    <p>Before entering your dashboard, confirm that you own this email address. We have sent a welcome message with a secure confirmation link to:</p>
+    <strong class="email-verify-address" id="emailVerifyAddress">your email address</strong>
+    <p>Open the message from Mac&amp;Talk and click <strong>Confirm My Email</strong>. Then return here and select “I've confirmed my email”.</p>
+    <div class="email-verify-actions">
+      <button class="email-verify-btn" id="emailVerifyCheck" type="button">I've confirmed my email</button>
+      <button class="email-verify-btn secondary" id="emailVerifyResend" type="button">Resend confirmation email</button>
+    </div>
+    <p class="email-verify-status" id="emailVerifyStatus" role="status" aria-live="polite">Check your inbox, and your Spam folder if needed.</p>
+    <p class="email-verify-foot">Your dashboard remains locked until Supabase confirms the email address.</p>
+  </section>
+</div>
 
 <div class="sender-trust-overlay" id="senderTrustModal" role="dialog" aria-modal="true" aria-labelledby="senderTrustTitle" hidden>
   <section class="sender-trust-card">
@@ -278,9 +305,16 @@ body { background: #ffffff; }
 </div>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import emailjs from "https://esm.sh/@emailjs/browser@4";
 
 const SUPABASE_URL = "https://gprdmwjqgyrvqrgjkycc.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uBlQa2v-VS9OYVRk3FEE4A_CwmVPVH4";
+// Existing Mac&Talk EmailJS service/public key. Create a dedicated Welcome template
+// and replace the template ID below; do not reuse the invitation or grade template.
+const EMAILJS_SERVICE_ID = "service_er1dxj1";
+const EMAILJS_WELCOME_TEMPLATE_ID = "template_j1we08r";
+const EMAILJS_PUBLIC_KEY = "pqs-PofxSGTgsno9o";
+emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = id => document.getElementById(id);
 // Keep the results overlay at the document root so it always covers the entire page.
@@ -298,7 +332,101 @@ let authListenerRegistered = false;
 const SEEN_KEY = "mactalk_seen_sessions_v1";
 const pageTitles = {dashboard:"Dashboard",sessions:"Live Sessions",profile:"My Profile",settings:"Settings"};
 const SENDER_TRUST_PREFIX = "mactalk_trusted_sender_v1:";
+const EMAIL_SENT_PREFIX = "mactalk_welcome_verification_sent_v1:";
+const WELCOME_CHANNEL_PREFIX = "mactalk_welcome_channel_v1:";
 let senderTrustPromise = null;
+let emailVerificationPromise = null;
+let verificationSendInProgress = false;
+function setEmailVerifyStatus(message,type=""){
+  const status=$("emailVerifyStatus");
+  status.textContent=message;
+  status.className="email-verify-status"+(type?" "+type:"");
+}
+async function sendWelcomeVerification(user,{force=false}={}){
+  if(!user?.email)throw new Error("This account does not have an email address.");
+  if(verificationSendInProgress)return;
+  verificationSendInProgress=true;
+  const resendButton=$("emailVerifyResend");
+  resendButton.disabled=true;
+  resendButton.textContent="Sending…";
+  try{
+    const redirectTo=window.location.origin+window.location.pathname;
+    const {error}=await supabase.auth.resend({
+      type:"signup",
+      email:user.email,
+      options:{emailRedirectTo:redirectTo}
+    });
+    if(error)throw error;
+    try{localStorage.setItem(WELCOME_CHANNEL_PREFIX+user.id,"supabase-confirmation");}catch(storageError){console.warn("Could not save welcome-email state:",storageError);}
+    setEmailVerifyStatus("Welcome and confirmation email sent. Check your inbox (and Spam folder).","success");
+  }catch(error){
+    console.error("Welcome confirmation email error:",error);
+    setEmailVerifyStatus(error.message||"Could not send the confirmation email. Please try again.","error");
+  }finally{
+    verificationSendInProgress=false;
+    resendButton.disabled=false;
+    resendButton.textContent="Resend confirmation email";
+  }
+}
+async function sendFirstLoginWelcome(user){
+  if(!user?.id||!user?.email)return;
+  const key=EMAIL_SENT_PREFIX+user.id;
+  try{if(localStorage.getItem(key)==="yes")return;}catch(error){console.warn(error);}
+  if(!EMAILJS_WELCOME_TEMPLATE_ID||EMAILJS_WELCOME_TEMPLATE_ID==="YOUR_WELCOME_TEMPLATE_ID"){
+    console.warn("Set EMAILJS_WELCOME_TEMPLATE_ID after creating the dedicated Mac&Talk Welcome template.");
+    return;
+  }
+  const fullName=user.user_metadata?.full_name||user.user_metadata?.display_name||user.email.split("@")[0];
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_WELCOME_TEMPLATE_ID,{
+      to_email:user.email,
+      full_name:fullName,
+      platform_email:"mactalk.contact@gmail.com",
+      login_link:window.location.origin+"/login.html"
+    });
+    try{localStorage.setItem(key,"yes");}catch(error){console.warn("Could not save welcome email state:",error);}
+  }catch(error){console.error("Mac&Talk welcome email could not be sent:",error);}
+}
+async function ensureEmailVerified(user){
+  if(user?.email_confirmed_at){
+    let confirmationWasWelcome=false;
+    try{confirmationWasWelcome=localStorage.getItem(WELCOME_CHANNEL_PREFIX+user.id)==="supabase-confirmation";}catch(error){console.warn(error);}
+    if(!confirmationWasWelcome)await sendFirstLoginWelcome(user);
+    return true;
+  }
+  if(emailVerificationPromise)return emailVerificationPromise;
+  emailVerificationPromise=(async()=>{
+    $("emailVerifyAddress").textContent=user?.email||"Email address unavailable";
+    $("emailVerifyModal").hidden=false;
+    setEmailVerifyStatus("Sending your Mac&Talk welcome and confirmation email…");
+    let alreadySent=false;
+    try{alreadySent=localStorage.getItem(EMAIL_SENT_PREFIX+user.id)==="yes";}catch(error){console.warn(error);}
+    if(!alreadySent)await sendWelcomeVerification(user);
+    else setEmailVerifyStatus("A confirmation email was already requested. Check your inbox or resend it below.");
+    return await new Promise(resolve=>{
+      const checkButton=$("emailVerifyCheck");
+      checkButton.onclick=async()=>{
+        checkButton.disabled=true;
+        setEmailVerifyStatus("Checking your confirmation…");
+        try{
+          const {data,error}=await supabase.auth.refreshSession();
+          if(error)throw error;
+          const refreshedUser=data?.user||data?.session?.user;
+          if(refreshedUser?.email_confirmed_at){
+            currentUser=refreshedUser;
+            $("emailVerifyModal").hidden=true;
+            resolve(true);
+          }else{
+            setEmailVerifyStatus("Your email is not confirmed yet. Open the latest confirmation email and click its button.","error");
+          }
+        }catch(error){setEmailVerifyStatus(error.message||"Could not check verification. Please try again.","error");}
+        finally{checkButton.disabled=false;}
+      };
+      $("emailVerifyResend").onclick=()=>sendWelcomeVerification(user);
+    });
+  })().finally(()=>{emailVerificationPromise=null;});
+  return emailVerificationPromise;
+}
 function requestSenderTrust(user){
   if(!user?.id)return Promise.resolve(false);
   const key=SENDER_TRUST_PREFIX+user.id;
@@ -814,6 +942,8 @@ async function handleSession(authSession){
     return;
   }
   currentUser=authSession.user;
+  const verified=await ensureEmailVerified(currentUser);
+  if(!verified)return;
   const senderTrusted=await requestSenderTrust(currentUser);
   if(!senderTrusted)return;
   $("currentDate").textContent=new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date());
