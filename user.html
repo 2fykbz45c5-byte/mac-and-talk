@@ -207,14 +207,15 @@ body { background: #ffffff; }
   <section class="email-verify-card">
     <div class="email-verify-icon" aria-hidden="true">✉️</div>
     <h2 id="emailVerifyTitle">Welcome to Mac&amp;Talk!</h2>
-    <p>Before entering your dashboard, confirm that you own this email address. We have sent a welcome message with a secure confirmation link to:</p>
+    <p>Before entering your dashboard, please verify your email address. We have sent a confirmation email with a secure verification link to:</p>
     <strong class="email-verify-address" id="emailVerifyAddress">your email address</strong>
-    <p>Open the message from Mac&amp;Talk and click <strong>Confirm My Email</strong>. Then return here and select “I've confirmed my email”.</p>
+    <p><strong>Important:</strong> Check your <strong>Inbox</strong>. If you cannot find the email, check your <strong>Spam</strong> or <strong>Junk</strong> folder too.</p>
+    <p>Open the email from Mac&amp;Talk, click its confirmation link, then return here and select <strong>“I've confirmed my email”</strong>.</p>
     <div class="email-verify-actions">
       <button class="email-verify-btn" id="emailVerifyCheck" type="button">I've confirmed my email</button>
       <button class="email-verify-btn secondary" id="emailVerifyResend" type="button">Resend confirmation email</button>
     </div>
-    <p class="email-verify-status" id="emailVerifyStatus" role="status" aria-live="polite">Check your inbox, and your Spam folder if needed.</p>
+    <p class="email-verify-status" id="emailVerifyStatus" role="status" aria-live="polite">Can’t find the email? Check your Spam or Junk folder.</p>
     <p class="email-verify-foot">Your dashboard remains locked until Supabase confirms the email address.</p>
   </section>
 </div>
