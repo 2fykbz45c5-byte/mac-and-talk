@@ -173,10 +173,43 @@ body { background: #ffffff; }
   .content { padding: 15px 12px 26px; }
   .welcome-banner { padding: 22px 18px; }
 }
+
+/* First-login trusted sender confirmation */
+.sender-trust-overlay{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:20px;background:rgba(7,18,33,.78);backdrop-filter:blur(7px)}
+.sender-trust-card{width:min(100%,500px);padding:30px;background:#fff;border:1px solid #eee8d9;border-radius:20px;box-shadow:0 25px 90px #0005;color:var(--navy)}
+.sender-trust-icon{width:54px;height:54px;display:grid;place-items:center;margin-bottom:17px;border-radius:15px;background:#fff4c9;font-size:27px}
+.sender-trust-card h2{font-size:22px;line-height:1.25;margin-bottom:9px}.sender-trust-card p{font-size:13px;color:#647187;line-height:1.7;margin:10px 0}
+.sender-trust-address{display:block;margin:14px 0;padding:13px 15px;border:1px solid #f0dfaa;border-radius:11px;background:#fffaf0;color:#10243e;font-weight:850;overflow-wrap:anywhere}
+.sender-trust-steps{padding-left:19px;color:#536176;font-size:12px;line-height:1.8}
+.sender-trust-confirm{display:flex;align-items:flex-start;gap:10px;margin:18px 0;padding:13px;border:1px solid #e5e9f0;border-radius:11px;background:#f8fafc;font-size:12px;line-height:1.6}
+.sender-trust-confirm input{width:17px;height:17px;flex-shrink:0;margin-top:2px;accent-color:#10243e}
+.sender-trust-submit{width:100%;border:0;border-radius:11px;padding:14px;background:#ffc629;color:#10243e;font-size:13px;font-weight:850;cursor:pointer}
+.sender-trust-submit:disabled{opacity:.45;cursor:not-allowed}
+.sender-trust-foot{font-size:10px!important;color:#8792a3!important;text-align:center}
+
 </style>
 </head>
 <body>
 <div class="loading-screen" id="loadingScreen"><div class="loading-box"><strong>Mac&amp;Talk</strong><p id="loadingMessage">Checking your account...</p></div></div>
+
+<div class="sender-trust-overlay" id="senderTrustModal" role="dialog" aria-modal="true" aria-labelledby="senderTrustTitle" hidden>
+  <section class="sender-trust-card">
+    <div class="sender-trust-icon" aria-hidden="true">✉️</div>
+    <h2 id="senderTrustTitle">Stay updated with official Mac&amp;Talk emails</h2>
+    <p>Mac&amp;Talk sends important account updates, invitations, notifications and results from its official email address:</p>
+    <strong class="sender-trust-address">mactalk.contact@gmail.com</strong>
+    <p>To make sure you receive these messages:</p>
+    <ol class="sender-trust-steps">
+      <li>Save this address in your contacts.</li>
+      <li>If a Mac&amp;Talk message is in Spam, open it and choose <strong>Report not spam</strong>.</li>
+      <li>Keep this address trusted so future messages can reach your inbox.</li>
+    </ol>
+    <label class="sender-trust-confirm"><input type="checkbox" id="senderTrustCheck"><span>I recognize <strong>mactalk.contact@gmail.com</strong> as the official Mac&amp;Talk sender and have added it to my trusted contacts / will mark its messages as not spam.</span></label>
+    <button class="sender-trust-submit" id="senderTrustContinue" type="button" disabled>Confirm and continue to Mac&amp;Talk</button>
+    <p class="sender-trust-foot">This confirmation is requested once per account on this browser. Mac&amp;Talk cannot change your email provider's spam settings automatically.</p>
+  </section>
+</div>
+
 <div class="app" id="app" hidden>
 <aside class="sidebar" id="mtSharedSidebar" aria-label="Main sidebar">
   <div class="brand"><div class="brand-icon" aria-label="Mac&Talk logo">M&amp;T</div><div class="brand-name">Mac<span>&amp;</span>Talk</div></div>
@@ -264,6 +297,25 @@ let activeResultsTrimester = "first";
 let authListenerRegistered = false;
 const SEEN_KEY = "mactalk_seen_sessions_v1";
 const pageTitles = {dashboard:"Dashboard",sessions:"Live Sessions",profile:"My Profile",settings:"Settings"};
+const SENDER_TRUST_PREFIX = "mactalk_trusted_sender_v1:";
+let senderTrustPromise = null;
+function requestSenderTrust(user){
+  if(!user?.id)return Promise.resolve(false);
+  const key=SENDER_TRUST_PREFIX+user.id;
+  try{if(localStorage.getItem(key)==="yes")return Promise.resolve(true);}catch(error){console.warn("Could not read sender confirmation:",error);}
+  if(senderTrustPromise)return senderTrustPromise;
+  const modal=$("senderTrustModal"),check=$("senderTrustCheck"),button=$("senderTrustContinue");
+  modal.hidden=false;check.checked=false;button.disabled=true;
+  check.onchange=()=>{button.disabled=!check.checked;};
+  senderTrustPromise=new Promise(resolve=>{
+    button.onclick=()=>{
+      if(!check.checked)return;
+      try{localStorage.setItem(key,"yes");}catch(error){console.warn("Could not save sender confirmation:",error);}
+      modal.hidden=true;senderTrustPromise=null;resolve(true);
+    };
+  });
+  return senderTrustPromise;
+}
 
 function showNotice(message,type="success"){
   const el=$("notice");
@@ -762,6 +814,8 @@ async function handleSession(authSession){
     return;
   }
   currentUser=authSession.user;
+  const senderTrusted=await requestSenderTrust(currentUser);
+  if(!senderTrusted)return;
   $("currentDate").textContent=new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date());
   $("footerYear").textContent=String(new Date().getFullYear());
   $("loadingScreen").hidden=true;$("app").hidden=false;
